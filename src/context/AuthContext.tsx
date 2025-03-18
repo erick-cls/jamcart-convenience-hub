@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
@@ -55,7 +54,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         address: '123 Main St',
         town: 'Kingston',
         isVerified: true,
-        isAdmin: email.includes('admin') // For demo, make admin if email has "admin" in it
+        // Make ericksonvilleta@gmail.com admin by default, also keep admin if email contains "admin"
+        isAdmin: email === 'ericksonvilleta@gmail.com' || email.includes('admin')
       };
       
       setUser(mockUser);
@@ -85,7 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         address: userData.address,
         town: userData.town,
         isVerified: false,
-        isAdmin: false
+        // Make ericksonvilleta@gmail.com admin by default
+        isAdmin: userData.email === 'ericksonvilleta@gmail.com'
       };
       
       setUser(mockUser);
