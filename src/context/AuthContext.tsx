@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
@@ -45,7 +46,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // This is just a mock login for demo purposes
       // In a real app, this would be an API call to authenticate
       
-      // For demo purposes, we'll create a fake user
+      // Special case for ericksonvilleta@gmail.com
+      if (email === 'ericksonvilleta@gmail.com') {
+        if (password === 'P@ssw0rdnimda') {
+          const adminUser: User = {
+            id: 'admin-123',
+            name: 'Erickson Villeta',
+            email: email,
+            phone: '+1234567890',
+            address: '123 Admin St',
+            town: 'Kingston',
+            isVerified: true,
+            isAdmin: true
+          };
+          
+          setUser(adminUser);
+          localStorage.setItem('jamcart-user', JSON.stringify(adminUser));
+          setLoading(false);
+          return;
+        } else {
+          throw new Error('Invalid password');
+        }
+      }
+      
+      // For demo purposes, we'll create a fake user for other emails
       const mockUser: User = {
         id: 'user-123',
         name: 'John Doe',
@@ -73,6 +97,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
+      // Special case for ericksonvilleta@gmail.com
+      if (userData.email === 'ericksonvilleta@gmail.com' && userData.password !== 'P@ssw0rdnimda') {
+        setError('This email requires a specific password');
+        setLoading(false);
+        return;
+      }
+      
       // This is just a mock registration for demo purposes
       // In a real app, this would be an API call to register the user
       
