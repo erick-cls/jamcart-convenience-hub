@@ -74,9 +74,9 @@ const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(
           </div>
         )}
         <span className={`flex items-center gap-2 ${loading ? 'opacity-0' : ''}`}>
-          {icon && iconPosition === 'left' && icon}
-          {children}
-          {icon && iconPosition === 'right' && icon}
+          {icon && iconPosition === 'left' && <>{icon}</>}
+          {children && <>{children}</>}
+          {icon && iconPosition === 'right' && <>{icon}</>}
         </span>
       </motion.button>
     );
