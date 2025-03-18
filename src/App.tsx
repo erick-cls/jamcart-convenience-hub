@@ -9,6 +9,9 @@ import LandingPage from "./pages/LandingPage";
 import AuthPage from "./pages/AuthPage";
 import CategoryPage from "./pages/CategoryPage";
 import OrderPage from "./pages/OrderPage";
+import Categories from "./pages/Categories";
+import HowItWorks from "./pages/HowItWorks";
+import About from "./pages/About";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminOrders from "./pages/admin/Orders";
 import NotFound from "./pages/NotFound";
@@ -25,8 +28,11 @@ const App = () => (
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/categories" element={<Categories />} />
             <Route path="/category/:categoryId" element={<CategoryPage />} />
             <Route path="/order/:categoryId/:storeId" element={<OrderPage />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
+            <Route path="/about" element={<About />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/orders" element={<AdminOrders />} />
             <Route path="*" element={<NotFound />} />
