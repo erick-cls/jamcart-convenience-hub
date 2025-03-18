@@ -8,6 +8,9 @@ import { useAuth } from '@/context/AuthContext';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import OrderItem from '@/components/ui/OrderItem';
 
+// Define OrderStatus type to match OrderItem component requirements
+type OrderStatus = 'pending' | 'completed' | 'accepted' | 'declined';
+
 // Mock data for dashboard
 const mockStats = [
   { id: 'orders', label: 'Total Orders', value: 124, icon: ShoppingBag, color: 'bg-blue-500' },
@@ -32,7 +35,7 @@ const mockPendingOrders = [
     storeName: 'FreshMart Supermarket',
     category: 'Supermarket',
     date: '2023-06-10T14:30:00',
-    status: 'pending',
+    status: 'pending' as OrderStatus,
     items: ['2 loaves of bread', '1 gallon of milk', '5 apples', 'Box of cereal']
   },
   {
@@ -40,7 +43,7 @@ const mockPendingOrders = [
     storeName: 'Island Pharmacy',
     category: 'Pharmacy',
     date: '2023-06-10T15:45:00',
-    status: 'pending',
+    status: 'pending' as OrderStatus,
     items: ['Paracetamol', 'Bandages', 'Antiseptic solution']
   }
 ];
@@ -51,7 +54,7 @@ const mockRecentOrders = [
     storeName: 'Quick Stop Mini Mart',
     category: 'Mini Mart',
     date: '2023-06-09T10:15:00',
-    status: 'completed',
+    status: 'completed' as OrderStatus,
     items: ['Snacks', 'Soft drinks', 'Cigarettes'],
     total: 35.50
   },
@@ -60,7 +63,7 @@ const mockRecentOrders = [
     storeName: 'Island Flavors Restaurant',
     category: 'Restaurant',
     date: '2023-06-09T12:30:00',
-    status: 'completed',
+    status: 'completed' as OrderStatus,
     items: ['Jerk chicken', 'Rice and peas', 'Festival'],
     total: 85.75
   },
@@ -69,7 +72,7 @@ const mockRecentOrders = [
     storeName: 'Hardware Express',
     category: 'Hardware',
     date: '2023-06-08T14:00:00',
-    status: 'declined',
+    status: 'declined' as OrderStatus,
     items: ['Paint brushes', 'Screwdriver set', 'Light bulbs'],
     total: 42.20
   }
@@ -102,7 +105,11 @@ const Dashboard = () => {
     // Add to recent orders with accepted status
     const acceptedOrder = pendingOrders.find(order => order.id === orderId);
     if (acceptedOrder) {
-      const newOrder = { ...acceptedOrder, status: 'accepted' as const };
+      const newOrder = { 
+        ...acceptedOrder, 
+        status: 'accepted' as OrderStatus,
+        total: 0 // Adding a default total value to satisfy the type requirement
+      };
       setRecentOrders([newOrder, ...recentOrders]);
     }
     
@@ -123,7 +130,11 @@ const Dashboard = () => {
     // Add to recent orders with declined status
     const declinedOrder = pendingOrders.find(order => order.id === orderId);
     if (declinedOrder) {
-      const newOrder = { ...declinedOrder, status: 'declined' as const };
+      const newOrder = { 
+        ...declinedOrder, 
+        status: 'declined' as OrderStatus,
+        total: 0 // Adding a default total value to satisfy the type requirement
+      };
       setRecentOrders([newOrder, ...recentOrders]);
     }
   };

@@ -1,14 +1,17 @@
 
 import { ButtonHTMLAttributes, forwardRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 import { cn } from "@/lib/utils";
 
-interface ActionButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ActionButtonProps extends Omit<HTMLMotionProps<"button">, "className" | "disabled" | "onClick"> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'link';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
+  className?: string;
+  disabled?: boolean;
+  onClick?: ButtonHTMLAttributes<HTMLButtonElement>["onClick"];
 }
 
 const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(
@@ -20,7 +23,7 @@ const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(
     loading = false, 
     icon, 
     iconPosition = 'left',
-    disabled, 
+    disabled,
     ...props 
   }, ref) => {
     const baseStyles = "relative inline-flex items-center justify-center font-medium transition-all duration-200 ease-in-out rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-jamcart-red disabled:opacity-50 disabled:cursor-not-allowed";
@@ -41,22 +44,26 @@ const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(
     
     const isDisabled = disabled || loading;
     
+    const buttonProps: any = {
+      ref,
+      className: cn(
+        baseStyles,
+        variants[variant],
+        variant !== 'link' && sizes[size],
+        className
+      ),
+      disabled: isDisabled,
+      ...props
+    };
+    
     return (
       <motion.button
-        ref={ref}
-        className={cn(
-          baseStyles,
-          variants[variant],
-          variant !== 'link' && sizes[size],
-          className
-        )}
-        disabled={isDisabled}
+        {...buttonProps}
         whileTap={{ scale: isDisabled ? 1 : 0.98 }}
         whileHover={{ 
           scale: isDisabled ? 1 : 1.02,
           transition: { duration: 0.2 }
         }}
-        {...props}
       >
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center">
