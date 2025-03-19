@@ -1,7 +1,4 @@
-
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,13 +7,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ChevronLeft, Save, Bell, Lock, Store, RefreshCcw } from 'lucide-react';
+import { Save, Bell, Lock, RefreshCcw } from 'lucide-react';
 import ActionButton from '@/components/ui/ActionButton';
 
 const SettingsPage = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  
   const [notifyNewOrders, setNotifyNewOrders] = useState(true);
   const [notifyOrderStatus, setNotifyOrderStatus] = useState(true);
   const [maintenanceMode, setMaintenanceMode] = useState(false);
@@ -30,11 +24,6 @@ const SettingsPage = () => {
   
   const [selectedCurrency, setSelectedCurrency] = useState('JMD');
   
-  if (!user?.isAdmin) {
-    navigate('/');
-    return null;
-  }
-  
   const handleSaveSettings = () => {
     // In a real app, this would save settings to a database
     toast.success("Settings saved successfully");
@@ -42,15 +31,7 @@ const SettingsPage = () => {
   
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex items-center mb-6">
-        <ActionButton 
-          variant="ghost" 
-          className="mr-2" 
-          icon={<ChevronLeft className="h-4 w-4" />}
-          onClick={() => navigate('/admin/dashboard')}
-        >
-          Back to Dashboard
-        </ActionButton>
+      <div className="mb-6">
         <h1 className="text-2xl font-bold">Admin Settings</h1>
       </div>
       

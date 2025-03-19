@@ -1,91 +1,49 @@
 
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
-import OrdersSearch from './OrdersSearch';
-import OrdersFilter from './OrdersFilter';
-import OrdersList from './OrdersList';
-import OrdersEmpty from './OrdersEmpty';
-import { useOrdersState } from './useOrdersState';
+import { useOrdersState } from "./useOrdersState";
+import OrdersSearch from "./OrdersSearch";
+import OrdersFilter from "./OrdersFilter";
+import OrdersList from "./OrdersList";
+import OrdersEmpty from "./OrdersEmpty";
 
 const OrdersPage = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const { 
-    filteredOrders, 
-    searchTerm, 
-    setSearchTerm, 
-    activeFilter, 
-    setActiveFilter 
+  const {
+    orders,
+    filteredOrders,
+    searchQuery,
+    setSearchQuery,
+    activeFilter,
+    setActiveFilter,
+    loading,
   } = useOrdersState();
-  
-  useEffect(() => {
-    // Check if user is admin
-    if (!user?.isAdmin) {
-      navigate('/');
-    }
-  }, [user, navigate]);
-  
-  const handleViewOrderDetails = (orderId: string) => {
-    navigate(`/admin/orders/${orderId}`);
-  };
-  
-  const handleExportCSV = () => {
-    // In a real app, this would generate and download a CSV file
-    alert('Export functionality would be implemented here');
-  };
-  
+
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-10">
-      <div className="app-container">
-        <div className="flex items-center mb-8">
-          <button
-            className="p-2 rounded-full hover:bg-gray-200 mr-3"
-            onClick={() => navigate('/admin/dashboard')}
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <div>
-            <h1 className="text-3xl font-bold mb-1">Orders Management</h1>
-            <p className="text-gray-600">View and manage all customer orders</p>
-          </div>
-        </div>
-        
-        {/* Filters and Search */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
-          <div className="p-5 flex flex-col md:flex-row justify-between gap-4">
-            <OrdersSearch 
-              searchTerm={searchTerm} 
-              setSearchTerm={setSearchTerm} 
-            />
-            
-            <OrdersFilter 
-              activeFilter={activeFilter} 
-              setActiveFilter={setActiveFilter}
-              onExport={handleExportCSV}
-            />
-          </div>
-        </div>
-        
-        {/* Orders Grid */}
-        {filteredOrders.length > 0 ? (
-          <OrdersList 
-            orders={filteredOrders} 
-            onViewDetails={handleViewOrderDetails} 
-          />
-        ) : (
-          <OrdersEmpty 
-            searchTerm={searchTerm}
-            activeFilter={activeFilter}
-            onClearFilters={() => {
-              setSearchTerm('');
-              setActiveFilter('all');
-            }}
-            onBackToDashboard={() => navigate('/admin/dashboard')}
-          />
-        )}
+    <div className="p-6 max-w-7xl mx-auto">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-1">Orders</h1>
+        <p className="text-gray-600">Manage and track all customer orders</p>
       </div>
+
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <OrdersSearch 
+          searchQuery={searchQuery} 
+          setSearchQuery={setSearchQuery} 
+        />
+        <OrdersFilter 
+          activeFilter={activeFilter} 
+          setActiveFilter={setActiveFilter} 
+        />
+      </div>
+
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-jamcart-red border-r-transparent"></div>
+          <p className="mt-4 text-gray-600">Loading orders...</p>
+        </div>
+      ) : filteredOrders.length > 0 ? (
+        <OrdersList orders={filteredOrders} />
+      ) : (
+        <OrdersEmpty searchQuery={searchQuery} activeFilter={activeFilter} />
+      )}
     </div>
   );
 };

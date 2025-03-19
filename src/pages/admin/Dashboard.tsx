@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -140,27 +139,12 @@ const Dashboard = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-10">
-      <div className="app-container">
+    <div className="py-6 px-6">
+      <div className="max-w-7xl mx-auto">
         <div className="flex flex-wrap items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold mb-1">Admin Dashboard</h1>
             <p className="text-gray-600">Monitor orders, users, and business performance</p>
-          </div>
-          <div className="flex gap-3 mt-4 sm:mt-0">
-            <ActionButton
-              size="md"
-              variant="outline"
-              onClick={() => navigate('/admin/settings')}
-            >
-              Settings
-            </ActionButton>
-            <ActionButton
-              size="md"
-              onClick={() => navigate('/admin/orders')}
-            >
-              View All Orders
-            </ActionButton>
           </div>
         </div>
         

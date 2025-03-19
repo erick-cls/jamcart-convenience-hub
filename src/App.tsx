@@ -12,6 +12,7 @@ import OrderPage from "./pages/OrderPage";
 import Categories from "./pages/Categories";
 import HowItWorks from "./pages/HowItWorks";
 import About from "./pages/About";
+import AdminLayout from "./components/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import OrdersPage from "./pages/admin/orders/OrdersPage";
 import SettingsPage from "./pages/admin/SettingsPage";
@@ -36,9 +37,14 @@ const App = () => (
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/about" element={<About />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/orders" element={<OrdersPage />} />
-            <Route path="/admin/settings" element={<SettingsPage />} />
+            
+            {/* Admin routes with layout */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="orders" element={<OrdersPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
