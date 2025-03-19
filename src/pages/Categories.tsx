@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CategoryCard from "@/components/ui/CategoryCard";
+import { Store, ShoppingBag, Pill, Wrench, ShoppingCart, CreditCard, Droplet, Smartphone } from "lucide-react";
 
 // Mock categories data
 const categories = [
@@ -11,56 +12,64 @@ const categories = [
     id: "minimart",
     name: "Mini Mart",
     description: "Snacks, drinks, and everyday essentials",
-    imageUrl: "/placeholder.svg",
+    icon: <Store className="h-6 w-6" />,
+    color: "bg-blue-500",
     storeCount: 24
   },
   {
     id: "restaurant",
     name: "Restaurants",
     description: "Local and international cuisine",
-    imageUrl: "/placeholder.svg",
+    icon: <ShoppingBag className="h-6 w-6" />,
+    color: "bg-red-500",
     storeCount: 42
   },
   {
     id: "pharmacy",
     name: "Pharmacy",
     description: "Medications and health products",
-    imageUrl: "/placeholder.svg",
+    icon: <Pill className="h-6 w-6" />,
+    color: "bg-green-500",
     storeCount: 16
   },
   {
     id: "hardware",
     name: "Hardware",
     description: "Tools and home improvement items",
-    imageUrl: "/placeholder.svg",
+    icon: <Wrench className="h-6 w-6" />,
+    color: "bg-yellow-500",
     storeCount: 8
   },
   {
     id: "supermarket",
     name: "Supermarket",
     description: "Groceries and household items",
-    imageUrl: "/placeholder.svg",
+    icon: <ShoppingCart className="h-6 w-6" />,
+    color: "bg-purple-500",
     storeCount: 12
   },
   {
     id: "billpay",
     name: "Bill Payment",
     description: "Pay utility bills and services",
-    imageUrl: "/placeholder.svg",
+    icon: <CreditCard className="h-6 w-6" />,
+    color: "bg-indigo-500",
     storeCount: 5
   },
   {
     id: "water",
     name: "Water Services",
     description: "Water delivery and filtration",
-    imageUrl: "/placeholder.svg",
+    icon: <Droplet className="h-6 w-6" />,
+    color: "bg-cyan-500",
     storeCount: 7
   },
   {
     id: "electronics",
     name: "Electronics",
     description: "Phones, accessories and appliances",
-    imageUrl: "/placeholder.svg",
+    icon: <Smartphone className="h-6 w-6" />,
+    color: "bg-orange-500",
     storeCount: 14
   }
 ];
@@ -89,11 +98,11 @@ const Categories = () => {
               {categories.map((category) => (
                 <CategoryCard
                   key={category.id}
+                  id={category.id}
                   name={category.name}
                   description={category.description}
-                  image={category.imageUrl}
-                  storeCount={category.storeCount}
-                  onClick={() => handleCategoryClick(category.id)}
+                  icon={category.icon}
+                  color={category.color}
                 />
               ))}
             </div>
