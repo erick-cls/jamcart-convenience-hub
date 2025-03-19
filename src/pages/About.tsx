@@ -24,7 +24,7 @@ const About = () => {
               </p>
               
               <p className="text-gray-700">
-                Founded in 2023, JAMCart has quickly grown to become the go-to platform for quick deliveries and services across multiple categories, from groceries to bill payments.
+                Founded in 2025, JAMCart has quickly grown to become the go-to platform for quick deliveries and services across multiple categories, from groceries to bill payments.
               </p>
             </div>
             
