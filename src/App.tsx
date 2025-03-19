@@ -13,7 +13,7 @@ import Categories from "./pages/Categories";
 import HowItWorks from "./pages/HowItWorks";
 import About from "./pages/About";
 import AdminDashboard from "./pages/admin/Dashboard";
-import AdminOrders from "./pages/admin/Orders";
+import OrdersPage from "./pages/admin/orders/OrdersPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,7 +34,7 @@ const App = () => (
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/about" element={<About />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/admin/orders" element={<OrdersPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
