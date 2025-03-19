@@ -5,7 +5,7 @@ import ActionButton from '@/components/ui/ActionButton';
 interface OrdersFilterProps {
   activeFilter: string;
   setActiveFilter: (filter: string) => void;
-  onExport: () => void;
+  onExport?: () => void; // Made onExport optional
 }
 
 // Order status options
@@ -40,15 +40,17 @@ const OrdersFilter = ({ activeFilter, setActiveFilter, onExport }: OrdersFilterP
         </button>
       ))}
       
-      <ActionButton
-        variant="outline"
-        size="sm"
-        className="ml-2"
-        onClick={onExport}
-        icon={<Download className="h-4 w-4" />}
-      >
-        Export
-      </ActionButton>
+      {onExport && (
+        <ActionButton
+          variant="outline"
+          size="sm"
+          className="ml-2"
+          onClick={onExport}
+          icon={<Download className="h-4 w-4" />}
+        >
+          Export
+        </ActionButton>
+      )}
     </div>
   );
 };

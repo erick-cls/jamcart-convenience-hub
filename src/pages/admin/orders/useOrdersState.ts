@@ -95,6 +95,7 @@ export function useOrdersState() {
   const [filteredOrders, setFilteredOrders] = useState(mockOrders);
   const [activeFilter, setActiveFilter] = useState(initialFilter);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false); // Added loading state
   
   useEffect(() => {
     let result = orders;
@@ -124,6 +125,7 @@ export function useOrdersState() {
     activeFilter,
     setActiveFilter,
     searchTerm,
-    setSearchTerm
+    setSearchTerm,
+    loading, // Added loading state to the returned object
   };
 }

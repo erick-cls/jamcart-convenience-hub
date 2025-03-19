@@ -1,4 +1,5 @@
 
+import { useNavigate } from 'react-router-dom';
 import { useOrdersState } from "./useOrdersState";
 import OrdersSearch from "./OrdersSearch";
 import OrdersFilter from "./OrdersFilter";
@@ -6,15 +7,27 @@ import OrdersList from "./OrdersList";
 import OrdersEmpty from "./OrdersEmpty";
 
 const OrdersPage = () => {
+  const navigate = useNavigate();
   const {
     orders,
     filteredOrders,
-    searchQuery,
-    setSearchQuery,
+    searchTerm,
+    setSearchTerm,
     activeFilter,
     setActiveFilter,
     loading,
   } = useOrdersState();
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setActiveFilter('all');
+  };
+
+  const handleViewDetails = (id: string) => {
+    console.log(`Viewing details for order ${id}`);
+    // In a real app, this would navigate to a details page
+    // navigate(`/admin/orders/${id}`);
+  };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -25,8 +38,8 @@ const OrdersPage = () => {
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <OrdersSearch 
-          searchQuery={searchQuery} 
-          setSearchQuery={setSearchQuery} 
+          searchTerm={searchTerm} 
+          setSearchTerm={setSearchTerm} 
         />
         <OrdersFilter 
           activeFilter={activeFilter} 
@@ -40,9 +53,17 @@ const OrdersPage = () => {
           <p className="mt-4 text-gray-600">Loading orders...</p>
         </div>
       ) : filteredOrders.length > 0 ? (
-        <OrdersList orders={filteredOrders} />
+        <OrdersList 
+          orders={filteredOrders} 
+          onViewDetails={handleViewDetails} 
+        />
       ) : (
-        <OrdersEmpty searchQuery={searchQuery} activeFilter={activeFilter} />
+        <OrdersEmpty 
+          searchTerm={searchTerm} 
+          activeFilter={activeFilter} 
+          onClearFilters={handleClearFilters}
+          onBackToDashboard={() => navigate('/admin/dashboard')}
+        />
       )}
     </div>
   );

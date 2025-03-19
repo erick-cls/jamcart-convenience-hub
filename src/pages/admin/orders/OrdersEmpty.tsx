@@ -2,12 +2,13 @@
 import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 import ActionButton from '@/components/ui/ActionButton';
+import { useNavigate } from 'react-router-dom';
 
 interface OrdersEmptyProps {
   searchTerm: string;
   activeFilter: string;
-  onClearFilters: () => void;
-  onBackToDashboard: () => void;
+  onClearFilters?: () => void;
+  onBackToDashboard?: () => void;
 }
 
 const OrdersEmpty = ({ 
@@ -16,6 +17,22 @@ const OrdersEmpty = ({
   onClearFilters, 
   onBackToDashboard 
 }: OrdersEmptyProps) => {
+  const navigate = useNavigate();
+  
+  const handleClearFilters = () => {
+    if (onClearFilters) {
+      onClearFilters();
+    }
+  };
+  
+  const handleBackToDashboard = () => {
+    if (onBackToDashboard) {
+      onBackToDashboard();
+    } else {
+      navigate('/admin/dashboard');
+    }
+  };
+  
   return (
     <motion.div
       className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center"
@@ -36,14 +53,14 @@ const OrdersEmpty = ({
         <ActionButton
           variant="outline"
           size="md"
-          onClick={onClearFilters}
+          onClick={handleClearFilters}
         >
           Clear Filters
         </ActionButton>
         <ActionButton
           variant="primary"
           size="md"
-          onClick={onBackToDashboard}
+          onClick={handleBackToDashboard}
         >
           Back to Dashboard
         </ActionButton>
