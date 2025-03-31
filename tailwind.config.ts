@@ -65,9 +65,9 @@ export default {
 				},
 				jamcart: {
 					red: '#e4173e',
-					green: '#5eaa46',
-					yellow: '#ffde59',
-					dark: '#121212',
+					green: '#009B3A', // Jamaican flag green
+					yellow: '#FFCD00', // Jamaican flag yellow
+					dark: '#000000',  // Jamaican flag black
 					light: '#f8f9fa'
 				}
 			},

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ShoppingBag, X, Check, Star, ChevronRight } from 'lucide-react';
 import ActionButton from '@/components/ui/ActionButton';
@@ -33,7 +34,7 @@ const PendingOrdersCard = ({
       <div className="p-5 border-b border-gray-100 flex justify-between items-center">
         <h2 className="font-semibold text-lg">Pending Orders</h2>
         <button
-          className="text-sm text-jamcart-red flex items-center"
+          className="text-sm text-jamcart-green flex items-center"
           onClick={() => navigate('/admin/orders?filter=pending')}
         >
           View all
@@ -52,8 +53,8 @@ const PendingOrdersCard = ({
                       {new Date(order.date).toLocaleString()}
                     </p>
                   </div>
-                  <div className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full font-medium flex items-center">
-                    <Star className="h-3 w-3 mr-1" />
+                  <div className="bg-jamcart-yellow/20 text-jamcart-dark text-xs px-2 py-1 rounded-full font-medium flex items-center">
+                    <Star className="h-3 w-3 mr-1 text-jamcart-yellow" />
                     Pending
                   </div>
                 </div>
@@ -74,7 +75,7 @@ const PendingOrdersCard = ({
                   <ul className="text-sm text-gray-600 space-y-1">
                     {order.items.map((item, index) => (
                       <li key={index} className="flex items-center">
-                        <span className="h-1.5 w-1.5 rounded-full bg-jamcart-red mr-2"></span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-jamcart-green mr-2"></span>
                         {item}
                       </li>
                     ))}
@@ -93,7 +94,7 @@ const PendingOrdersCard = ({
                   <ActionButton
                     variant="ghost"
                     size="sm"
-                    className="flex-1 text-red-600 border border-red-200 hover:bg-red-50"
+                    className="flex-1 text-jamcart-red border border-jamcart-red/20 hover:bg-jamcart-red/10"
                     onClick={() => onDeclineOrder(order.id)}
                     icon={<X className="h-4 w-4" />}
                   >
@@ -102,7 +103,7 @@ const PendingOrdersCard = ({
                   <ActionButton
                     variant="ghost"
                     size="sm"
-                    className="flex-1 text-green-600 border border-green-200 hover:bg-green-50"
+                    className="flex-1 text-jamcart-green border border-jamcart-green/20 hover:bg-jamcart-green/10"
                     onClick={() => onAcceptOrder(order.id)}
                     icon={<Check className="h-4 w-4" />}
                   >
