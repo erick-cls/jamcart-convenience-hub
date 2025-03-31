@@ -94,7 +94,7 @@ const PendingOrdersCard = ({
                   <ActionButton
                     variant="ghost"
                     size="sm"
-                    className="flex-1 text-jamcart-dark border border-jamcart-dark/20 hover:bg-jamcart-dark/10"
+                    className="flex-1 text-jamcart-red border border-jamcart-red/20 hover:bg-jamcart-red/10"
                     onClick={() => onDeclineOrder(order.id)}
                     icon={<X className="h-4 w-4" />}
                   >
