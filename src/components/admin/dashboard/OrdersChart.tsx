@@ -25,7 +25,7 @@ const OrdersChart = ({ chartData }: OrdersChartProps) => {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="orders" fill="#e4173e" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="orders" fill="#009B3A" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -18,21 +18,21 @@ const Footer = () => {
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="text-gray-500 hover:text-jamcart-red transition-colors"
+                className="text-gray-500 hover:text-jamcart-green transition-colors"
                 aria-label="Facebook"
               >
                 <Facebook size={20} />
               </a>
               <a
                 href="#"
-                className="text-gray-500 hover:text-jamcart-red transition-colors"
+                className="text-gray-500 hover:text-jamcart-green transition-colors"
                 aria-label="Twitter"
               >
                 <Twitter size={20} />
               </a>
               <a
                 href="#"
-                className="text-gray-500 hover:text-jamcart-red transition-colors"
+                className="text-gray-500 hover:text-jamcart-green transition-colors"
                 aria-label="Instagram"
               >
                 <Instagram size={20} />
@@ -46,7 +46,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/"
-                  className="text-gray-600 hover:text-jamcart-red transition-colors text-sm"
+                  className="text-gray-600 hover:text-jamcart-green transition-colors text-sm"
                 >
                   Home
                 </Link>
@@ -54,7 +54,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/categories"
-                  className="text-gray-600 hover:text-jamcart-red transition-colors text-sm"
+                  className="text-gray-600 hover:text-jamcart-green transition-colors text-sm"
                 >
                   Categories
                 </Link>
@@ -62,7 +62,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/how-it-works"
-                  className="text-gray-600 hover:text-jamcart-red transition-colors text-sm"
+                  className="text-gray-600 hover:text-jamcart-green transition-colors text-sm"
                 >
                   How It Works
                 </Link>
@@ -70,7 +70,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/about"
-                  className="text-gray-600 hover:text-jamcart-red transition-colors text-sm"
+                  className="text-gray-600 hover:text-jamcart-green transition-colors text-sm"
                 >
                   About Us
                 </Link>
@@ -84,7 +84,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/category/mini-mart"
-                  className="text-gray-600 hover:text-jamcart-red transition-colors text-sm"
+                  className="text-gray-600 hover:text-jamcart-green transition-colors text-sm"
                 >
                   Mini Mart
                 </Link>
@@ -92,7 +92,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/category/supermarket"
-                  className="text-gray-600 hover:text-jamcart-red transition-colors text-sm"
+                  className="text-gray-600 hover:text-jamcart-green transition-colors text-sm"
                 >
                   Supermarket
                 </Link>
@@ -100,7 +100,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/category/pharmacy"
-                  className="text-gray-600 hover:text-jamcart-red transition-colors text-sm"
+                  className="text-gray-600 hover:text-jamcart-green transition-colors text-sm"
                 >
                   Pharmacy
                 </Link>
@@ -108,7 +108,7 @@ const Footer = () => {
               <li>
                 <Link
                   to="/category/restaurant"
-                  className="text-gray-600 hover:text-jamcart-red transition-colors text-sm"
+                  className="text-gray-600 hover:text-jamcart-green transition-colors text-sm"
                 >
                   Restaurant
                 </Link>
@@ -120,17 +120,17 @@ const Footer = () => {
             <h3 className="font-semibold text-gray-800 mb-4">Contact Us</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
-                <Mail className="h-5 w-5 text-jamcart-red mr-2 mt-0.5" />
+                <Mail className="h-5 w-5 text-jamcart-green mr-2 mt-0.5" />
                 <span className="text-gray-600 text-sm">support@jamcart.com</span>
               </li>
               <li className="flex items-start">
-                <Phone className="h-5 w-5 text-jamcart-red mr-2 mt-0.5" />
+                <Phone className="h-5 w-5 text-jamcart-green mr-2 mt-0.5" />
                 <span className="text-gray-600 text-sm">+1 (555) 123-4567</span>
               </li>
               <li className="flex items-start">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-jamcart-red mr-2 mt-0.5"
+                  className="h-5 w-5 text-jamcart-green mr-2 mt-0.5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -163,13 +163,13 @@ const Footer = () => {
           <div className="flex space-x-6 mt-4 md:mt-0">
             <Link
               to="/terms"
-              className="text-gray-600 hover:text-jamcart-red transition-colors text-sm"
+              className="text-gray-600 hover:text-jamcart-green transition-colors text-sm"
             >
               Terms of Service
             </Link>
             <Link
               to="/privacy"
-              className="text-gray-600 hover:text-jamcart-red transition-colors text-sm"
+              className="text-gray-600 hover:text-jamcart-green transition-colors text-sm"
             >
               Privacy Policy
             </Link>

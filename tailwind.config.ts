@@ -26,12 +26,12 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: '#009B3A', // Changed to Jamaican green
+					foreground: '#ffffff'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: '#FFCD00', // Changed to Jamaican yellow
+					foreground: '#000000'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -42,8 +42,8 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					DEFAULT: '#000000', // Changed to Jamaican black
+					foreground: '#ffffff'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -54,17 +54,17 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				sidebar: {
-					DEFAULT: 'hsl(var(--sidebar-background))',
-					foreground: 'hsl(var(--sidebar-foreground))',
-					primary: 'hsl(var(--sidebar-primary))',
-					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-					accent: 'hsl(var(--sidebar-accent))',
-					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-					border: 'hsl(var(--sidebar-border))',
-					ring: 'hsl(var(--sidebar-ring))'
+					DEFAULT: '#000000', // Changed to Jamaican black
+					foreground: '#ffffff',
+					primary: '#009B3A', // Changed to Jamaican green
+					'primary-foreground': '#ffffff',
+					accent: '#FFCD00', // Changed to Jamaican yellow
+					'accent-foreground': '#000000',
+					border: 'rgba(255, 255, 255, 0.1)',
+					ring: '#009B3A'
 				},
 				jamcart: {
-					red: '#e4173e',
+					red: '#e4173e', // Keeping the original red for brand consistency
 					green: '#009B3A', // Jamaican flag green
 					yellow: '#FFCD00', // Jamaican flag yellow
 					dark: '#000000',  // Jamaican flag black

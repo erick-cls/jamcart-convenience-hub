@@ -33,7 +33,7 @@ const StatCard = ({ id, label, value, icon: Icon, color, percentChange, changeTe
       </div>
       {percentChange && (
         <div className="flex items-center text-sm">
-          <span className="text-green-600 font-medium mr-1">{percentChange}</span>
+          <span className="text-jamcart-green font-medium mr-1">{percentChange}</span>
           <span className="text-gray-500">{changeText}</span>
         </div>
       )}

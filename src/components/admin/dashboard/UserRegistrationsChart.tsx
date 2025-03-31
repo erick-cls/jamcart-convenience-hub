@@ -28,7 +28,7 @@ const UserRegistrationsChart = ({ chartData }: UserRegistrationsChartProps) => {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="users" fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="users" fill="#FFCD00" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

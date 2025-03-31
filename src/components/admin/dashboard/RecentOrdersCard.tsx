@@ -27,7 +27,7 @@ const RecentOrdersCard = ({ recentOrders, onViewDetails }: RecentOrdersCardProps
       <div className="p-5 border-b border-gray-100 flex justify-between items-center">
         <h2 className="font-semibold text-lg">Recent Orders</h2>
         <button
-          className="text-sm text-jamcart-red flex items-center"
+          className="text-sm text-jamcart-green flex items-center"
           onClick={() => navigate('/admin/orders')}
         >
           View all

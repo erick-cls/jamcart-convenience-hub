@@ -1,4 +1,3 @@
-
 import { ButtonHTMLAttributes, forwardRef } from 'react';
 import { motion, HTMLMotionProps } from 'framer-motion';
 import { cn } from "@/lib/utils";
@@ -26,14 +25,14 @@ const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(
     disabled,
     ...props 
   }, ref) => {
-    const baseStyles = "relative inline-flex items-center justify-center font-medium transition-all duration-200 ease-in-out rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-jamcart-red disabled:opacity-50 disabled:cursor-not-allowed";
+    const baseStyles = "relative inline-flex items-center justify-center font-medium transition-all duration-200 ease-in-out rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-jamcart-green disabled:opacity-50 disabled:cursor-not-allowed";
     
     const variants = {
-      primary: "bg-jamcart-red text-white hover:bg-jamcart-red/90 shadow-sm",
-      secondary: "bg-jamcart-dark text-white hover:bg-jamcart-dark/90 shadow-sm",
+      primary: "bg-jamcart-green text-white hover:bg-jamcart-green/90 shadow-sm",
+      secondary: "bg-jamcart-yellow text-jamcart-dark hover:bg-jamcart-yellow/90 shadow-sm",
       outline: "border border-jamcart-dark text-jamcart-dark hover:bg-jamcart-dark/5",
       ghost: "text-jamcart-dark hover:bg-jamcart-dark/5",
-      link: "text-jamcart-red underline-offset-4 hover:underline p-0 h-auto"
+      link: "text-jamcart-green underline-offset-4 hover:underline p-0 h-auto"
     };
     
     const sizes = {
