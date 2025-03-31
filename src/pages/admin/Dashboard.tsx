@@ -1,14 +1,27 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { ShoppingBag, Users, TrendingUp, Calendar, ChevronRight, Star, X, Check, UserPlus } from 'lucide-react';
-import ActionButton from '@/components/ui/ActionButton';
-import { useAuth } from '@/context/AuthContext';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import OrderItem from '@/components/ui/OrderItem';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-type OrderStatus = 'pending' | 'completed' | 'accepted' | 'declined';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ShoppingBag, Users, TrendingUp, Calendar } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import StatCard from '@/components/admin/dashboard/StatCard';
+import PendingOrdersCard from '@/components/admin/dashboard/PendingOrdersCard';
+import OrdersChart from '@/components/admin/dashboard/OrdersChart';
+import RecentOrdersCard from '@/components/admin/dashboard/RecentOrdersCard';
+import RecentUsers from '@/components/admin/dashboard/RecentUsers';
+import UserRegistrationsChart from '@/components/admin/dashboard/UserRegistrationsChart';
+import UserOverview from '@/components/admin/dashboard/UserOverview';
+import QuickActions from '@/components/admin/dashboard/QuickActions';
+import { OrderStatus } from '@/components/ui/OrderItem';
+
+type OrderItem = {
+  id: string;
+  storeName: string;
+  category: string;
+  date: string;
+  status: OrderStatus;
+  items: string[];
+  total?: number;
+};
 
 const mockStats = [
   { id: 'orders', label: 'Total Orders', value: 124, icon: ShoppingBag, color: 'bg-blue-500' },
@@ -19,9 +32,9 @@ const mockStats = [
 
 const mockUserStats = [
   { id: 'total', label: 'Total Users', value: 532, icon: Users, color: 'bg-green-500' },
-  { id: 'new', label: 'New This Week', value: 48, icon: UserPlus, color: 'bg-blue-500' },
+  { id: 'new', label: 'New This Week', value: 48, icon: Users, color: 'bg-blue-500' },
   { id: 'active', label: 'Active Users', value: 326, icon: Users, color: 'bg-purple-500' },
-  { id: 'verified', label: 'Verified Users', value: 498, icon: Check, color: 'bg-jamcart-red' },
+  { id: 'verified', label: 'Verified Users', value: 498, icon: Users, color: 'bg-jamcart-red' },
 ];
 
 const mockRecentUsers = [
@@ -40,6 +53,16 @@ const mockChartData = [
   { name: 'Fri', orders: 8 },
   { name: 'Sat', orders: 12 },
   { name: 'Sun', orders: 6 },
+];
+
+const mockUserChartData = [
+  { name: 'Mon', users: 7 },
+  { name: 'Tue', users: 5 },
+  { name: 'Wed', users: 12 },
+  { name: 'Thu', users: 8 },
+  { name: 'Fri', users: 10 },
+  { name: 'Sat', users: 4 },
+  { name: 'Sun', users: 2 },
 ];
 
 const mockPendingOrders = [
@@ -89,6 +112,19 @@ const mockRecentOrders = [
     items: ['Paint brushes', 'Screwdriver set', 'Light bulbs'],
     total: 42.20
   }
+];
+
+const mockUserOverviewItems = [
+  { label: 'Verified Users', percentage: '94%', color: 'bg-green-500' },
+  { label: 'Active Users', percentage: '61%', color: 'bg-blue-500' },
+  { label: 'Returning Users', percentage: '73%', color: 'bg-purple-500' },
+  { label: 'Mobile Users', percentage: '85%', color: 'bg-jamcart-red' },
+];
+
+const mockQuickActions = [
+  { label: 'Export User Data', variant: 'outline' as const },
+  { label: 'Send Mass Email', variant: 'outline' as const },
+  { label: 'Manage User Permissions', variant: 'outline' as const, className: 'text-red-600 border-red-100 hover:bg-red-50' },
 ];
 
 const Dashboard = () => {
@@ -191,53 +227,27 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {activeTab === 'orders' ? (
             stats.map((stat) => (
-              <motion.div
+              <StatCard
                 key={stat.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="flex items-center mb-4">
-                  <div className={`${stat.color} rounded-full p-3 text-white mr-4`}>
-                    <stat.icon className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-gray-500 text-sm">{stat.label}</h3>
-                    <p className="text-2xl font-bold">{stat.value}</p>
-                  </div>
-                </div>
-                <div className="flex items-center text-sm">
-                  <span className="text-green-600 font-medium mr-1">+12%</span>
-                  <span className="text-gray-500">since last month</span>
-                </div>
-              </motion.div>
+                id={stat.id}
+                label={stat.label}
+                value={stat.value}
+                icon={stat.icon}
+                color={stat.color}
+                percentChange="+12%"
+              />
             ))
           ) : (
             userStats.map((stat) => (
-              <motion.div
+              <StatCard
                 key={stat.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-100 p-5"
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="flex items-center mb-4">
-                  <div className={`${stat.color} rounded-full p-3 text-white mr-4`}>
-                    <stat.icon className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-gray-500 text-sm">{stat.label}</h3>
-                    <p className="text-2xl font-bold">{stat.value}</p>
-                  </div>
-                </div>
-                <div className="flex items-center text-sm">
-                  <span className="text-green-600 font-medium mr-1">+8%</span>
-                  <span className="text-gray-500">since last month</span>
-                </div>
-              </motion.div>
+                id={stat.id}
+                label={stat.label}
+                value={stat.value}
+                icon={stat.icon}
+                color={stat.color}
+                percentChange="+8%"
+              />
             ))
           )}
         </div>
@@ -245,299 +255,35 @@ const Dashboard = () => {
         {activeTab === 'orders' ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-                <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-                  <h2 className="font-semibold text-lg">Pending Orders</h2>
-                  <button
-                    className="text-sm text-jamcart-red flex items-center"
-                    onClick={() => navigate('/admin/orders?filter=pending')}
-                  >
-                    View all
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </button>
-                </div>
-                <div className="p-5">
-                  {pendingOrders.length > 0 ? (
-                    <div className="space-y-4">
-                      {pendingOrders.map((order) => (
-                        <div key={order.id} className="bg-jamcart-yellow/5 border border-jamcart-yellow/20 rounded-xl p-4">
-                          <div className="flex justify-between items-start mb-3">
-                            <div>
-                              <h3 className="font-semibold">Order #{order.id.slice(-6)}</h3>
-                              <p className="text-sm text-gray-500">
-                                {new Date(order.date).toLocaleString()}
-                              </p>
-                            </div>
-                            <div className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full font-medium flex items-center">
-                              <Star className="h-3 w-3 mr-1" />
-                              Pending
-                            </div>
-                          </div>
-                          
-                          <div className="mb-3">
-                            <div className="text-sm">
-                              <span className="font-medium">Store:</span>
-                              <span className="ml-1 text-gray-700">{order.storeName}</span>
-                            </div>
-                            <div className="text-sm">
-                              <span className="font-medium">Category:</span>
-                              <span className="ml-1 text-gray-700">{order.category}</span>
-                            </div>
-                          </div>
-                          
-                          <div className="mb-4">
-                            <h4 className="text-sm font-medium mb-1">Items:</h4>
-                            <ul className="text-sm text-gray-600 space-y-1">
-                              {order.items.map((item, index) => (
-                                <li key={index} className="flex items-center">
-                                  <span className="h-1.5 w-1.5 rounded-full bg-jamcart-red mr-2"></span>
-                                  {item}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          
-                          <div className="flex gap-3">
-                            <ActionButton
-                              variant="outline"
-                              size="sm"
-                              className="flex-1"
-                              onClick={() => handleViewOrderDetails(order.id)}
-                            >
-                              View Details
-                            </ActionButton>
-                            <ActionButton
-                              variant="ghost"
-                              size="sm"
-                              className="flex-1 text-red-600 border border-red-200 hover:bg-red-50"
-                              onClick={() => handleDeclineOrder(order.id)}
-                              icon={<X className="h-4 w-4" />}
-                            >
-                              Decline
-                            </ActionButton>
-                            <ActionButton
-                              variant="ghost"
-                              size="sm"
-                              className="flex-1 text-green-600 border border-green-200 hover:bg-green-50"
-                              onClick={() => handleAcceptOrder(order.id)}
-                              icon={<Check className="h-4 w-4" />}
-                            >
-                              Accept
-                            </ActionButton>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <div className="bg-gray-50 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
-                        <ShoppingBag className="h-8 w-8 text-gray-400" />
-                      </div>
-                      <h3 className="text-lg font-medium mb-1">No Pending Orders</h3>
-                      <p className="text-gray-500">All orders have been processed.</p>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <PendingOrdersCard
+                pendingOrders={pendingOrders}
+                onViewDetails={handleViewOrderDetails}
+                onAcceptOrder={handleAcceptOrder}
+                onDeclineOrder={handleDeclineOrder}
+              />
               
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-5 border-b border-gray-100">
-                  <h2 className="font-semibold text-lg">Orders This Week</h2>
-                </div>
-                <div className="p-5">
-                  <div style={{ height: 300 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="orders" fill="#e4173e" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
+              <OrdersChart chartData={chartData} />
             </div>
             
             <div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-                  <h2 className="font-semibold text-lg">Recent Orders</h2>
-                  <button
-                    className="text-sm text-jamcart-red flex items-center"
-                    onClick={() => navigate('/admin/orders')}
-                  >
-                    View all
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </button>
-                </div>
-                <div className="p-5">
-                  <div className="space-y-4">
-                    {recentOrders.map((order) => (
-                      <OrderItem
-                        key={order.id}
-                        id={order.id}
-                        storeName={order.storeName}
-                        category={order.category}
-                        date={order.date}
-                        status={order.status}
-                        items={order.items}
-                        total={order.total}
-                        onViewDetails={handleViewOrderDetails}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <RecentOrdersCard
+                recentOrders={recentOrders}
+                onViewDetails={handleViewOrderDetails}
+              />
             </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-                <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-                  <h2 className="font-semibold text-lg">Recent Users</h2>
-                  <button
-                    className="text-sm text-jamcart-red flex items-center"
-                  >
-                    View all
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </button>
-                </div>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Date Joined</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Orders</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {recentUsers.map((user) => (
-                        <TableRow key={user.id}>
-                          <TableCell className="font-medium">{user.name}</TableCell>
-                          <TableCell>{user.email}</TableCell>
-                          <TableCell>{new Date(user.dateJoined).toLocaleDateString()}</TableCell>
-                          <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              user.status === 'active' 
-                                ? 'bg-green-100 text-green-800' 
-                                : 'bg-gray-100 text-gray-800'
-                            }`}>
-                              {user.status}
-                            </span>
-                          </TableCell>
-                          <TableCell>{user.orders}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </div>
+              <RecentUsers users={recentUsers} />
               
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-5 border-b border-gray-100">
-                  <h2 className="font-semibold text-lg">User Registrations This Week</h2>
-                </div>
-                <div className="p-5">
-                  <div style={{ height: 300 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart 
-                        data={[
-                          { name: 'Mon', users: 7 },
-                          { name: 'Tue', users: 5 },
-                          { name: 'Wed', users: 12 },
-                          { name: 'Thu', users: 8 },
-                          { name: 'Fri', users: 10 },
-                          { name: 'Sat', users: 4 },
-                          { name: 'Sun', users: 2 },
-                        ]} 
-                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="users" fill="#10b981" radius={[4, 4, 0, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div>
-              </div>
+              <UserRegistrationsChart chartData={mockUserChartData} />
             </div>
             
             <div>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-                <div className="p-5 border-b border-gray-100">
-                  <h2 className="font-semibold text-lg">User Overview</h2>
-                </div>
-                <div className="p-5">
-                  <div className="space-y-6">
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-600">Verified Users</span>
-                        <span className="font-medium">94%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-green-500 h-2 rounded-full" style={{ width: '94%' }}></div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-600">Active Users</span>
-                        <span className="font-medium">61%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: '61%' }}></div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-600">Returning Users</span>
-                        <span className="font-medium">73%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-purple-500 h-2 rounded-full" style={{ width: '73%' }}></div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-600">Mobile Users</span>
-                        <span className="font-medium">85%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div className="bg-jamcart-red h-2 rounded-full" style={{ width: '85%' }}></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <UserOverview progressItems={mockUserOverviewItems} />
               
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-5 border-b border-gray-100">
-                  <h2 className="font-semibold text-lg">Quick Actions</h2>
-                </div>
-                <div className="p-5">
-                  <div className="space-y-3">
-                    <ActionButton className="w-full justify-center" variant="outline">
-                      Export User Data
-                    </ActionButton>
-                    <ActionButton className="w-full justify-center" variant="outline">
-                      Send Mass Email
-                    </ActionButton>
-                    <ActionButton className="w-full justify-center text-red-600 border-red-100 hover:bg-red-50" variant="outline">
-                      Manage User Permissions
-                    </ActionButton>
-                  </div>
-                </div>
-              </div>
+              <QuickActions actions={mockQuickActions} />
             </div>
           </div>
         )}
