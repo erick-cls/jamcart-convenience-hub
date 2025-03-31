@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, Users, TrendingUp, Calendar } from 'lucide-react';
@@ -24,17 +23,17 @@ type OrderItem = {
 };
 
 const mockStats = [
-  { id: 'orders', label: 'Total Orders', value: 124, icon: ShoppingBag, color: 'bg-blue-500' },
-  { id: 'users', label: 'Registered Users', value: 532, icon: Users, color: 'bg-green-500' },
-  { id: 'revenue', label: 'Revenue (JMD)', value: '$15,480', icon: TrendingUp, color: 'bg-purple-500' },
-  { id: 'today', label: 'Orders Today', value: 8, icon: Calendar, color: 'bg-jamcart-red' },
+  { id: 'orders', label: 'Total Orders', value: 124, icon: ShoppingBag, color: 'bg-jamcart-green' },
+  { id: 'users', label: 'Registered Users', value: 532, icon: Users, color: 'bg-jamcart-green' },
+  { id: 'revenue', label: 'Revenue (JMD)', value: '$15,480', icon: TrendingUp, color: 'bg-jamcart-yellow' },
+  { id: 'today', label: 'Orders Today', value: 8, icon: Calendar, color: 'bg-jamcart-dark' },
 ];
 
 const mockUserStats = [
-  { id: 'total', label: 'Total Users', value: 532, icon: Users, color: 'bg-green-500' },
-  { id: 'new', label: 'New This Week', value: 48, icon: Users, color: 'bg-blue-500' },
-  { id: 'active', label: 'Active Users', value: 326, icon: Users, color: 'bg-purple-500' },
-  { id: 'verified', label: 'Verified Users', value: 498, icon: Users, color: 'bg-jamcart-red' },
+  { id: 'total', label: 'Total Users', value: 532, icon: Users, color: 'bg-jamcart-green' },
+  { id: 'new', label: 'New This Week', value: 48, icon: Users, color: 'bg-jamcart-green' },
+  { id: 'active', label: 'Active Users', value: 326, icon: Users, color: 'bg-jamcart-yellow' },
+  { id: 'verified', label: 'Verified Users', value: 498, icon: Users, color: 'bg-jamcart-dark' },
 ];
 
 const mockRecentUsers = [
@@ -115,16 +114,16 @@ const mockRecentOrders = [
 ];
 
 const mockUserOverviewItems = [
-  { label: 'Verified Users', percentage: '94%', color: 'bg-green-500' },
-  { label: 'Active Users', percentage: '61%', color: 'bg-blue-500' },
-  { label: 'Returning Users', percentage: '73%', color: 'bg-purple-500' },
-  { label: 'Mobile Users', percentage: '85%', color: 'bg-jamcart-red' },
+  { label: 'Verified Users', percentage: '94%', color: 'bg-jamcart-green' },
+  { label: 'Active Users', percentage: '61%', color: 'bg-jamcart-green' },
+  { label: 'Returning Users', percentage: '73%', color: 'bg-jamcart-yellow' },
+  { label: 'Mobile Users', percentage: '85%', color: 'bg-jamcart-dark' },
 ];
 
 const mockQuickActions = [
   { label: 'Export User Data', variant: 'outline' as const },
   { label: 'Send Mass Email', variant: 'outline' as const },
-  { label: 'Manage User Permissions', variant: 'outline' as const, className: 'text-red-600 border-red-100 hover:bg-red-50' },
+  { label: 'Manage User Permissions', variant: 'outline' as const, className: 'text-jamcart-dark border-jamcart-dark/10 hover:bg-jamcart-dark/5' },
 ];
 
 const Dashboard = () => {
@@ -199,7 +198,7 @@ const Dashboard = () => {
               onClick={() => setActiveTab('orders')}
               className={`px-4 py-2 rounded-md transition-colors ${
                 activeTab === 'orders' 
-                  ? 'bg-jamcart-red text-white' 
+                  ? 'bg-jamcart-green text-white' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
@@ -212,7 +211,7 @@ const Dashboard = () => {
               onClick={() => setActiveTab('users')}
               className={`px-4 py-2 rounded-md transition-colors ${
                 activeTab === 'users' 
-                  ? 'bg-jamcart-red text-white' 
+                  ? 'bg-jamcart-green text-white' 
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
