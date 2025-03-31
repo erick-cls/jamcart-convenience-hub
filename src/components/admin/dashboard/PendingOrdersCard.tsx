@@ -1,10 +1,8 @@
-
 import React from 'react';
 import { ShoppingBag, X, Check, Star, ChevronRight } from 'lucide-react';
 import ActionButton from '@/components/ui/ActionButton';
 import { useNavigate } from 'react-router-dom';
-
-export type OrderStatus = 'pending' | 'completed' | 'accepted' | 'declined';
+import { OrderStatus } from '@/components/ui/OrderItem';
 
 interface OrderItem {
   id: string;
