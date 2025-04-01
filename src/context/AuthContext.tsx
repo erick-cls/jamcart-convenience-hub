@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
@@ -10,12 +9,13 @@ interface User {
   town: string;
   isVerified: boolean;
   isAdmin: boolean;
+  isRider: boolean;
 }
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin'> & { password: string }) => Promise<void>;
+  register: (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isRider'> & { password: string }) => Promise<void>;
   logout: () => void;
   verifyPhone: (code: string) => Promise<boolean>;
   loading: boolean;
@@ -57,11 +57,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             address: '123 Admin St',
             town: 'Kingston',
             isVerified: true,
-            isAdmin: true
+            isAdmin: true,
+            isRider: false
           };
           
           setUser(adminUser);
           localStorage.setItem('jamcart-user', JSON.stringify(adminUser));
+          setLoading(false);
+          return;
+        } else {
+          throw new Error('Invalid password');
+        }
+      }
+      
+      // Special case for rider account
+      if (email === 'rider@jamcart.com') {
+        if (password === 'rider123') {
+          const riderUser: User = {
+            id: 'rider-123',
+            name: 'John Rider',
+            email: email,
+            phone: '+1234567890',
+            address: '123 Rider St',
+            town: 'Kingston',
+            isVerified: true,
+            isAdmin: false,
+            isRider: true
+          };
+          
+          setUser(riderUser);
+          localStorage.setItem('jamcart-user', JSON.stringify(riderUser));
           setLoading(false);
           return;
         } else {
@@ -79,7 +104,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         town: 'Kingston',
         isVerified: true,
         // Make ericksonvilleta@gmail.com admin by default, also keep admin if email contains "admin"
-        isAdmin: email === 'ericksonvilleta@gmail.com' || email.includes('admin')
+        isAdmin: email === 'ericksonvilleta@gmail.com' || email.includes('admin'),
+        isRider: email.includes('rider')
       };
       
       setUser(mockUser);
@@ -92,7 +118,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin'> & { password: string }) => {
+  const register = async (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isRider'> & { password: string }) => {
     setLoading(true);
     setError(null);
     
@@ -117,7 +143,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         town: userData.town,
         isVerified: false,
         // Make ericksonvilleta@gmail.com admin by default
-        isAdmin: userData.email === 'ericksonvilleta@gmail.com'
+        isAdmin: userData.email === 'ericksonvilleta@gmail.com',
+        isRider: userData.email.includes('rider')
       };
       
       setUser(mockUser);

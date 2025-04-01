@@ -19,6 +19,9 @@ import UsersPage from "./pages/admin/users/UsersPage";
 import SettingsPage from "./pages/admin/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
+import RiderLayout from "./components/rider/RiderLayout";
+import RiderDashboard from "./pages/rider/Dashboard";
+import RiderOrdersPage from "./pages/rider/OrdersPage";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +48,12 @@ const App = () => (
               <Route path="orders" element={<OrdersPage />} />
               <Route path="users" element={<UsersPage />} />
               <Route path="settings" element={<SettingsPage />} />
+            </Route>
+            
+            {/* Rider routes with layout */}
+            <Route path="/rider" element={<RiderLayout />}>
+              <Route path="dashboard" element={<RiderDashboard />} />
+              <Route path="orders" element={<RiderOrdersPage />} />
             </Route>
             
             <Route path="*" element={<NotFound />} />
