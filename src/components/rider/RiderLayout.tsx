@@ -1,23 +1,35 @@
 
 import { useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { Bike, Home, LogOut, Package } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 const RiderLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Redirect if not a rider or not logged in
     if (!user || !user.isRider) {
+      toast({
+        title: "Access Denied",
+        description: "You need rider permissions to access this area.",
+        variant: "destructive"
+      });
       navigate('/auth');
     }
-  }, [user, navigate]);
+  }, [user, navigate, toast]);
 
   const handleLogout = () => {
     logout();
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out."
+    });
     navigate('/auth');
   };
 
@@ -34,7 +46,7 @@ const RiderLayout = () => {
         <div className="py-4 flex-1">
           <nav className="px-2 space-y-1">
             <Button
-              variant="ghost"
+              variant={location.pathname === '/rider/dashboard' ? "default" : "ghost"}
               className="w-full justify-start"
               onClick={() => navigate('/rider/dashboard')}
             >
@@ -43,7 +55,7 @@ const RiderLayout = () => {
             </Button>
             
             <Button
-              variant="ghost"
+              variant={location.pathname === '/rider/orders' ? "default" : "ghost"}
               className="w-full justify-start"
               onClick={() => navigate('/rider/orders')}
             >
