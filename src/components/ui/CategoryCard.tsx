@@ -11,7 +11,7 @@ interface CategoryCardProps {
   color?: string;
 }
 
-const CategoryCard = ({ id, name, description, icon, color = 'bg-jamcart-red' }: CategoryCardProps) => {
+const CategoryCard = ({ id, name, description, icon, color = 'bg-jamcart-green' }: CategoryCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
   
@@ -42,7 +42,7 @@ const CategoryCard = ({ id, name, description, icon, color = 'bg-jamcart-red' }:
         <p className="text-gray-600 text-sm flex-grow">{description}</p>
         
         <motion.div 
-          className="mt-4 text-jamcart-red font-medium text-sm flex items-center"
+          className="mt-4 text-jamcart-green font-medium text-sm flex items-center"
           animate={{
             x: isHovered ? 5 : 0
           }}

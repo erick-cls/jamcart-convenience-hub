@@ -4,7 +4,7 @@ import AnimatedLogo from '@/components/ui/AnimatedLogo';
 
 const BrandingSection = () => {
   return (
-    <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-jamcart-red to-jamcart-red/80 p-12 flex-col justify-between text-white">
+    <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-jamcart-green to-jamcart-green/80 p-12 flex-col justify-between text-white">
       <div>
         <AnimatedLogo size="md" className="mb-12" />
         <h1 className="text-4xl font-bold mb-4">Welcome to JAMCart</h1>

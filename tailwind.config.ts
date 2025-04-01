@@ -30,7 +30,7 @@ export default {
 					foreground: '#ffffff'
 				},
 				secondary: {
-					DEFAULT: '#FFCD00', // Changed to Jamaican yellow
+					DEFAULT: '#FFCD00', // Jamaican yellow
 					foreground: '#000000'
 				},
 				destructive: {
@@ -42,7 +42,7 @@ export default {
 					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: '#000000', // Changed to Jamaican black
+					DEFAULT: '#000000', // Jamaican black
 					foreground: '#ffffff'
 				},
 				popover: {
@@ -54,17 +54,17 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				sidebar: {
-					DEFAULT: '#000000', // Changed to Jamaican black
+					DEFAULT: '#000000', // Jamaican black
 					foreground: '#ffffff',
-					primary: '#009B3A', // Changed to Jamaican green
+					primary: '#009B3A', // Jamaican green
 					'primary-foreground': '#ffffff',
-					accent: '#FFCD00', // Changed to Jamaican yellow
+					accent: '#FFCD00', // Jamaican yellow
 					'accent-foreground': '#000000',
 					border: 'rgba(255, 255, 255, 0.1)',
 					ring: '#009B3A'
 				},
 				jamcart: {
-					red: '#e4173e', // Keeping the original red for brand consistency
+					red: '#009B3A', // Changed from red to Jamaican green
 					green: '#009B3A', // Jamaican flag green
 					yellow: '#FFCD00', // Jamaican flag yellow
 					dark: '#000000',  // Jamaican flag black

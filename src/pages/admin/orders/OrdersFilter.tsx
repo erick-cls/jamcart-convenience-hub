@@ -31,7 +31,7 @@ const OrdersFilter = ({ activeFilter, setActiveFilter, onExport }: OrdersFilterP
           key={option.value}
           className={`px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap ${
             activeFilter === option.value
-              ? 'bg-jamcart-red text-white'
+              ? 'bg-jamcart-green text-white'
               : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
           }`}
           onClick={() => setActiveFilter(option.value)}
