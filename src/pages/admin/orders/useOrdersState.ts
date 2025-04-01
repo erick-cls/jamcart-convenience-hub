@@ -91,11 +91,19 @@ const mockOrders = [
 export function useOrdersState() {
   const [searchParams] = useSearchParams();
   const initialFilter = searchParams.get('filter') || 'all';
-  const [orders] = useState(mockOrders);
+  const [orders, setOrders] = useState(mockOrders);
   const [filteredOrders, setFilteredOrders] = useState(mockOrders);
   const [activeFilter, setActiveFilter] = useState(initialFilter);
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(false); // Added loading state
+  const [loading, setLoading] = useState(false);
+  
+  // Add function to update order status
+  const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
+    const updatedOrders = orders.map(order => 
+      order.id === orderId ? { ...order, status: newStatus } : order
+    );
+    setOrders(updatedOrders);
+  };
   
   useEffect(() => {
     let result = orders;
@@ -126,6 +134,7 @@ export function useOrdersState() {
     setActiveFilter,
     searchTerm,
     setSearchTerm,
-    loading, // Added loading state to the returned object
+    loading,
+    updateOrderStatus,
   };
 }

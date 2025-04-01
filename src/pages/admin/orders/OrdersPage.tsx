@@ -5,9 +5,12 @@ import OrdersSearch from "./OrdersSearch";
 import OrdersFilter from "./OrdersFilter";
 import OrdersList from "./OrdersList";
 import OrdersEmpty from "./OrdersEmpty";
+import { OrderStatus } from '@/components/ui/OrderItem';
+import { useToast } from '@/hooks/use-toast';
 
 const OrdersPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const {
     orders,
     filteredOrders,
@@ -16,6 +19,7 @@ const OrdersPage = () => {
     activeFilter,
     setActiveFilter,
     loading,
+    updateOrderStatus,
   } = useOrdersState();
 
   const handleClearFilters = () => {
@@ -25,8 +29,15 @@ const OrdersPage = () => {
 
   const handleViewDetails = (id: string) => {
     console.log(`Viewing details for order ${id}`);
-    // In a real app, this would navigate to a details page
-    // navigate(`/admin/orders/${id}`);
+  };
+  
+  const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
+    updateOrderStatus(orderId, newStatus);
+    
+    toast({
+      title: "Order updated",
+      description: `Order #${orderId.slice(-6)} status changed to ${newStatus}`,
+    });
   };
 
   return (
@@ -49,13 +60,14 @@ const OrdersPage = () => {
 
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-jamcart-red border-r-transparent"></div>
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-jamcart-green border-r-transparent"></div>
           <p className="mt-4 text-gray-600">Loading orders...</p>
         </div>
       ) : filteredOrders.length > 0 ? (
         <OrdersList 
           orders={filteredOrders} 
-          onViewDetails={handleViewDetails} 
+          onViewDetails={handleViewDetails}
+          onStatusChange={handleStatusChange}
         />
       ) : (
         <OrdersEmpty 
