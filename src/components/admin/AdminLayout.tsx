@@ -16,6 +16,7 @@ import {
 import {
   LayoutDashboard,
   ShoppingBag,
+  Users,
   Settings,
   LogOut,
   ChevronLeft,
@@ -69,6 +70,17 @@ const AdminLayout = () => {
                 >
                   <ShoppingBag className="h-4 w-4" />
                   <span>Orders</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={() => navigate('/admin/users')}
+                  isActive={window.location.pathname.includes('/admin/users')}
+                  tooltip="Users"
+                >
+                  <Users className="h-4 w-4" />
+                  <span>Users</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               

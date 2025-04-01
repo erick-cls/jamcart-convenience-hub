@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, Users, TrendingUp, Calendar } from 'lucide-react';
@@ -185,6 +184,12 @@ const Dashboard = () => {
     }
   };
   
+  const handleQuickAction = (actionLabel: string) => {
+    if (actionLabel === 'Manage User Permissions') {
+      navigate('/admin/users');
+    }
+  };
+  
   return (
     <div className="py-6 px-6">
       <div className="max-w-7xl mx-auto">
@@ -283,7 +288,10 @@ const Dashboard = () => {
             <div>
               <UserOverview progressItems={mockUserOverviewItems} />
               
-              <QuickActions actions={mockQuickActions} />
+              <QuickActions 
+                actions={mockQuickActions} 
+                onActionClick={handleQuickAction}
+              />
             </div>
           </div>
         )}

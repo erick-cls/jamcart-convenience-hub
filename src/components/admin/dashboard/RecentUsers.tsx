@@ -2,6 +2,7 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useNavigate } from 'react-router-dom';
 
 interface User {
   id: string;
@@ -17,12 +18,19 @@ interface RecentUsersProps {
 }
 
 const RecentUsers = ({ users }: RecentUsersProps) => {
+  const navigate = useNavigate();
+  
+  const handleViewAll = () => {
+    navigate('/admin/users');
+  };
+  
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
       <div className="p-5 border-b border-gray-100 flex justify-between items-center">
         <h2 className="font-semibold text-lg">Recent Users</h2>
         <button
-          className="text-sm text-jamcart-red flex items-center"
+          className="text-sm text-jamcart-green flex items-center"
+          onClick={handleViewAll}
         >
           View all
           <ChevronRight className="h-4 w-4 ml-1" />
