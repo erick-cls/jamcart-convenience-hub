@@ -20,8 +20,10 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
+  Bell,
 } from 'lucide-react';
 import AnimatedLogo from '@/components/ui/AnimatedLogo';
+import { Badge } from '@/components/ui/badge';
 
 const AdminLayout = () => {
   const { user, logout } = useAuth();
@@ -45,7 +47,10 @@ const AdminLayout = () => {
           <SidebarHeader className="flex items-center justify-between">
             <div className="flex items-center">
               <AnimatedLogo size="sm" />
-              <span className="ml-2 text-xs bg-jamcart-green px-2 py-0.5 rounded text-white">Admin</span>
+              <div className="ml-2 flex items-center">
+                <span className="font-semibold text-sm mr-1">JAMCart</span>
+                <span className="text-xs bg-jamcart-green px-2 py-0.5 rounded text-white">Admin</span>
+              </div>
             </div>
             <SidebarTrigger />
           </SidebarHeader>
@@ -60,6 +65,7 @@ const AdminLayout = () => {
                 >
                   <LayoutDashboard className="h-4 w-4" />
                   <span>Dashboard</span>
+                  <Badge className="ml-auto bg-blue-500 py-0 px-1.5 text-[10px]">2 new</Badge>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               
@@ -71,6 +77,7 @@ const AdminLayout = () => {
                 >
                   <ShoppingBag className="h-4 w-4" />
                   <span>Orders</span>
+                  <Badge className="ml-auto bg-jamcart-red py-0 px-1.5 text-[10px]">New</Badge>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               
@@ -82,6 +89,7 @@ const AdminLayout = () => {
                 >
                   <Users className="h-4 w-4" />
                   <span>Users</span>
+                  <Badge className="ml-auto bg-blue-500 py-0 px-1.5 text-[10px]">2 new</Badge>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               

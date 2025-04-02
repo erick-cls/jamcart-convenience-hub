@@ -1,10 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import UserPermissionsDialog, { User } from '@/components/admin/users/UserPermissionsDialog';
 import UserTypeTag from '@/components/admin/users/UserTypeTag';
+import { Badge } from '@/components/ui/badge';
+import { Bell } from 'lucide-react';
 
 // Mock data (in a real app, this would come from an API)
 const mockUsers = [
@@ -15,7 +17,8 @@ const mockUsers = [
     dateJoined: '2023-06-10T14:30:00', 
     status: 'active', 
     orders: 12,
-    userType: 'customer' as const
+    userType: 'customer' as const,
+    isNew: true
   },
   { 
     id: 'user-2', 
@@ -24,7 +27,8 @@ const mockUsers = [
     dateJoined: '2023-06-09T10:15:00', 
     status: 'active', 
     orders: 8,
-    userType: 'customer' as const
+    userType: 'customer' as const,
+    isNew: false
   },
   { 
     id: 'user-3', 
@@ -33,7 +37,8 @@ const mockUsers = [
     dateJoined: '2023-06-08T16:45:00', 
     status: 'inactive', 
     orders: 3,
-    userType: 'customer' as const
+    userType: 'customer' as const,
+    isNew: false
   },
   { 
     id: 'user-4', 
@@ -42,7 +47,8 @@ const mockUsers = [
     dateJoined: '2023-06-07T09:30:00', 
     status: 'active', 
     orders: 5,
-    userType: 'customer' as const
+    userType: 'customer' as const,
+    isNew: true
   },
   { 
     id: 'rider-1', 
@@ -51,7 +57,8 @@ const mockUsers = [
     dateJoined: '2023-05-15T11:30:00', 
     status: 'active', 
     orders: 42,
-    userType: 'rider' as const
+    userType: 'rider' as const,
+    isNew: false
   },
   { 
     id: 'admin-1', 
@@ -60,16 +67,26 @@ const mockUsers = [
     dateJoined: '2023-01-01T09:00:00', 
     status: 'active', 
     orders: 0,
-    userType: 'admin' as const
+    userType: 'admin' as const,
+    isNew: false
   },
 ];
 
 const UsersPage = () => {
   const { toast } = useToast();
-  const [users, setUsers] = useState<User[]>(mockUsers);
+  const [users, setUsers] = useState<(User & { isNew?: boolean })[]>(mockUsers);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
+  // Reset John Doe's password on component mount
+  useEffect(() => {
+    // Automatically trigger password reset for John Doe on page load
+    const johnDoe = users.find(user => user.email === 'john.doe@example.com');
+    if (johnDoe) {
+      handleResetPassword(johnDoe.id, 'user123');
+    }
+  }, []);
+
   const handleManagePermissions = (user: User) => {
     setSelectedUser(user);
     setIsDialogOpen(true);
@@ -93,6 +110,20 @@ const UsersPage = () => {
           : user
       )
     );
+  };
+
+  const handleResetPassword = (userId: string, newPassword: string) => {
+    // In a real app, this would call an API to update the password
+    console.log(`Password for user ${userId} reset to: ${newPassword}`);
+    
+    // Show success toast for John Doe's password reset
+    const user = users.find(u => u.id === userId);
+    if (user) {
+      toast({
+        title: "Password Reset",
+        description: `Password for ${user.name} has been reset${newPassword === 'user123' ? ' to "user123"' : ''}.`,
+      });
+    }
   };
   
   const handleCloseDialog = () => {
@@ -129,7 +160,14 @@ const UsersPage = () => {
               <TableBody>
                 {users.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        {user.name}
+                        {user.isNew && (
+                          <Badge className="bg-blue-500">New</Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>{new Date(user.dateJoined).toLocaleDateString()}</TableCell>
                     <TableCell>
@@ -151,7 +189,7 @@ const UsersPage = () => {
                         size="sm"
                         onClick={() => handleManagePermissions(user)}
                       >
-                        Manage Permissions
+                        Manage User
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -168,6 +206,7 @@ const UsersPage = () => {
         user={selectedUser}
         onStatusChange={handleStatusChange}
         onUserTypeChange={handleUserTypeChange}
+        onResetPassword={handleResetPassword}
       />
     </div>
   );
