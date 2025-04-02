@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Calendar, MapPin, Check } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Check, Bike } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AnimatedLogo from '@/components/ui/AnimatedLogo';
 import ThankYouAnimation from '@/components/ThankYouAnimation';
