@@ -4,14 +4,64 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import UserPermissionsDialog, { User } from '@/components/admin/users/UserPermissionsDialog';
+import UserTypeTag from '@/components/admin/users/UserTypeTag';
 
 // Mock data (in a real app, this would come from an API)
 const mockUsers = [
-  { id: 'user-1', name: 'John Doe', email: 'john.doe@example.com', dateJoined: '2023-06-10T14:30:00', status: 'active', orders: 12 },
-  { id: 'user-2', name: 'Jane Smith', email: 'jane.smith@example.com', dateJoined: '2023-06-09T10:15:00', status: 'active', orders: 8 },
-  { id: 'user-3', name: 'Robert Johnson', email: 'robert.j@example.com', dateJoined: '2023-06-08T16:45:00', status: 'inactive', orders: 3 },
-  { id: 'user-4', name: 'Maria Garcia', email: 'maria.g@example.com', dateJoined: '2023-06-07T09:30:00', status: 'active', orders: 5 },
-  { id: 'user-5', name: 'David Williams', email: 'david.w@example.com', dateJoined: '2023-06-06T11:20:00', status: 'active', orders: 7 },
+  { 
+    id: 'user-1', 
+    name: 'John Doe', 
+    email: 'john.doe@example.com', 
+    dateJoined: '2023-06-10T14:30:00', 
+    status: 'active', 
+    orders: 12,
+    userType: 'customer' as const
+  },
+  { 
+    id: 'user-2', 
+    name: 'Jane Smith', 
+    email: 'jane.smith@example.com', 
+    dateJoined: '2023-06-09T10:15:00', 
+    status: 'active', 
+    orders: 8,
+    userType: 'customer' as const
+  },
+  { 
+    id: 'user-3', 
+    name: 'Robert Johnson', 
+    email: 'robert.j@example.com', 
+    dateJoined: '2023-06-08T16:45:00', 
+    status: 'inactive', 
+    orders: 3,
+    userType: 'customer' as const
+  },
+  { 
+    id: 'user-4', 
+    name: 'Maria Garcia', 
+    email: 'maria.g@example.com', 
+    dateJoined: '2023-06-07T09:30:00', 
+    status: 'active', 
+    orders: 5,
+    userType: 'customer' as const
+  },
+  { 
+    id: 'rider-1', 
+    name: 'John Rider', 
+    email: 'rider@jamcart.com', 
+    dateJoined: '2023-05-15T11:30:00', 
+    status: 'active', 
+    orders: 42,
+    userType: 'rider' as const
+  },
+  { 
+    id: 'admin-1', 
+    name: 'Erickson Villeta', 
+    email: 'ericksonvilleta@gmail.com', 
+    dateJoined: '2023-01-01T09:00:00', 
+    status: 'active', 
+    orders: 0,
+    userType: 'admin' as const
+  },
 ];
 
 const UsersPage = () => {
@@ -30,6 +80,16 @@ const UsersPage = () => {
       prevUsers.map(user => 
         user.id === userId 
           ? { ...user, status: isActive ? 'active' : 'inactive' }
+          : user
+      )
+    );
+  };
+
+  const handleUserTypeChange = (userId: string, userType: 'customer' | 'rider' | 'admin') => {
+    setUsers(prevUsers => 
+      prevUsers.map(user => 
+        user.id === userId 
+          ? { ...user, userType }
           : user
       )
     );
@@ -61,6 +121,7 @@ const UsersPage = () => {
                   <TableHead>Email</TableHead>
                   <TableHead>Date Joined</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>User Type</TableHead>
                   <TableHead>Orders</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -79,6 +140,9 @@ const UsersPage = () => {
                       }`}>
                         {user.status}
                       </span>
+                    </TableCell>
+                    <TableCell>
+                      {user.userType && <UserTypeTag userType={user.userType} />}
                     </TableCell>
                     <TableCell>{user.orders}</TableCell>
                     <TableCell>
@@ -103,6 +167,7 @@ const UsersPage = () => {
         onClose={handleCloseDialog}
         user={selectedUser}
         onStatusChange={handleStatusChange}
+        onUserTypeChange={handleUserTypeChange}
       />
     </div>
   );

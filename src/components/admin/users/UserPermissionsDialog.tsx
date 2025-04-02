@@ -6,7 +6,9 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
+import UserTypeTag from './UserTypeTag';
 
 export interface User {
   id: string;
@@ -15,6 +17,7 @@ export interface User {
   dateJoined: string;
   status: string;
   orders: number;
+  userType?: 'customer' | 'rider' | 'admin';
 }
 
 interface UserPermissionsDialogProps {
@@ -22,17 +25,20 @@ interface UserPermissionsDialogProps {
   onClose: () => void;
   user: User | null;
   onStatusChange: (userId: string, isActive: boolean) => void;
+  onUserTypeChange?: (userId: string, userType: 'customer' | 'rider' | 'admin') => void;
 }
 
-const UserPermissionsDialog = ({ isOpen, onClose, user, onStatusChange }: UserPermissionsDialogProps) => {
+const UserPermissionsDialog = ({ isOpen, onClose, user, onStatusChange, onUserTypeChange }: UserPermissionsDialogProps) => {
   const { toast } = useToast();
   const [isActive, setIsActive] = useState(user?.status === 'active');
   const [confirmationVisible, setConfirmationVisible] = useState(false);
+  const [userType, setUserType] = useState<'customer' | 'rider' | 'admin'>(user?.userType || 'customer');
   
   // Reset state when dialog opens with a new user
   React.useEffect(() => {
     if (user) {
       setIsActive(user.status === 'active');
+      setUserType(user.userType || 'customer');
       setConfirmationVisible(false);
     }
   }, [user, isOpen]);
@@ -47,13 +53,21 @@ const UserPermissionsDialog = ({ isOpen, onClose, user, onStatusChange }: UserPe
     }
   };
   
+  const handleUserTypeChange = (value: string) => {
+    setUserType(value as 'customer' | 'rider' | 'admin');
+  };
+  
   const handleSave = () => {
     if (user) {
       onStatusChange(user.id, isActive);
       
+      if (onUserTypeChange) {
+        onUserTypeChange(user.id, userType);
+      }
+      
       toast({
         title: "User permissions updated",
-        description: `${user.name}'s status has been set to ${isActive ? 'active' : 'inactive'}`,
+        description: `${user.name}'s status has been set to ${isActive ? 'active' : 'inactive'} and user type to ${userType}`,
       });
       
       onClose();
@@ -73,7 +87,10 @@ const UserPermissionsDialog = ({ isOpen, onClose, user, onStatusChange }: UserPe
           <div className="space-y-2">
             <h3 className="font-medium text-lg">{user.name}</h3>
             <p className="text-sm text-gray-500">{user.email}</p>
-            <p className="text-xs text-gray-400">Member since {new Date(user.dateJoined).toLocaleDateString()}</p>
+            <div className="flex items-center space-x-2 mt-1">
+              <p className="text-xs text-gray-400">Member since {new Date(user.dateJoined).toLocaleDateString()}</p>
+              {user.userType && <UserTypeTag userType={user.userType} />}
+            </div>
           </div>
           
           <Separator />
@@ -104,6 +121,32 @@ const UserPermissionsDialog = ({ isOpen, onClose, user, onStatusChange }: UserPe
                 </div>
               </div>
             )}
+          </div>
+          
+          <Separator />
+          
+          <div className="space-y-3">
+            <Label className="text-base">User Type</Label>
+            <p className="text-sm text-gray-500 mb-2">Change the user's role in the system</p>
+            
+            <RadioGroup 
+              value={userType} 
+              onValueChange={handleUserTypeChange}
+              className="space-y-3"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="customer" id="r-customer" />
+                <Label htmlFor="r-customer">Customer</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="rider" id="r-rider" />
+                <Label htmlFor="r-rider">Rider (Delivery Personnel)</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="admin" id="r-admin" />
+                <Label htmlFor="r-admin">Administrator</Label>
+              </div>
+            </RadioGroup>
           </div>
         </div>
         

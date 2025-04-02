@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { ChevronLeft, Eye, EyeOff } from 'lucide-react';
 import ActionButton from '@/components/ui/ActionButton';
 import { useAuth } from '@/context/AuthContext';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
@@ -17,6 +19,7 @@ const RegisterForm = ({ onSwitchToLogin, onRegisterSuccess }: RegisterFormProps)
     phone: '',
     address: '',
     town: '',
+    userType: 'customer' // Default user type
   });
   const [showPassword, setShowPassword] = useState(false);
   const { register, loading, error } = useAuth();
@@ -24,6 +27,10 @@ const RegisterForm = ({ onSwitchToLogin, onRegisterSuccess }: RegisterFormProps)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleUserTypeChange = (value: string) => {
+    setFormData(prev => ({ ...prev, userType: value }));
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -159,6 +166,31 @@ const RegisterForm = ({ onSwitchToLogin, onRegisterSuccess }: RegisterFormProps)
             placeholder="Kingston"
             required
           />
+        </div>
+
+        <div className="pt-2">
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Account Type
+          </label>
+          <RadioGroup 
+            defaultValue="customer" 
+            value={formData.userType} 
+            onValueChange={handleUserTypeChange}
+            className="flex flex-col space-y-3"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="customer" id="customer" />
+              <Label htmlFor="customer">Customer</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="rider" id="rider" />
+              <Label htmlFor="rider">Rider (Delivery Personnel)</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="admin" id="admin" />
+              <Label htmlFor="admin">Administrator</Label>
+            </div>
+          </RadioGroup>
         </div>
         
         {error && (

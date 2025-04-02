@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
@@ -10,12 +11,13 @@ interface User {
   isVerified: boolean;
   isAdmin: boolean;
   isRider: boolean;
+  userType: 'customer' | 'rider' | 'admin';
 }
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isRider'> & { password: string }) => Promise<void>;
+  register: (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isRider' | 'userType'> & { password: string, userType: string }) => Promise<void>;
   logout: () => void;
   verifyPhone: (code: string) => Promise<boolean>;
   loading: boolean;
@@ -58,7 +60,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             town: 'Kingston',
             isVerified: true,
             isAdmin: true,
-            isRider: false
+            isRider: false,
+            userType: 'admin'
           };
           
           setUser(adminUser);
@@ -82,7 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             town: 'Kingston',
             isVerified: true,
             isAdmin: false,
-            isRider: true
+            isRider: true,
+            userType: 'rider'
           };
           
           setUser(riderUser);
@@ -105,7 +109,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isVerified: true,
         // Make ericksonvilleta@gmail.com admin by default, also keep admin if email contains "admin"
         isAdmin: email === 'ericksonvilleta@gmail.com' || email.includes('admin'),
-        isRider: email.includes('rider')
+        isRider: email.includes('rider'),
+        userType: email.includes('admin') ? 'admin' : (email.includes('rider') ? 'rider' : 'customer')
       };
       
       setUser(mockUser);
@@ -118,7 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isRider'> & { password: string }) => {
+  const register = async (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isRider' | 'userType'> & { password: string, userType: string }) => {
     setLoading(true);
     setError(null);
     
@@ -134,6 +139,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // In a real app, this would be an API call to register the user
       
       // For demo purposes, create user but mark as not verified
+      const isAdmin = userData.userType === 'admin' || userData.email === 'ericksonvilleta@gmail.com';
+      const isRider = userData.userType === 'rider' || userData.email.includes('rider');
+      
       const mockUser: User = {
         id: 'user-' + Math.random().toString(36).substr(2, 9),
         name: userData.name,
@@ -142,9 +150,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         address: userData.address,
         town: userData.town,
         isVerified: false,
-        // Make ericksonvilleta@gmail.com admin by default
-        isAdmin: userData.email === 'ericksonvilleta@gmail.com',
-        isRider: userData.email.includes('rider')
+        isAdmin: isAdmin,
+        isRider: isRider,
+        userType: userData.userType as 'customer' | 'rider' | 'admin'
       };
       
       setUser(mockUser);

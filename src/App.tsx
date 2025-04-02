@@ -22,8 +22,16 @@ import NotFound from "./pages/NotFound";
 import RiderLayout from "./components/rider/RiderLayout";
 import RiderDashboard from "./pages/rider/Dashboard";
 import RiderOrdersPage from "./pages/rider/OrdersPage";
+import ThankYouPage from "./pages/ThankYouPage";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -38,6 +46,7 @@ const App = () => (
             <Route path="/categories" element={<Categories />} />
             <Route path="/category/:categoryId" element={<CategoryPage />} />
             <Route path="/order/:categoryId/:storeId" element={<OrderPage />} />
+            <Route path="/order/thank-you/:orderId?" element={<ThankYouPage />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/about" element={<About />} />
             <Route path="/profile" element={<ProfilePage />} />
