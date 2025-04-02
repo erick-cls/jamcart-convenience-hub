@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingCart, User, LogOut } from "lucide-react";
+import { Menu, X, ShoppingCart, User, LogOut, Bike, Package } from "lucide-react";
 import AnimatedLogo from "../ui/AnimatedLogo";
 import ActionButton from "../ui/ActionButton";
 import { useAuth } from "@/context/AuthContext";
@@ -131,6 +131,22 @@ const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                   )}
+                  {user.isRider && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link to="/rider/dashboard" className="cursor-pointer">
+                          <Bike className="mr-2 h-4 w-4" />
+                          Rider Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/rider/orders" className="cursor-pointer">
+                          <Package className="mr-2 h-4 w-4" />
+                          Rider Orders
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -232,6 +248,24 @@ const Header = () => {
                         </svg>
                         Admin Dashboard
                       </Link>
+                    )}
+                    {user.isRider && (
+                      <>
+                        <Link
+                          to="/rider/dashboard"
+                          className="flex items-center text-lg font-medium text-gray-800"
+                        >
+                          <Bike className="h-5 w-5 mr-3" />
+                          Rider Dashboard
+                        </Link>
+                        <Link
+                          to="/rider/orders"
+                          className="flex items-center text-lg font-medium text-gray-800"
+                        >
+                          <Package className="h-5 w-5 mr-3" />
+                          Rider Orders
+                        </Link>
+                      </>
                     )}
                     <button
                       onClick={handleLogout}

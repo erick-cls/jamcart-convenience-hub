@@ -14,7 +14,17 @@ const RiderLayout = () => {
 
   useEffect(() => {
     // Redirect if not a rider or not logged in
-    if (!user || !user.isRider) {
+    if (!user) {
+      toast({
+        title: "Access Denied",
+        description: "You need to be logged in to access this area.",
+        variant: "destructive"
+      });
+      navigate('/auth');
+      return;
+    }
+    
+    if (!user.isRider) {
       toast({
         title: "Access Denied",
         description: "You need rider permissions to access this area.",
@@ -33,7 +43,7 @@ const RiderLayout = () => {
     navigate('/auth');
   };
 
-  if (!user || !user.isRider) return null;
+  if (!user) return null;
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
