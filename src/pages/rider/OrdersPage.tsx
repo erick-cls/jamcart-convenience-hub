@@ -168,22 +168,22 @@ const RiderOrdersPage = () => {
   };
   
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-1">Orders</h1>
-          <p className="text-gray-600">View and manage all customer orders</p>
+        <div className="mb-4 md:mb-6">
+          <h1 className="text-xl md:text-2xl font-bold mb-1">Orders</h1>
+          <p className="text-sm md:text-base text-gray-600">View and manage all customer orders</p>
         </div>
         
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 mb-6">
-          <div className="flex flex-wrap gap-2">
+        <div className="bg-white rounded-xl p-3 md:p-4 shadow-sm border border-gray-100 mb-4 md:mb-6 overflow-x-auto">
+          <div className="flex flex-nowrap gap-2 md:flex-wrap">
             {filterOptions.map(option => (
               <Button
                 key={option.value}
                 variant={activeFilter === option.value ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => handleSetFilter(option.value)}
-                className={activeFilter === option.value ? 'bg-jamcart-green hover:bg-jamcart-green/90' : ''}
+                className={`${activeFilter === option.value ? 'bg-jamcart-green hover:bg-jamcart-green/90' : ''} whitespace-nowrap`}
               >
                 {option.label}
               </Button>
@@ -194,10 +194,10 @@ const RiderOrdersPage = () => {
                 variant="ghost"
                 size="sm"
                 onClick={handleClearFilters}
-                className="ml-auto"
+                className="ml-auto whitespace-nowrap"
               >
                 <FilterX className="h-4 w-4 mr-1" />
-                Clear Filter
+                Clear
               </Button>
             )}
           </div>
@@ -216,14 +216,14 @@ const RiderOrdersPage = () => {
             onCompleteOrder={handleCompleteOrder}
           />
         ) : (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-8 text-center">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-6 md:p-8 text-center">
             <div className="mb-4">
               <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gray-100">
                 <XCircle className="h-6 w-6 text-gray-500" />
               </div>
             </div>
-            <h3 className="text-lg font-medium mb-2">No orders found</h3>
-            <p className="text-gray-500 mb-6">
+            <h3 className="text-base md:text-lg font-medium mb-2">No orders found</h3>
+            <p className="text-sm md:text-base text-gray-500 mb-4 md:mb-6">
               {activeFilter !== 'all' ? (
                 `There are no orders with the "${activeFilter}" status.`
               ) : (

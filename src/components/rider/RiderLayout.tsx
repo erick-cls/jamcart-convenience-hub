@@ -1,10 +1,11 @@
 
 import { useEffect } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Bike, Home, LogOut, Package } from 'lucide-react';
+import { Outlet, useNavigate, useLocation, Link } from 'react-router-dom';
+import { Bike, Home, LogOut, Package, ChevronLeft } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import AnimatedLogo from '@/components/ui/AnimatedLogo';
 
 const RiderLayout = () => {
   const { user, logout } = useAuth();
@@ -46,11 +47,31 @@ const RiderLayout = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+      {/* Mobile Header - only visible on small screens */}
+      <div className="md:hidden bg-white shadow-sm border-b border-gray-200 p-4 flex items-center justify-between">
+        <div className="flex items-center">
+          <AnimatedLogo size="sm" />
+          <span className="ml-2 text-jamcart-green font-semibold">Rider</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate('/')}
+            className="px-2"
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Back to Site
+          </Button>
+        </div>
+      </div>
+      
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-sm border-r border-gray-200 flex flex-col">
-        <div className="p-4 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-jamcart-green">JamCart Rider</h1>
+      <div className="w-full md:w-64 bg-white shadow-sm border-r border-gray-200 flex flex-col">
+        <div className="p-4 border-b border-gray-200 hidden md:flex items-center">
+          <AnimatedLogo size="sm" />
+          <h1 className="ml-2 text-xl font-bold text-jamcart-green">Rider</h1>
         </div>
         
         <div className="py-4 flex-1">
@@ -88,14 +109,25 @@ const RiderLayout = () => {
             </div>
           </div>
           
-          <Button 
-            variant="outline"
-            className="w-full justify-start"
-            onClick={handleLogout}
-          >
-            <LogOut className="mr-2 h-5 w-5" />
-            Logout
-          </Button>
+          <div className="space-y-2">
+            <Button 
+              variant="outline"
+              className="w-full justify-start"
+              onClick={() => navigate('/')}
+            >
+              <ChevronLeft className="mr-2 h-5 w-5" />
+              Back to Site
+            </Button>
+            
+            <Button 
+              variant="outline"
+              className="w-full justify-start"
+              onClick={handleLogout}
+            >
+              <LogOut className="mr-2 h-5 w-5" />
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
       

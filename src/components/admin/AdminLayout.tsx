@@ -1,6 +1,6 @@
 
 import { useEffect } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
+import { useNavigate, Outlet, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import {
   SidebarProvider,
@@ -21,6 +21,7 @@ import {
   LogOut,
   ChevronLeft,
 } from 'lucide-react';
+import AnimatedLogo from '@/components/ui/AnimatedLogo';
 
 const AdminLayout = () => {
   const { user, logout } = useAuth();
@@ -43,7 +44,7 @@ const AdminLayout = () => {
         <Sidebar>
           <SidebarHeader className="flex items-center justify-between">
             <div className="flex items-center">
-              <span className="text-xl font-bold text-jamcart-yellow">JamCart</span>
+              <AnimatedLogo size="sm" />
               <span className="ml-2 text-xs bg-jamcart-green px-2 py-0.5 rounded text-white">Admin</span>
             </div>
             <SidebarTrigger />

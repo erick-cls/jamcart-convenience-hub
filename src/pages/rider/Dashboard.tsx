@@ -22,72 +22,72 @@ const RiderDashboard = () => {
   }, []);
 
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-1">Rider Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {user?.name}! Manage your deliveries here.</p>
+          <h1 className="text-xl md:text-2xl font-bold mb-1">Rider Dashboard</h1>
+          <p className="text-sm md:text-base text-gray-600">Welcome back, {user?.name}! Manage your deliveries here.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center">
-                <Clock className="mr-2 h-5 w-5 text-orange-500" />
+              <CardTitle className="text-base md:text-lg flex items-center">
+                <Clock className="mr-2 h-4 w-4 md:h-5 md:w-5 text-orange-500" />
                 Pending
               </CardTitle>
-              <CardDescription>Orders waiting assignment</CardDescription>
+              <CardDescription className="text-xs md:text-sm">Orders waiting assignment</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.pendingAssignments}</div>
+              <div className="text-2xl md:text-3xl font-bold">{stats.pendingAssignments}</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center">
-                <Bike className="mr-2 h-5 w-5 text-blue-500" />
+              <CardTitle className="text-base md:text-lg flex items-center">
+                <Bike className="mr-2 h-4 w-4 md:h-5 md:w-5 text-blue-500" />
                 In Progress
               </CardTitle>
-              <CardDescription>Orders you're delivering</CardDescription>
+              <CardDescription className="text-xs md:text-sm">Orders you're delivering</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.inProgressOrders}</div>
+              <div className="text-2xl md:text-3xl font-bold">{stats.inProgressOrders}</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center">
-                <CheckCheck className="mr-2 h-5 w-5 text-jamcart-green" />
+              <CardTitle className="text-base md:text-lg flex items-center">
+                <CheckCheck className="mr-2 h-4 w-4 md:h-5 md:w-5 text-jamcart-green" />
                 Completed
               </CardTitle>
-              <CardDescription>Successfully delivered</CardDescription>
+              <CardDescription className="text-xs md:text-sm">Successfully delivered</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.completedOrders}</div>
+              <div className="text-2xl md:text-3xl font-bold">{stats.completedOrders}</div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg flex items-center">
-                <XCircle className="mr-2 h-5 w-5 text-gray-500" />
+              <CardTitle className="text-base md:text-lg flex items-center">
+                <XCircle className="mr-2 h-4 w-4 md:h-5 md:w-5 text-gray-500" />
                 Cancelled
               </CardTitle>
-              <CardDescription>Cancelled orders</CardDescription>
+              <CardDescription className="text-xs md:text-sm">Cancelled orders</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.cancelledOrders}</div>
+              <div className="text-2xl md:text-3xl font-bold">{stats.cancelledOrders}</div>
             </CardContent>
           </Card>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-          <div className="p-5 border-b border-gray-100">
-            <h2 className="font-semibold text-lg">Quick Actions</h2>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6 md:mb-8">
+          <div className="p-4 md:p-5 border-b border-gray-100">
+            <h2 className="font-semibold text-base md:text-lg">Quick Actions</h2>
           </div>
-          <div className="p-5 space-y-3">
+          <div className="p-4 md:p-5 space-y-3">
             <Button
               variant="default"
               className="w-full justify-start bg-jamcart-green hover:bg-jamcart-green/90"
@@ -106,11 +106,11 @@ const RiderDashboard = () => {
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-5 border-b border-gray-100">
-            <h2 className="font-semibold text-lg">Today's Schedule</h2>
+          <div className="p-4 md:p-5 border-b border-gray-100">
+            <h2 className="font-semibold text-base md:text-lg">Today's Schedule</h2>
           </div>
-          <div className="p-5">
-            <div className="text-center py-8 text-gray-500">
+          <div className="p-4 md:p-5">
+            <div className="text-center py-6 md:py-8 text-gray-500 text-sm md:text-base">
               No deliveries scheduled for today yet.
               <br />
               Check back later or view all orders.
