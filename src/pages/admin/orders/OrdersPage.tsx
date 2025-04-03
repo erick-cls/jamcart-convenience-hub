@@ -20,6 +20,7 @@ const OrdersPage = () => {
     setActiveFilter,
     loading,
     updateOrderStatus,
+    assignRider,
   } = useOrdersState();
 
   const handleClearFilters = () => {
@@ -37,6 +38,15 @@ const OrdersPage = () => {
     toast({
       title: "Order updated",
       description: `Order #${orderId.slice(-6)} status changed to ${newStatus}`,
+    });
+  };
+
+  const handleAssignRider = (orderId: string, riderId: string) => {
+    assignRider(orderId, riderId);
+    
+    toast({
+      title: "Rider assigned",
+      description: `Rider has been assigned to order #${orderId.slice(-6)}`,
     });
   };
 
@@ -68,6 +78,8 @@ const OrdersPage = () => {
           orders={filteredOrders} 
           onViewDetails={handleViewDetails}
           onStatusChange={handleStatusChange}
+          onAssignRider={handleAssignRider}
+          showUserInfo={true}
         />
       ) : (
         <OrdersEmpty 

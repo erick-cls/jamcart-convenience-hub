@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,13 +8,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, Bell, Lock, RefreshCcw } from 'lucide-react';
+import { Save, Bell, Lock, RefreshCcw, AlertTriangle } from 'lucide-react';
 import ActionButton from '@/components/ui/ActionButton';
+import { useMaintenanceMode } from '@/context/MaintenanceContext';
 
 const SettingsPage = () => {
+  const { isMaintenanceMode, setMaintenanceMode } = useMaintenanceMode();
   const [notifyNewOrders, setNotifyNewOrders] = useState(true);
   const [notifyOrderStatus, setNotifyOrderStatus] = useState(true);
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [storeApproval, setStoreApproval] = useState(true);
   
   // Mock store currency options
@@ -27,6 +29,17 @@ const SettingsPage = () => {
   const handleSaveSettings = () => {
     // In a real app, this would save settings to a database
     toast.success("Settings saved successfully");
+  };
+
+  const handleMaintenanceModeToggle = (checked: boolean) => {
+    setMaintenanceMode(checked);
+    
+    toast({
+      title: checked ? "Maintenance Mode Activated" : "Maintenance Mode Deactivated",
+      description: checked 
+        ? "The site is now in maintenance mode. Only admins can access it." 
+        : "The site is now accessible to all users.",
+    });
   };
   
   return (
@@ -52,15 +65,18 @@ const SettingsPage = () => {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label htmlFor="maintenance-mode">Maintenance Mode</Label>
+                    <Label htmlFor="maintenance-mode" className="flex items-center">
+                      <AlertTriangle className="h-4 w-4 mr-2 text-yellow-500" />
+                      Maintenance Mode
+                    </Label>
                     <p className="text-sm text-gray-500">
                       Enable to make the site inaccessible to regular users
                     </p>
                   </div>
                   <Switch 
                     id="maintenance-mode" 
-                    checked={maintenanceMode}
-                    onCheckedChange={setMaintenanceMode}
+                    checked={isMaintenanceMode}
+                    onCheckedChange={handleMaintenanceModeToggle}
                   />
                 </div>
                 

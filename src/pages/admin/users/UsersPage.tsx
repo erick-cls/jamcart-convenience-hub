@@ -6,7 +6,26 @@ import { useToast } from '@/hooks/use-toast';
 import UserPermissionsDialog, { User } from '@/components/admin/users/UserPermissionsDialog';
 import UserTypeTag from '@/components/admin/users/UserTypeTag';
 import { Badge } from '@/components/ui/badge';
-import { Bell } from 'lucide-react';
+import { Bell, UserPlus } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
+// Generate a random user
+const generateRandomUser = (): User & { isNew: boolean; dateJoined: string } => {
+  const userTypes = ['customer', 'customer', 'customer', 'rider', 'admin'] as const;
+  const userType = userTypes[Math.floor(Math.random() * 3)]; // Mostly customers
+  const now = new Date();
+  
+  return {
+    id: `user-${now.getTime()}`,
+    name: `New ${userType.charAt(0).toUpperCase() + userType.slice(1)}`,
+    email: `new.${userType}${now.getTime()}@example.com`,
+    dateJoined: now.toISOString(),
+    status: 'active',
+    orders: 0,
+    userType: userType,
+    isNew: true
+  };
+};
 
 // Mock data (in a real app, this would come from an API)
 const mockUsers = [
@@ -74,17 +93,25 @@ const mockUsers = [
 
 const UsersPage = () => {
   const { toast } = useToast();
-  const [users, setUsers] = useState<(User & { isNew?: boolean })[]>(mockUsers);
+  const [users, setUsers] = useState<(User & { isNew?: boolean; dateJoined: string })[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState("user123");
   
-  // Reset John Doe's password on component mount
+  // Add new user on component mount for demo purposes
   useEffect(() => {
-    // Automatically trigger password reset for John Doe on page load
-    const johnDoe = users.find(user => user.email === 'john.doe@example.com');
-    if (johnDoe) {
-      handleResetPassword(johnDoe.id, 'user123');
-    }
+    // Add a random new user
+    const newUser = generateRandomUser();
+    setUsers([newUser, ...mockUsers]);
+    
+    // Reset John Doe's password
+    setTimeout(() => {
+      const johnDoe = mockUsers.find(user => user.email === 'john.doe@example.com');
+      if (johnDoe) {
+        handleResetPassword(johnDoe.id, 'user123');
+      }
+    }, 1000);
   }, []);
 
   const handleManagePermissions = (user: User) => {
@@ -126,10 +153,34 @@ const UsersPage = () => {
     }
   };
   
+  const handleShowResetDialog = (user: User) => {
+    setSelectedUser(user);
+    setIsResetPasswordDialogOpen(true);
+  };
+  
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setSelectedUser(null);
   };
+
+  const handleAddTestUser = () => {
+    const newUser = generateRandomUser();
+    setUsers(prevUsers => [newUser, ...prevUsers]);
+    
+    toast({
+      title: "New User Added",
+      description: `${newUser.name} has signed up as a ${newUser.userType}.`,
+    });
+  };
+
+  // Get new users (joined today)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const newUsers = users.filter(user => {
+    const joinDate = new Date(user.dateJoined);
+    return joinDate >= today || user.isNew;
+  });
 
   return (
     <div className="py-6 px-6">
@@ -139,9 +190,61 @@ const UsersPage = () => {
           <p className="text-gray-600">Manage users and their permissions</p>
         </div>
         
+        {newUsers.length > 0 && (
+          <Card className="mb-6">
+            <CardHeader className="py-4">
+              <CardTitle className="text-lg flex items-center">
+                <UserPlus className="h-5 w-5 mr-2 text-jamcart-green" />
+                New Sign Ups
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>User Type</TableHead>
+                      <TableHead>Joined</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {newUsers.map(user => (
+                      <TableRow key={user.id}>
+                        <TableCell className="font-medium">{user.name}</TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          <UserTypeTag userType={user.userType} />
+                        </TableCell>
+                        <TableCell>
+                          {new Date(user.dateJoined).toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleShowResetDialog(user)}
+                          >
+                            Reset Password
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+        
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-5 border-b border-gray-100">
+          <div className="p-5 border-b border-gray-100 flex justify-between items-center">
             <h2 className="font-semibold text-lg">All Users</h2>
+            <Button onClick={handleAddTestUser} size="sm">
+              Add Test User
+            </Button>
           </div>
           
           <div className="overflow-x-auto">
@@ -183,13 +286,20 @@ const UsersPage = () => {
                       {user.userType && <UserTypeTag userType={user.userType} />}
                     </TableCell>
                     <TableCell>{user.orders}</TableCell>
-                    <TableCell>
+                    <TableCell className="space-x-2">
                       <Button 
                         variant="outline" 
                         size="sm"
                         onClick={() => handleManagePermissions(user)}
                       >
                         Manage User
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleShowResetDialog(user)}
+                      >
+                        Reset Password
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -208,6 +318,49 @@ const UsersPage = () => {
         onUserTypeChange={handleUserTypeChange}
         onResetPassword={handleResetPassword}
       />
+
+      <Dialog open={isResetPasswordDialogOpen} onOpenChange={setIsResetPasswordDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reset Password</DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <p className="mb-4">
+              Reset password for <strong>{selectedUser?.name}</strong>
+            </p>
+            
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <Input 
+                id="new-password" 
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setIsResetPasswordDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={() => {
+                if (selectedUser) {
+                  handleResetPassword(selectedUser.id, newPassword);
+                  setIsResetPasswordDialogOpen(false);
+                  setSelectedUser(null);
+                }
+              }}
+            >
+              Reset Password
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { OrderStatus } from '@/components/ui/OrderItem';
 import OrderItem from '@/components/ui/OrderItem';
 import OrderDetailsDialog from '@/components/admin/orders/OrderDetailsDialog';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
 
 interface Order {
   id: string;
@@ -15,6 +16,10 @@ interface Order {
   items: string[];
   total: number;
   userId?: string;
+  userName?: string;
+  riderId?: string | null;
+  riderName?: string | null;
+  isNew?: boolean;
 }
 
 interface UserOrdersListProps {
@@ -63,27 +68,101 @@ const UserOrdersList = ({ orders }: UserOrdersListProps) => {
         <p className="text-sm md:text-base text-gray-500 mb-4 md:mb-6">
           You haven't placed any orders yet.
         </p>
+        <Button onClick={() => navigate('/categories')}>Browse Categories</Button>
       </div>
     );
   }
   
+  // Group orders by date (today, yesterday, earlier)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  const todayOrders = orders.filter(order => {
+    const orderDate = new Date(order.date);
+    orderDate.setHours(0, 0, 0, 0);
+    return orderDate.getTime() === today.getTime();
+  });
+  
+  const yesterdayOrders = orders.filter(order => {
+    const orderDate = new Date(order.date);
+    orderDate.setHours(0, 0, 0, 0);
+    return orderDate.getTime() === yesterday.getTime();
+  });
+  
+  const earlierOrders = orders.filter(order => {
+    const orderDate = new Date(order.date);
+    orderDate.setHours(0, 0, 0, 0);
+    return orderDate.getTime() < yesterday.getTime();
+  });
+  
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {orders.map((order) => (
-          <OrderItem
-            key={order.id}
-            id={order.id}
-            storeName={order.storeName}
-            category={order.category}
-            date={order.date}
-            status={order.status}
-            items={order.items}
-            total={order.total}
-            onViewDetails={handleViewDetails}
-          />
-        ))}
-      </div>
+      {todayOrders.length > 0 && (
+        <div className="mb-8">
+          <h3 className="text-lg font-medium mb-4">Today</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {todayOrders.map((order) => (
+              <OrderItem
+                key={order.id}
+                id={order.id}
+                storeName={order.storeName}
+                category={order.category}
+                date={order.date}
+                status={order.status}
+                items={order.items}
+                total={order.total}
+                onViewDetails={handleViewDetails}
+                isNew={order.isNew}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {yesterdayOrders.length > 0 && (
+        <div className="mb-8">
+          <h3 className="text-lg font-medium mb-4">Yesterday</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {yesterdayOrders.map((order) => (
+              <OrderItem
+                key={order.id}
+                id={order.id}
+                storeName={order.storeName}
+                category={order.category}
+                date={order.date}
+                status={order.status}
+                items={order.items}
+                total={order.total}
+                onViewDetails={handleViewDetails}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {earlierOrders.length > 0 && (
+        <div>
+          <h3 className="text-lg font-medium mb-4">Earlier</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {earlierOrders.map((order) => (
+              <OrderItem
+                key={order.id}
+                id={order.id}
+                storeName={order.storeName}
+                category={order.category}
+                date={order.date}
+                status={order.status}
+                items={order.items}
+                total={order.total}
+                onViewDetails={handleViewDetails}
+              />
+            ))}
+          </div>
+        </div>
+      )}
       
       <OrderDetailsDialog
         isOpen={isDialogOpen}
