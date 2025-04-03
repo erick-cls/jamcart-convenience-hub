@@ -8,11 +8,15 @@ import UserTypeTag from '@/components/admin/users/UserTypeTag';
 import { Badge } from '@/components/ui/badge';
 import { Bell, UserPlus } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { useAuth } from '@/context/AuthContext';
 
 // Generate a random user
 const generateRandomUser = (): User & { isNew: boolean; dateJoined: string } => {
   const userTypes = ['customer', 'customer', 'customer', 'rider', 'admin'] as const;
-  const userType = userTypes[Math.floor(Math.random() * 3)]; // Mostly customers
+  const userType = userTypes[Math.floor(Math.random() * userTypes.length)]; // All types, not just customers
   const now = new Date();
   
   return {
@@ -93,6 +97,7 @@ const mockUsers = [
 
 const UsersPage = () => {
   const { toast } = useToast();
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<(User & { isNew?: boolean; dateJoined: string })[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -101,9 +106,74 @@ const UsersPage = () => {
   
   // Add new user on component mount for demo purposes
   useEffect(() => {
+    // Get any registered users from localStorage
+    const allRegisteredUsers: (User & { isNew?: boolean; dateJoined: string })[] = [];
+    
+    // Check for user data in localStorage (simulating database access)
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('jamcart-user-')) {
+        try {
+          const userData = JSON.parse(localStorage.getItem(key) || '{}');
+          // Convert to the format expected by this component
+          const userForDisplay: User & { isNew?: boolean; dateJoined: string } = {
+            id: userData.id || `reg-${Date.now()}`,
+            name: userData.name || 'Unknown User',
+            email: userData.email || 'unknown@example.com',
+            status: 'active',
+            orders: 0,
+            userType: userData.userType || (userData.isRider ? 'rider' : (userData.isAdmin ? 'admin' : 'customer')),
+            dateJoined: userData.dateJoined || new Date().toISOString(),
+            isNew: true
+          };
+          allRegisteredUsers.push(userForDisplay);
+        } catch (error) {
+          console.error('Error parsing user data', error);
+        }
+      }
+    }
+    
+    // Also check the main user object
+    const mainUserData = localStorage.getItem('jamcart-user');
+    if (mainUserData) {
+      try {
+        const userData = JSON.parse(mainUserData);
+        // Only add if not already in the list
+        if (!allRegisteredUsers.some(u => u.email === userData.email)) {
+          const userForDisplay: User & { isNew?: boolean; dateJoined: string } = {
+            id: userData.id || `main-${Date.now()}`,
+            name: userData.name || 'Current User',
+            email: userData.email || 'current@example.com',
+            status: 'active',
+            orders: 0,
+            userType: userData.userType || (userData.isRider ? 'rider' : (userData.isAdmin ? 'admin' : 'customer')),
+            dateJoined: userData.dateJoined || new Date().toISOString(),
+            isNew: true
+          };
+          allRegisteredUsers.push(userForDisplay);
+        }
+      } catch (error) {
+        console.error('Error parsing main user data', error);
+      }
+    }
+
     // Add a random new user
     const newUser = generateRandomUser();
-    setUsers([newUser, ...mockUsers]);
+    
+    // Combine registered users with mock users, ensuring no duplicates
+    const combinedUsers = [...allRegisteredUsers];
+    
+    // Add mock users if they don't exist in registered users
+    mockUsers.forEach(mockUser => {
+      if (!combinedUsers.some(u => u.email === mockUser.email)) {
+        combinedUsers.push(mockUser);
+      }
+    });
+    
+    // Add the new random user
+    combinedUsers.unshift(newUser);
+    
+    setUsers(combinedUsers);
     
     // Reset John Doe's password
     setTimeout(() => {
@@ -143,7 +213,13 @@ const UsersPage = () => {
     // In a real app, this would call an API to update the password
     console.log(`Password for user ${userId} reset to: ${newPassword}`);
     
-    // Show success toast for John Doe's password reset
+    // Store the new password in localStorage for demo purposes
+    const userEmail = users.find(u => u.id === userId)?.email;
+    if (userEmail) {
+      localStorage.setItem(`jamcart-password-${userEmail}`, newPassword);
+    }
+    
+    // Show success toast for password reset
     const user = users.find(u => u.id === userId);
     if (user) {
       toast({
@@ -166,6 +242,16 @@ const UsersPage = () => {
   const handleAddTestUser = () => {
     const newUser = generateRandomUser();
     setUsers(prevUsers => [newUser, ...prevUsers]);
+    
+    // Also store in localStorage for persistence
+    const key = `jamcart-user-${newUser.id}`;
+    localStorage.setItem(key, JSON.stringify({
+      ...newUser,
+      isVerified: true,
+      isAdmin: newUser.userType === 'admin',
+      isRider: newUser.userType === 'rider',
+      dateJoined: new Date().toISOString()
+    }));
     
     toast({
       title: "New User Added",

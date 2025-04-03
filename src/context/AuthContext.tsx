@@ -12,6 +12,7 @@ interface User {
   isAdmin: boolean;
   isRider: boolean;
   userType: 'customer' | 'rider' | 'admin';
+  dateJoined?: string;
 }
 
 interface AuthContextType {
@@ -48,9 +49,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // This is just a mock login for demo purposes
       // In a real app, this would be an API call to authenticate
       
+      // Check if we have a stored password for this user
+      const storedPassword = localStorage.getItem(`jamcart-password-${email}`);
+      
       // Special case for ericksonvilleta@gmail.com
       if (email === 'ericksonvilleta@gmail.com') {
-        if (password === 'P@ssw0rdnimda') {
+        if (password === 'P@ssw0rdnimda' || (storedPassword && password === storedPassword)) {
           const adminUser: User = {
             id: 'admin-123',
             name: 'Erickson Villeta',
@@ -61,7 +65,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isVerified: true,
             isAdmin: true,
             isRider: false,
-            userType: 'admin'
+            userType: 'admin',
+            dateJoined: new Date().toISOString()
           };
           
           setUser(adminUser);
@@ -75,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Special case for rider account
       if (email === 'rider@jamcart.com') {
-        if (password === 'rider123') {
+        if (password === 'rider123' || (storedPassword && password === storedPassword)) {
           const riderUser: User = {
             id: 'rider-123',
             name: 'John Rider',
@@ -86,7 +91,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             isVerified: true,
             isAdmin: false,
             isRider: true,
-            userType: 'rider'
+            userType: 'rider',
+            dateJoined: new Date().toISOString()
           };
           
           setUser(riderUser);
@@ -95,6 +101,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         } else {
           throw new Error('Invalid password');
+        }
+      }
+      
+      // Look for registered users in localStorage
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('jamcart-user-')) {
+          try {
+            const userData = JSON.parse(localStorage.getItem(key) || '{}');
+            if (userData.email === email) {
+              // Check password if there's a stored password
+              const userPassword = localStorage.getItem(`jamcart-password-${email}`);
+              if (userPassword && password !== userPassword) {
+                throw new Error('Invalid password');
+              }
+              
+              setUser(userData);
+              localStorage.setItem('jamcart-user', JSON.stringify(userData));
+              setLoading(false);
+              return;
+            }
+          } catch (error) {
+            console.error('Error checking registered user', error);
+          }
         }
       }
       
@@ -110,7 +140,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         // Make ericksonvilleta@gmail.com admin by default, also keep admin if email contains "admin"
         isAdmin: email === 'ericksonvilleta@gmail.com' || email.includes('admin'),
         isRider: email.includes('rider'),
-        userType: email.includes('admin') ? 'admin' : (email.includes('rider') ? 'rider' : 'customer')
+        userType: email.includes('admin') ? 'admin' : (email.includes('rider') ? 'rider' : 'customer'),
+        dateJoined: new Date().toISOString()
       };
       
       setUser(mockUser);
@@ -141,9 +172,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // For demo purposes, create user but mark as not verified
       const isAdmin = userData.userType === 'admin' || userData.email === 'ericksonvilleta@gmail.com';
       const isRider = userData.userType === 'rider' || userData.email.includes('rider');
+      const userId = 'user-' + Math.random().toString(36).substr(2, 9);
       
       const mockUser: User = {
-        id: 'user-' + Math.random().toString(36).substr(2, 9),
+        id: userId,
         name: userData.name,
         email: userData.email,
         phone: userData.phone,
@@ -152,8 +184,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isVerified: false,
         isAdmin: isAdmin,
         isRider: isRider,
-        userType: userData.userType as 'customer' | 'rider' | 'admin'
+        userType: userData.userType as 'customer' | 'rider' | 'admin',
+        dateJoined: new Date().toISOString()
       };
+      
+      // Store the user in localStorage for persistence
+      localStorage.setItem(`jamcart-user-${userId}`, JSON.stringify(mockUser));
+      // Store the password
+      localStorage.setItem(`jamcart-password-${userData.email}`, userData.password);
       
       setUser(mockUser);
       localStorage.setItem('jamcart-user', JSON.stringify(mockUser));
