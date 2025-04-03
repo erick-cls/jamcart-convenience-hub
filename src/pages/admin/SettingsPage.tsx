@@ -34,12 +34,14 @@ const SettingsPage = () => {
   const handleMaintenanceModeToggle = (checked: boolean) => {
     setMaintenanceMode(checked);
     
-    toast({
-      title: checked ? "Maintenance Mode Activated" : "Maintenance Mode Deactivated",
-      description: checked 
-        ? "The site is now in maintenance mode. Only admins can access it." 
-        : "The site is now accessible to all users.",
-    });
+    toast(
+      checked ? "Maintenance Mode Activated" : "Maintenance Mode Deactivated",
+      {
+        description: checked 
+          ? "The site is now in maintenance mode. Only admins can access it." 
+          : "The site is now accessible to all users.",
+      }
+    );
   };
   
   return (

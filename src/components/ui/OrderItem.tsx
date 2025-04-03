@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import { Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import ActionButton from './ActionButton';
+import { ReactNode } from 'react';
 
 export type OrderStatus = 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
 
@@ -14,6 +15,9 @@ interface OrderItemProps {
   items: string[];
   total?: number;
   onViewDetails: (id: string) => void;
+  isNew?: boolean;
+  metadata?: { label: string; value: string }[];
+  actionButton?: ReactNode;
 }
 
 const OrderItem = ({ 
@@ -24,7 +28,10 @@ const OrderItem = ({
   status, 
   items, 
   total, 
-  onViewDetails 
+  onViewDetails,
+  isNew,
+  metadata,
+  actionButton
 }: OrderItemProps) => {
   
   const statusConfig = {
@@ -94,6 +101,17 @@ const OrderItem = ({
           </div>
         </div>
         
+        {metadata && metadata.length > 0 && (
+          <div className="mb-4">
+            {metadata.map((item, index) => (
+              <div key={index} className="flex items-center text-sm text-gray-600 mb-1">
+                <span className="font-medium">{item.label}:</span>
+                <span className="ml-2">{item.value}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        
         <div className="mb-4">
           <h4 className="text-sm font-medium text-gray-700 mb-2">Items:</h4>
           <ul className="text-sm text-gray-600 space-y-1">
@@ -116,14 +134,18 @@ const OrderItem = ({
           </div>
         )}
         
-        <ActionButton 
-          variant="outline" 
-          size="sm" 
-          className="w-full mt-2"
-          onClick={() => onViewDetails(id)}
-        >
-          View Details
-        </ActionButton>
+        {actionButton ? (
+          <div className="mt-2">{actionButton}</div>
+        ) : (
+          <ActionButton 
+            variant="outline" 
+            size="sm" 
+            className="w-full mt-2"
+            onClick={() => onViewDetails(id)}
+          >
+            View Details
+          </ActionButton>
+        )}
       </div>
     </motion.div>
   );
