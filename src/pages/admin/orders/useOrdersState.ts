@@ -168,6 +168,17 @@ export interface Rider {
   isAvailable: boolean;
 }
 
+// Get orders from localStorage or return an empty array
+const getStoredOrders = (): Order[] => {
+  const storedOrders = localStorage.getItem('jamcart_orders');
+  return storedOrders ? JSON.parse(storedOrders) : [];
+};
+
+// Save orders to localStorage
+const saveOrdersToStorage = (orders: Order[]) => {
+  localStorage.setItem('jamcart_orders', JSON.stringify(orders));
+};
+
 export function useOrdersState() {
   const [searchParams] = useSearchParams();
   const initialFilter = searchParams.get('filter') || 'all';
@@ -178,10 +189,13 @@ export function useOrdersState() {
   const [loading, setLoading] = useState(false);
   const [riders, setRiders] = useState<Rider[]>(mockRiders);
   
-  // Initialize with mock data and mark new orders
+  // Initialize with mockOrders and any stored orders
   useEffect(() => {
     // Simulate loading
     setLoading(true);
+    
+    // Get orders from localStorage
+    const storedOrders = getStoredOrders();
     
     // Add a new order with current date/time when the component mounts
     const now = new Date();
@@ -200,7 +214,23 @@ export function useOrdersState() {
       isNew: true
     };
     
-    setOrders([newOrder, ...mockOrders]);
+    // Combine stored orders with mock orders, ensuring no duplicates by ID
+    const allOrderIds = new Set([...storedOrders.map(order => order.id), ...mockOrders.map(order => order.id)]);
+    const combinedOrders = [...storedOrders];
+    
+    // Add any mock orders that aren't already in stored orders
+    mockOrders.forEach(mockOrder => {
+      if (!storedOrders.some(order => order.id === mockOrder.id)) {
+        combinedOrders.push(mockOrder);
+      }
+    });
+    
+    // Add the new test order
+    combinedOrders.unshift(newOrder);
+    
+    // Set orders and save to localStorage
+    setOrders(combinedOrders);
+    saveOrdersToStorage(combinedOrders);
     
     setTimeout(() => {
       setLoading(false);
@@ -213,6 +243,7 @@ export function useOrdersState() {
       order.id === orderId ? { ...order, status: newStatus } : order
     );
     setOrders(updatedOrders);
+    saveOrdersToStorage(updatedOrders);
   };
   
   // Filter orders by user ID
@@ -235,6 +266,7 @@ export function useOrdersState() {
           : order
       );
       setOrders(updatedOrders);
+      saveOrdersToStorage(updatedOrders);
     }
   };
 
@@ -261,7 +293,9 @@ export function useOrdersState() {
       isNew: true
     };
     
-    setOrders(prevOrders => [newOrder, ...prevOrders]);
+    const updatedOrders = [newOrder, ...orders];
+    setOrders(updatedOrders);
+    saveOrdersToStorage(updatedOrders);
     return newOrder;
   };
   
