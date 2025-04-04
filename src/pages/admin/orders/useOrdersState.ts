@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { OrderStatus } from '@/components/ui/OrderItem';
 
@@ -140,13 +139,6 @@ const mockOrders = [
   }
 ];
 
-// Mock riders data
-const mockRiders = [
-  { id: 'rider-123', name: 'John Rider', isAvailable: true },
-  { id: 'rider-456', name: 'Jane Rider', isAvailable: true },
-  { id: 'rider-789', name: 'Bob Rider', isAvailable: false }
-];
-
 export interface Order {
   id: string;
   storeName: string;
@@ -187,7 +179,11 @@ export function useOrdersState() {
   const [activeFilter, setActiveFilter] = useState(initialFilter);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
-  const [riders, setRiders] = useState<Rider[]>(mockRiders);
+  const [riders, setRiders] = useState<Rider[]>([
+    { id: 'rider-123', name: 'John Rider', isAvailable: true },
+    { id: 'rider-456', name: 'Jane Rider', isAvailable: true },
+    { id: 'rider-789', name: 'Bob Rider', isAvailable: false }
+  ]);
   
   // Initialize with mockOrders and any stored orders
   useEffect(() => {
@@ -197,36 +193,16 @@ export function useOrdersState() {
     // Get orders from localStorage
     const storedOrders = getStoredOrders();
     
-    // Add a new order with current date/time when the component mounts
-    const now = new Date();
-    const newOrder: Order = {
-      id: `order-${now.getTime()}`,
-      storeName: 'New Test Order',
-      category: 'Test Category',
-      date: now.toISOString(),
-      status: 'pending',
-      items: ['Test Item 1', 'Test Item 2'],
-      total: 25.99,
-      userId: 'user-123',
-      userName: 'John Doe',
-      riderId: null,
-      riderName: null,
-      isNew: true
-    };
-    
-    // Combine stored orders with mock orders, ensuring no duplicates by ID
-    const allOrderIds = new Set([...storedOrders.map(order => order.id), ...mockOrders.map(order => order.id)]);
-    const combinedOrders = [...storedOrders];
+    // Create a map of existing order IDs for quick lookup
+    const existingOrderIds = new Set(storedOrders.map(order => order.id));
     
     // Add any mock orders that aren't already in stored orders
+    const combinedOrders = [...storedOrders];
     mockOrders.forEach(mockOrder => {
-      if (!storedOrders.some(order => order.id === mockOrder.id)) {
+      if (!existingOrderIds.has(mockOrder.id)) {
         combinedOrders.push(mockOrder);
       }
     });
-    
-    // Add the new test order
-    combinedOrders.unshift(newOrder);
     
     // Set orders and save to localStorage
     setOrders(combinedOrders);
@@ -238,45 +214,55 @@ export function useOrdersState() {
   }, []);
   
   // Add function to update order status
-  const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
-    const updatedOrders = orders.map(order => 
-      order.id === orderId ? { ...order, status: newStatus } : order
-    );
-    setOrders(updatedOrders);
-    saveOrdersToStorage(updatedOrders);
-  };
+  const updateOrderStatus = useCallback((orderId: string, newStatus: OrderStatus) => {
+    setOrders(prevOrders => {
+      const updatedOrders = prevOrders.map(order => 
+        order.id === orderId ? { ...order, status: newStatus } : order
+      );
+      
+      // Save to localStorage
+      saveOrdersToStorage(updatedOrders);
+      
+      return updatedOrders;
+    });
+  }, []);
   
   // Filter orders by user ID
-  const getUserOrders = (userId: string) => {
+  const getUserOrders = useCallback((userId: string) => {
     return orders.filter(order => order.userId === userId);
-  };
+  }, [orders]);
   
   // Assign a rider to an order
-  const assignRider = (orderId: string, riderId: string) => {
+  const assignRider = useCallback((orderId: string, riderId: string) => {
     const rider = riders.find(r => r.id === riderId);
     
     if (rider) {
-      const updatedOrders = orders.map(order => 
-        order.id === orderId 
-          ? { 
-              ...order, 
-              riderId: rider.id, 
-              riderName: rider.name 
-            } 
-          : order
-      );
-      setOrders(updatedOrders);
-      saveOrdersToStorage(updatedOrders);
+      setOrders(prevOrders => {
+        const updatedOrders = prevOrders.map(order => 
+          order.id === orderId 
+            ? { 
+                ...order, 
+                riderId: rider.id, 
+                riderName: rider.name 
+              } 
+            : order
+        );
+        
+        // Save to localStorage
+        saveOrdersToStorage(updatedOrders);
+        
+        return updatedOrders;
+      });
     }
-  };
+  }, [riders]);
 
   // Get available riders
-  const getAvailableRiders = () => {
+  const getAvailableRiders = useCallback(() => {
     return riders.filter(rider => rider.isAvailable);
-  };
+  }, [riders]);
   
   // Create a new test order with current date/time
-  const createTestOrder = (userId: string, userName: string) => {
+  const createTestOrder = useCallback((userId: string, userName: string) => {
     const now = new Date();
     const newOrder: Order = {
       id: `order-${now.getTime()}`,
@@ -293,12 +279,19 @@ export function useOrdersState() {
       isNew: true
     };
     
-    const updatedOrders = [newOrder, ...orders];
-    setOrders(updatedOrders);
-    saveOrdersToStorage(updatedOrders);
+    setOrders(prevOrders => {
+      const updatedOrders = [newOrder, ...prevOrders];
+      
+      // Save to localStorage
+      saveOrdersToStorage(updatedOrders);
+      
+      return updatedOrders;
+    });
+    
     return newOrder;
-  };
+  }, []);
   
+  // Filter orders based on activeFilter and searchTerm
   useEffect(() => {
     let result = orders;
     

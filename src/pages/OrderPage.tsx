@@ -7,6 +7,7 @@ import Footer from '@/components/layout/Footer';
 import ActionButton from '@/components/ui/ActionButton';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
+import { useOrdersState } from '@/pages/admin/orders/useOrdersState';
 
 const categories = {
   'mini-mart': {
@@ -124,6 +125,7 @@ const OrderPage = () => {
   const { categoryId, storeId } = useParams<{ categoryId: string; storeId: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { createTestOrder } = useOrdersState();
   const [store, setStore] = useState<any>(null);
   const [category, setCategory] = useState<any>(null);
   const [orderText, setOrderText] = useState(
@@ -170,18 +172,46 @@ const OrderPage = () => {
     setIsReviewOpen(true);
   };
   
+  const parseOrderItems = (text: string): string[] => {
+    const lines = text.split('\n').filter(line => line.trim().length > 0);
+    return lines.map(line => line.replace(/^[•\-\*]\s+/, '').trim());
+  };
+  
   const handleConfirmOrder = () => {
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to submit an order.",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+    
+    try {
+      const orderItems = parseOrderItems(orderText);
+      const newOrder = createTestOrder(user.id, user.name || 'Anonymous');
+      newOrder.items = orderItems;
+      newOrder.storeName = store.name;
+      newOrder.category = category.name;
+      
       toast({
         title: "Order submitted successfully!",
         description: "Your order has been sent to the admin for approval.",
       });
-      navigate('/orders');
+      
+      navigate(`/thankyou/${newOrder.id}`);
+    } catch (error) {
+      toast({
+        title: "Error submitting order",
+        description: "There was a problem submitting your order. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
   
   const handleCancelReview = () => {
