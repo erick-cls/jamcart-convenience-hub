@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,7 +8,6 @@ import ActionButton from '@/components/ui/ActionButton';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
 
-// Mock categories data (same as in CategoryPage)
 const categories = {
   'mini-mart': {
     name: 'Mini Mart',
@@ -63,7 +61,6 @@ const categories = {
   }
 };
 
-// Mock stores data
 const mockStores: { [key: string]: any } = {
   'store-1': {
     id: 'store-1',
@@ -107,7 +104,6 @@ const mockStores: { [key: string]: any } = {
   }
 };
 
-// Add default stores for all categories
 Object.keys(categories).forEach(categoryId => {
   const storeId = `store-${categoryId}-1`;
   if (!mockStores[storeId]) {
@@ -130,7 +126,9 @@ const OrderPage = () => {
   const { user } = useAuth();
   const [store, setStore] = useState<any>(null);
   const [category, setCategory] = useState<any>(null);
-  const [orderText, setOrderText] = useState('');
+  const [orderText, setOrderText] = useState(
+    "• Be specific with brands and quantities\n• Mention alternatives if possible\n• Add any special instructions"
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -203,16 +201,15 @@ const OrderPage = () => {
               <ChevronLeft className="h-5 w-5" />
             </button>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold">{store.name}</h1>
+              <h1 className="text-2xl md:text-3xl font-bold">{store?.name}</h1>
               <p className="text-gray-600 flex items-center">
-                <span className="mr-2">{category.icon}</span>
-                {category.name}
+                <span className="mr-2">{category?.icon}</span>
+                {category?.name}
               </p>
             </div>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Store details */}
             <div className="order-2 lg:order-1 lg:col-span-1">
               <div className="sticky top-24">
                 <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 mb-6">
@@ -274,7 +271,6 @@ const OrderPage = () => {
               </div>
             </div>
             
-            {/* Order notepad */}
             <div className="order-1 lg:order-2 lg:col-span-2">
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-4 border-b border-gray-100 flex justify-between items-center">
@@ -285,7 +281,7 @@ const OrderPage = () => {
                   
                   <button
                     className="text-gray-500 hover:text-gray-700 p-1"
-                    onClick={() => setOrderText('')}
+                    onClick={() => setOrderText("• Be specific with brands and quantities\n• Mention alternatives if possible\n• Add any special instructions")}
                     disabled={!orderText}
                   >
                     <X className="h-5 w-5" />
@@ -325,7 +321,6 @@ const OrderPage = () => {
         </div>
       </div>
       
-      {/* Order review modal */}
       <AnimatePresence>
         {isReviewOpen && (
           <motion.div
