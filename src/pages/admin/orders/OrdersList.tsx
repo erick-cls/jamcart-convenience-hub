@@ -1,27 +1,10 @@
-
 import { useState } from 'react';
 import OrderItem, { OrderStatus } from '@/components/ui/OrderItem';
 import { useNavigate } from 'react-router-dom';
 import OrderDetailsDialog from '@/components/admin/orders/OrderDetailsDialog';
-import { Rider } from './useOrdersState';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useOrdersState } from './useOrdersState';
-
-interface Order {
-  id: string;
-  storeName: string;
-  category: string;
-  date: string;
-  status: OrderStatus;
-  items: string[];
-  total: number;
-  userId?: string;
-  userName?: string;
-  riderId?: string | null;
-  riderName?: string | null;
-  isNew?: boolean;
-}
+import { useOrdersState, Order, Rider } from './useOrdersState';
 
 interface OrdersListProps {
   orders: Order[];
@@ -45,7 +28,6 @@ const OrdersList = ({
   const [isAssignRiderDialogOpen, setIsAssignRiderDialogOpen] = useState(false);
   
   const handleViewDetails = (id: string) => {
-    // Find the order by id
     const order = orders.find(order => order.id === id);
     
     if (order) {
@@ -53,7 +35,6 @@ const OrdersList = ({
       setIsDialogOpen(true);
     }
     
-    // Still call the original onViewDetails if provided
     if (onViewDetails) {
       onViewDetails(id);
     }
@@ -83,7 +64,6 @@ const OrdersList = ({
     }
   };
   
-  // Group orders by status
   const pendingOrders = orders.filter(order => order.status === 'pending');
   const acceptedOrders = orders.filter(order => order.status === 'accepted');
   const completedOrders = orders.filter(order => 

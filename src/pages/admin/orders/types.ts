@@ -1,0 +1,31 @@
+// Define common types used across the orders system
+
+export type OrderStatus = 'pending' | 'accepted' | 'completed' | 'declined' | 'cancelled';
+
+export interface Order {
+  id: string;
+  storeName: string;
+  category: string;
+  date: string;
+  status: OrderStatus;
+  items: string[];
+  total: number;
+  userId?: string;
+  userName?: string;
+  riderId?: string | null;
+  riderName?: string | null;
+  isNew?: boolean;
+}
+
+export interface Rider {
+  id: string;
+  name: string;
+  isAvailable: boolean;
+}
+
+// Mock users data for reference (keeping for consistent functionality)
+export const mockUsers = [
+  { id: 'user-123', name: 'John Doe', email: 'john.doe@example.com' },
+  { id: 'admin-123', name: 'Admin User', email: 'admin@example.com' },
+  { id: 'rider-123', name: 'John Rider', email: 'rider@jamcart.com' }
+];
