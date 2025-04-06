@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -172,9 +173,16 @@ const OrderPage = () => {
     setIsReviewOpen(true);
   };
   
+  // Improved parseOrderItems function to correctly handle bullet points
   const parseOrderItems = (text: string): string[] => {
+    // Split by newlines and filter out empty lines
     const lines = text.split('\n').filter(line => line.trim().length > 0);
-    return lines.map(line => line.replace(/^[•\-\*]\s+/, '').trim());
+    
+    // Process each line to remove bullet points or other markers
+    return lines.map(line => {
+      // Remove bullet points, dashes, or asterisks at the beginning of the line
+      return line.replace(/^[•\-\*]\s*/, '').trim();
+    });
   };
   
   const handleConfirmOrder = () => {
@@ -192,8 +200,10 @@ const OrderPage = () => {
     
     try {
       const orderItems = parseOrderItems(orderText);
-      const newOrder = createTestOrder(user.id, user.name || 'Anonymous');
-      newOrder.items = orderItems;
+      // Pass the parsed order items directly to createTestOrder
+      const newOrder = createTestOrder(user.id, user.name || 'Anonymous', orderItems);
+      
+      // Update order store and category info
       newOrder.storeName = store.name;
       newOrder.category = category.name;
       

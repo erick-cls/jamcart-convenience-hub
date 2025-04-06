@@ -17,8 +17,10 @@ const OrdersHistoryPage = () => {
     if (!user) {
       navigate('/auth?mode=login');
     } else {
-      // Get orders for the current user
-      setUserOrders(getUserOrders(user.id));
+      // Get orders for the current user and set state
+      const orders = getUserOrders(user.id);
+      setUserOrders(orders);
+      console.log("User orders fetched:", orders);
     }
   }, [user, navigate, getUserOrders]);
 

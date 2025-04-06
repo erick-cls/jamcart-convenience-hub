@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { OrderStatus } from '@/components/ui/OrderItem';
@@ -162,13 +163,22 @@ export interface Rider {
 
 // Get orders from localStorage or return an empty array
 const getStoredOrders = (): Order[] => {
-  const storedOrders = localStorage.getItem('jamcart_orders');
-  return storedOrders ? JSON.parse(storedOrders) : [];
+  try {
+    const storedOrders = localStorage.getItem('jamcart_orders');
+    return storedOrders ? JSON.parse(storedOrders) : [];
+  } catch (error) {
+    console.error("Error retrieving orders from localStorage:", error);
+    return [];
+  }
 };
 
 // Save orders to localStorage
 const saveOrdersToStorage = (orders: Order[]) => {
-  localStorage.setItem('jamcart_orders', JSON.stringify(orders));
+  try {
+    localStorage.setItem('jamcart_orders', JSON.stringify(orders));
+  } catch (error) {
+    console.error("Error saving orders to localStorage:", error);
+  }
 };
 
 export function useOrdersState() {
@@ -227,8 +237,10 @@ export function useOrdersState() {
     });
   }, []);
   
-  // Filter orders by user ID
+  // Filter orders by user ID - fixed to properly get all orders for a user
   const getUserOrders = useCallback((userId: string) => {
+    if (!userId) return [];
+    // Return all orders that match the userId
     return orders.filter(order => order.userId === userId);
   }, [orders]);
   
@@ -261,8 +273,8 @@ export function useOrdersState() {
     return riders.filter(rider => rider.isAvailable);
   }, [riders]);
   
-  // Create a new test order with current date/time
-  const createTestOrder = useCallback((userId: string, userName: string) => {
+  // Create a new test order with current date/time - fixed to properly handle items
+  const createTestOrder = useCallback((userId: string, userName: string, items: string[] = []) => {
     const now = new Date();
     const newOrder: Order = {
       id: `order-${now.getTime()}`,
@@ -270,7 +282,7 @@ export function useOrdersState() {
       category: 'Test Category',
       date: now.toISOString(),
       status: 'pending',
-      items: ['Test Item 1', 'Test Item 2'],
+      items: items.length > 0 ? items : ['Test Item 1', 'Test Item 2'],
       total: Math.floor(Math.random() * 100) + 10,
       userId,
       userName,
