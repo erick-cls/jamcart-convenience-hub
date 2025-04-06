@@ -87,6 +87,12 @@ const App = () => (
                   <ThankYouPage />
                 </MaintenanceGuard>
               } />
+              {/* Add the new route for /thankyou/:orderId */}
+              <Route path="/thankyou/:orderId?" element={
+                <MaintenanceGuard>
+                  <ThankYouPage />
+                </MaintenanceGuard>
+              } />
               <Route path="/how-it-works" element={
                 <MaintenanceGuard>
                   <HowItWorks />
