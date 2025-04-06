@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -182,7 +181,9 @@ const OrderPage = () => {
     return lines.map(line => {
       // Remove bullet points, dashes, or asterisks at the beginning of the line
       return line.replace(/^[•\-\*]\s*/, '').trim();
-    });
+    }).filter(item => item !== 'Be specific with brands and quantities' && 
+                       item !== 'Mention alternatives if possible' && 
+                       item !== 'Add any special instructions');
   };
   
   const handleConfirmOrder = () => {

@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { OrderStatus } from '@/components/ui/OrderItem';
@@ -165,7 +164,9 @@ export interface Rider {
 const getStoredOrders = (): Order[] => {
   try {
     const storedOrders = localStorage.getItem('jamcart_orders');
-    return storedOrders ? JSON.parse(storedOrders) : [];
+    const parsedOrders = storedOrders ? JSON.parse(storedOrders) : [];
+    console.log("Retrieved orders from localStorage:", parsedOrders);
+    return parsedOrders;
   } catch (error) {
     console.error("Error retrieving orders from localStorage:", error);
     return [];
@@ -176,6 +177,8 @@ const getStoredOrders = (): Order[] => {
 const saveOrdersToStorage = (orders: Order[]) => {
   try {
     localStorage.setItem('jamcart_orders', JSON.stringify(orders));
+    window.dispatchEvent(new Event('storage'));
+    console.log("Saved orders to localStorage:", orders);
   } catch (error) {
     console.error("Error saving orders to localStorage:", error);
   }
@@ -239,10 +242,19 @@ export function useOrdersState() {
   
   // Filter orders by user ID - fixed to properly get all orders for a user
   const getUserOrders = useCallback((userId: string) => {
-    if (!userId) return [];
+    if (!userId) {
+      console.warn("getUserOrders called with no userId");
+      return [];
+    }
+    
+    // Get fresh orders from localStorage
+    const allOrders = getStoredOrders();
+    
     // Return all orders that match the userId
-    return orders.filter(order => order.userId === userId);
-  }, [orders]);
+    const userOrders = allOrders.filter(order => order.userId === userId);
+    console.log(`Found ${userOrders.length} orders for user ${userId}:`, userOrders);
+    return userOrders;
+  }, []);
   
   // Assign a rider to an order
   const assignRider = useCallback((orderId: string, riderId: string) => {
@@ -300,6 +312,7 @@ export function useOrdersState() {
       return updatedOrders;
     });
     
+    console.log("Created new order:", newOrder);
     return newOrder;
   }, []);
   

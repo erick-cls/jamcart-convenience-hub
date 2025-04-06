@@ -16,12 +16,30 @@ const OrdersHistoryPage = () => {
   useEffect(() => {
     if (!user) {
       navigate('/auth?mode=login');
-    } else {
-      // Get orders for the current user and set state
+      return;
+    }
+    
+    // Get orders for the current user and set state
+    const fetchUserOrders = () => {
       const orders = getUserOrders(user.id);
       setUserOrders(orders);
-      console.log("User orders fetched:", orders);
-    }
+      console.log("User orders fetched:", orders, "for user:", user.id);
+    };
+    
+    fetchUserOrders();
+    
+    // Add an event listener for storage changes to refresh orders when updated
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'jamcart_orders') {
+        fetchUserOrders();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, [user, navigate, getUserOrders]);
 
   if (!user) {
