@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -172,18 +173,23 @@ const OrderPage = () => {
     setIsReviewOpen(true);
   };
   
-  // Improved parseOrderItems function to correctly handle bullet points
+  // Improved parseOrderItems function to correctly handle user input
   const parseOrderItems = (text: string): string[] => {
     // Split by newlines and filter out empty lines
     const lines = text.split('\n').filter(line => line.trim().length > 0);
     
     // Process each line to remove bullet points or other markers
-    return lines.map(line => {
+    const parsedItems = lines.map(line => {
       // Remove bullet points, dashes, or asterisks at the beginning of the line
       return line.replace(/^[•\-\*]\s*/, '').trim();
-    }).filter(item => item !== 'Be specific with brands and quantities' && 
-                       item !== 'Mention alternatives if possible' && 
-                       item !== 'Add any special instructions');
+    });
+    
+    // Filter out the placeholder instructions
+    return parsedItems.filter(item => 
+      item !== 'Be specific with brands and quantities' && 
+      item !== 'Mention alternatives if possible' && 
+      item !== 'Add any special instructions'
+    );
   };
   
   const handleConfirmOrder = () => {
@@ -201,6 +207,13 @@ const OrderPage = () => {
     
     try {
       const orderItems = parseOrderItems(orderText);
+      
+      // Check if there are any items after filtering
+      if (orderItems.length === 0) {
+        // If no valid items found, add a default item
+        orderItems.push("Unspecified item");
+      }
+      
       // Pass the parsed order items directly to createTestOrder
       const newOrder = createTestOrder(user.id, user.name || 'Anonymous', orderItems);
       

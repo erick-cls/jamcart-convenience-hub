@@ -31,6 +31,31 @@ const ThankYouPage = () => {
   useEffect(() => {
     // In a real app, fetch order details from API
     console.log("Order confirmed:", orderId);
+    
+    // For now, let's retrieve order details from local storage if available
+    if (orderId) {
+      try {
+        const storedOrders = localStorage.getItem('jamcart_orders');
+        if (storedOrders) {
+          const orders = JSON.parse(storedOrders);
+          const currentOrder = orders.find((order: any) => order.id === orderId);
+          
+          if (currentOrder) {
+            setOrderDetails({
+              ...orderDetails,
+              id: currentOrder.id,
+              date: new Date(currentOrder.date).toLocaleDateString(),
+              time: new Date(currentOrder.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              items: currentOrder.items || orderDetails.items,
+              total: currentOrder.total || orderDetails.total,
+            });
+            console.log("Found order details:", currentOrder);
+          }
+        }
+      } catch (error) {
+        console.error("Error retrieving order details:", error);
+      }
+    }
   }, [orderId]);
 
   return (
@@ -70,7 +95,7 @@ const ThankYouPage = () => {
             <div className="p-6 border-b border-gray-100">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <h2 className="text-xl font-semibold">Order #{orderDetails.id}</h2>
+                  <h2 className="text-xl font-semibold">Order #{orderDetails.id.slice(-6)}</h2>
                   <div className="flex items-center mt-2 text-gray-600">
                     <Calendar className="h-4 w-4 mr-2" />
                     <span>{orderDetails.date} at {orderDetails.time}</span>
@@ -141,7 +166,7 @@ const ThankYouPage = () => {
               Continue Shopping
             </Button>
             <Button 
-              onClick={() => navigate('/profile')}
+              onClick={() => navigate('/orders')}
               className="mx-2"
             >
               View Order History
