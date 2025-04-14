@@ -38,14 +38,17 @@ const RegisterForm = ({ onSwitchToLogin, onRegisterSuccess }: RegisterFormProps)
     },
   });
 
+  const userType = form.watch('userType');
+
   const handleSubmit = async (values: FormValues) => {
     try {
-      const formattedCard = {
+      // Only process card info for customers
+      const formattedCard = userType === 'customer' ? {
         cardNumber: values.cardNumber,
         cardName: values.cardName,
         expiryDate: values.expiryDate,
         cvv: values.cvv
-      };
+      } : undefined;
       
       await registerUser({
         name: values.name,
@@ -86,7 +89,8 @@ const RegisterForm = ({ onSwitchToLogin, onRegisterSuccess }: RegisterFormProps)
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <AccountInfoFields form={form} />
           
-          <PaymentInfoFields form={form} />
+          {/* Only show payment info for customers */}
+          {userType === 'customer' && <PaymentInfoFields form={form} />}
           
           {error && (
             <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
