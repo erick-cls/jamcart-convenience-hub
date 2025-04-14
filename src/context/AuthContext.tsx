@@ -1,6 +1,18 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+interface CardInfo {
+  cardNumber: string;
+  cardName: string;
+  expiryDate: string;
+  cvv: string;
+}
+
+interface UserAddress {
+  type: string; // 'home', 'office', or 'current'
+  address: string;
+}
+
 interface User {
   id: string;
   name: string;
@@ -13,14 +25,17 @@ interface User {
   isRider: boolean;
   userType: 'customer' | 'rider' | 'admin';
   dateJoined?: string;
+  cardInfo?: CardInfo;
+  addresses?: UserAddress[];
 }
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isRider' | 'userType'> & { password: string, userType: string }) => Promise<void>;
+  register: (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isRider' | 'userType'> & { password: string, userType: string, cardInfo?: CardInfo }) => Promise<void>;
   logout: () => void;
   verifyPhone: (code: string) => Promise<boolean>;
+  updateUserProfile: (userData: Partial<User>) => Promise<void>;
   loading: boolean;
   error: string | null;
 }
@@ -154,7 +169,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isRider' | 'userType'> & { password: string, userType: string }) => {
+  const register = async (userData: Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isRider' | 'userType'> & { password: string, userType: string, cardInfo?: CardInfo }) => {
     setLoading(true);
     setError(null);
     
@@ -174,6 +189,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const isRider = userData.userType === 'rider' || userData.email.includes('rider');
       const userId = 'user-' + Math.random().toString(36).substr(2, 9);
       
+      // Initialize addresses array with home address
+      const addresses = [{
+        type: 'home',
+        address: userData.address
+      }];
+
       const mockUser: User = {
         id: userId,
         name: userData.name,
@@ -185,7 +206,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isAdmin: isAdmin,
         isRider: isRider,
         userType: userData.userType as 'customer' | 'rider' | 'admin',
-        dateJoined: new Date().toISOString()
+        dateJoined: new Date().toISOString(),
+        cardInfo: userData.cardInfo,
+        addresses: addresses
       };
       
       // Store the user in localStorage for persistence
@@ -232,13 +255,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateUserProfile = async (userData: Partial<User>): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      if (!user) {
+        throw new Error('No user logged in');
+      }
+      
+      const updatedUser = { ...user, ...userData };
+      
+      // Update in localStorage
+      localStorage.setItem(`jamcart-user-${user.id}`, JSON.stringify(updatedUser));
+      localStorage.setItem('jamcart-user', JSON.stringify(updatedUser));
+      
+      setUser(updatedUser);
+    } catch (err) {
+      setError('Update failed. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('jamcart-user');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, verifyPhone, loading, error }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      register, 
+      logout, 
+      verifyPhone, 
+      updateUserProfile,
+      loading, 
+      error 
+    }}>
       {children}
     </AuthContext.Provider>
   );

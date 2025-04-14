@@ -1,42 +1,76 @@
 
 import { useState } from 'react';
-import { ChevronLeft, Eye, EyeOff } from 'lucide-react';
+import { ChevronLeft, Eye, EyeOff, CreditCard } from 'lucide-react';
 import ActionButton from '@/components/ui/ActionButton';
 import { useAuth } from '@/context/AuthContext';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
   onRegisterSuccess: () => void;
 }
 
+const registerSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+  phone: z.string().min(1, { message: "Phone number is required" }),
+  address: z.string().min(1, { message: "Address is required" }),
+  town: z.string().min(1, { message: "Town is required" }),
+  userType: z.enum(["customer", "rider"]),
+  cardNumber: z.string().regex(/^\d{16}$/, { message: "Card number must be 16 digits" }),
+  cardName: z.string().min(1, { message: "Name on card is required" }),
+  expiryDate: z.string().regex(/^(0[1-9]|1[0-2])\/\d{2}$/, { message: "Expiry date must be in MM/YY format" }),
+  cvv: z.string().regex(/^\d{3,4}$/, { message: "CVV must be 3 or 4 digits" }),
+});
+
 const RegisterForm = ({ onSwitchToLogin, onRegisterSuccess }: RegisterFormProps) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    phone: '',
-    address: '',
-    town: '',
-    userType: 'customer' // Default user type
-  });
   const [showPassword, setShowPassword] = useState(false);
-  const { register, loading, error } = useAuth();
+  const { register: registerUser, loading, error } = useAuth();
+  
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      phone: '',
+      address: '',
+      town: '',
+      userType: 'customer',
+      cardNumber: '',
+      cardName: '',
+      expiryDate: '',
+      cvv: '',
+    },
+  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleUserTypeChange = (value: string) => {
-    setFormData(prev => ({ ...prev, userType: value }));
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (values: z.infer<typeof registerSchema>) => {
     try {
-      await register(formData);
+      const formattedCard = {
+        cardNumber: values.cardNumber,
+        cardName: values.cardName,
+        expiryDate: values.expiryDate,
+        cvv: values.cvv
+      };
+      
+      await registerUser({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        phone: values.phone,
+        address: values.address,
+        town: values.town,
+        userType: values.userType,
+        cardInfo: formattedCard
+      });
+      
       onRegisterSuccess();
     } catch (err) {
       console.error(err);
@@ -61,165 +95,224 @@ const RegisterForm = ({ onSwitchToLogin, onRegisterSuccess }: RegisterFormProps)
         </div>
       </div>
       
-      <form onSubmit={handleRegister} className="space-y-4">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            Full Name
-          </label>
-          <input
-            type="text"
-            id="name"
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
             name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jamcart-red focus:border-jamcart-red"
-            placeholder="John Doe"
-            required
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="John Doe" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
+          
+          <FormField
+            control={form.control}
             name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jamcart-red focus:border-jamcart-red"
-            placeholder="your.email@example.com"
-            required
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="your.email@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-        
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-            Password
-          </label>
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jamcart-red focus:border-jamcart-red pr-10"
-              placeholder="••••••••"
-              required
-              minLength={8}
+          
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <Input 
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••" 
+                      {...field} 
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input type="tel" placeholder="+1 (234) 567-8901" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Address</FormLabel>
+                <FormControl>
+                  <Input placeholder="123 Main St, Apt 4" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="town"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Closest Town</FormLabel>
+                <FormControl>
+                  <Input placeholder="Kingston" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="userType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Account Type</FormLabel>
+                <FormControl>
+                  <RadioGroup 
+                    onValueChange={field.onChange} 
+                    defaultValue={field.value}
+                    className="flex flex-col space-y-3"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="customer" id="customer" />
+                      <Label htmlFor="customer">Customer</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="rider" id="rider" />
+                      <Label htmlFor="rider">Rider (Delivery Personnel)</Label>
+                    </div>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="pt-3 pb-2">
+            <h3 className="text-md font-medium mb-2 flex items-center">
+              <CreditCard size={16} className="mr-1" /> Payment Information
+            </h3>
+          </div>
+
+          <FormField
+            control={form.control}
+            name="cardNumber"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Card Number</FormLabel>
+                <FormControl>
+                  <Input placeholder="1234 5678 9012 3456" maxLength={16} {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="cardName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name on Card</FormLabel>
+                <FormControl>
+                  <Input placeholder="John Doe" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="expiryDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Expiry Date</FormLabel>
+                  <FormControl>
+                    <Input placeholder="MM/YY" maxLength={5} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
+
+            <FormField
+              control={form.control}
+              name="cvv"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>CVV</FormLabel>
+                  <FormControl>
+                    <Input placeholder="123" type="password" maxLength={4} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          
+          {error && (
+            <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+          
+          <ActionButton
+            variant="primary"
+            size="lg"
+            className="w-full mt-2"
+            loading={loading}
+            type="submit"
+          >
+            Create Account
+          </ActionButton>
+          
+          <p className="text-center text-gray-600 text-sm">
+            Already have an account?{' '}
             <button
               type="button"
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-              onClick={() => setShowPassword(!showPassword)}
+              onClick={onSwitchToLogin}
+              className="text-jamcart-red font-medium hover:underline"
             >
-              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              Sign In
             </button>
-          </div>
-        </div>
-        
-        <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-            Phone Number
-          </label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jamcart-red focus:border-jamcart-red"
-            placeholder="+1 (234) 567-8901"
-            required
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-            Address
-          </label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jamcart-red focus:border-jamcart-red"
-            placeholder="123 Main St, Apt 4"
-            required
-          />
-        </div>
-        
-        <div>
-          <label htmlFor="town" className="block text-sm font-medium text-gray-700 mb-1">
-            Closest Town
-          </label>
-          <input
-            type="text"
-            id="town"
-            name="town"
-            value={formData.town}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-jamcart-red focus:border-jamcart-red"
-            placeholder="Kingston"
-            required
-          />
-        </div>
-
-        <div className="pt-2">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            Account Type
-          </label>
-          <RadioGroup 
-            defaultValue="customer" 
-            value={formData.userType} 
-            onValueChange={handleUserTypeChange}
-            className="flex flex-col space-y-3"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="customer" id="customer" />
-              <Label htmlFor="customer">Customer</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="rider" id="rider" />
-              <Label htmlFor="rider">Rider (Delivery Personnel)</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="admin" id="admin" />
-              <Label htmlFor="admin">Administrator</Label>
-            </div>
-          </RadioGroup>
-        </div>
-        
-        {error && (
-          <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
-        
-        <ActionButton
-          variant="primary"
-          size="lg"
-          className="w-full mt-2"
-          loading={loading}
-          type="submit"
-        >
-          Create Account
-        </ActionButton>
-        
-        <p className="text-center text-gray-600 text-sm">
-          Already have an account?{' '}
-          <button
-            type="button"
-            onClick={onSwitchToLogin}
-            className="text-jamcart-red font-medium hover:underline"
-          >
-            Sign In
-          </button>
-        </p>
-      </form>
+          </p>
+        </form>
+      </Form>
     </div>
   );
 };

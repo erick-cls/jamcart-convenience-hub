@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, Bell, Lock, RefreshCcw, AlertTriangle } from 'lucide-react';
+import { Save, Bell, Lock, RefreshCcw, AlertTriangle, Key } from 'lucide-react';
 import ActionButton from '@/components/ui/ActionButton';
 import { useMaintenanceMode } from '@/context/MaintenanceContext';
 
@@ -18,6 +18,14 @@ const SettingsPage = () => {
   const [notifyOrderStatus, setNotifyOrderStatus] = useState(true);
   const [storeApproval, setStoreApproval] = useState(true);
   
+  // Mock API keys
+  const [apiKeys, setApiKeys] = useState({
+    googleMaps: '',
+    paypal: '',
+    stripe: '',
+    twilioSMS: ''
+  });
+
   // Mock store currency options
   const currencies = [
     { label: 'JMD (J$)', value: 'JMD' },
@@ -29,6 +37,11 @@ const SettingsPage = () => {
   const handleSaveSettings = () => {
     // In a real app, this would save settings to a database
     toast.success("Settings saved successfully");
+  };
+
+  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setApiKeys(prev => ({ ...prev, [id]: value }));
   };
 
   const handleMaintenanceModeToggle = (checked: boolean) => {
@@ -200,17 +213,71 @@ const SettingsPage = () => {
               <CardDescription>Configure account security options</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-                  <Lock className="h-4 w-4" />
-                  Change Admin Password
-                </Button>
+              <div className="space-y-2 mb-6">
+                <Label htmlFor="api-keys" className="text-lg flex items-center">
+                  <Key className="h-4 w-4 mr-2" />
+                  API Integrations
+                </Label>
+                <p className="text-sm text-gray-500 mb-4">
+                  Manage API keys for various integrations
+                </p>
+                
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="googleMaps">Google Maps API Key</Label>
+                    <Input 
+                      id="googleMaps" 
+                      value={apiKeys.googleMaps}
+                      onChange={handleApiKeyChange}
+                      placeholder="Enter Google Maps API Key"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="paypal">PayPal Client ID</Label>
+                    <Input 
+                      id="paypal" 
+                      value={apiKeys.paypal}
+                      onChange={handleApiKeyChange}
+                      placeholder="Enter PayPal Client ID"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="stripe">Stripe API Key</Label>
+                    <Input 
+                      id="stripe" 
+                      value={apiKeys.stripe}
+                      onChange={handleApiKeyChange}
+                      placeholder="Enter Stripe API Key"
+                      type="password"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="twilioSMS">Twilio SMS API Key</Label>
+                    <Input 
+                      id="twilioSMS" 
+                      value={apiKeys.twilioSMS}
+                      onChange={handleApiKeyChange}
+                      placeholder="Enter Twilio SMS API Key"
+                      type="password"
+                    />
+                  </div>
+                </div>
               </div>
               
               <div className="space-y-2">
                 <Button variant="outline" className="w-full flex items-center justify-center gap-2">
                   <RefreshCcw className="h-4 w-4" />
                   Refresh API Keys
+                </Button>
+              </div>
+              
+              <div className="space-y-2">
+                <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                  <Lock className="h-4 w-4" />
+                  Change Admin Password
                 </Button>
               </div>
               
