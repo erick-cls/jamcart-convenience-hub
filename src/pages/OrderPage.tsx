@@ -11,6 +11,7 @@ import { useOrdersState } from '@/pages/admin/orders/useOrdersState';
 import StoreInfo from '@/components/order/StoreInfo';
 import ShoppingListForm from '@/components/order/ShoppingListForm';
 import OrderReviewModal from '@/components/order/OrderReviewModal';
+import CancellationPolicyModal from '@/components/order/CancellationPolicyModal';
 import { parseOrderItems } from '@/utils/order/orderUtils';
 import { categories, mockStores, getCategoryById, getStoreById } from '@/utils/order/mockStoreData';
 
@@ -26,6 +27,7 @@ const OrderPage = () => {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [isPolicyOpen, setIsPolicyOpen] = useState(false);
   
   useEffect(() => {
     if (!categoryId || !storeId || !Object.keys(categories).includes(categoryId)) {
@@ -58,7 +60,19 @@ const OrderPage = () => {
     setIsReviewOpen(true);
   };
   
-  const handleConfirmOrder = () => {
+  const handleReviewConfirmation = () => {
+    // Close review modal and open policy modal
+    setIsReviewOpen(false);
+    setIsPolicyOpen(true);
+  };
+  
+  const handlePolicyAgreement = () => {
+    // User agreed to policy, proceed with order
+    setIsPolicyOpen(false);
+    processOrder();
+  };
+  
+  const processOrder = () => {
     setIsSubmitting(true);
     
     if (!user) {
@@ -153,7 +167,14 @@ const OrderPage = () => {
             user={user}
             isSubmitting={isSubmitting}
             onCancel={handleCancelReview}
-            onConfirm={handleConfirmOrder}
+            onConfirm={handleReviewConfirmation}
+          />
+        )}
+        
+        {isPolicyOpen && (
+          <CancellationPolicyModal
+            isOpen={isPolicyOpen}
+            onAgree={handlePolicyAgreement}
           />
         )}
       </AnimatePresence>

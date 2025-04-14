@@ -94,7 +94,7 @@ const OrderReviewModal = ({
             icon={<Send className="h-5 w-5" />}
             iconPosition="right"
           >
-            Send Order
+            Continue
           </ActionButton>
         </div>
       </motion.div>
