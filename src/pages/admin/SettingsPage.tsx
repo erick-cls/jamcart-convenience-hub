@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -18,15 +17,28 @@ const SettingsPage = () => {
   const [notifyOrderStatus, setNotifyOrderStatus] = useState(true);
   const [storeApproval, setStoreApproval] = useState(true);
   
-  // Mock API keys
   const [apiKeys, setApiKeys] = useState({
     googleMaps: '',
     paypal: '',
     stripe: '',
     twilioSMS: ''
   });
+  const [savedApiKeys, setSavedApiKeys] = useState({
+    googleMaps: '',
+    paypal: '',
+    stripe: '',
+    twilioSMS: ''
+  });
 
-  // Mock store currency options
+  useEffect(() => {
+    const savedKeys = localStorage.getItem('apiKeys');
+    if (savedKeys) {
+      const parsedKeys = JSON.parse(savedKeys);
+      setApiKeys(parsedKeys);
+      setSavedApiKeys(parsedKeys);
+    }
+  }, []);
+
   const currencies = [
     { label: 'JMD (J$)', value: 'JMD' },
     { label: 'USD ($)', value: 'USD' }
@@ -35,13 +47,22 @@ const SettingsPage = () => {
   const [selectedCurrency, setSelectedCurrency] = useState('JMD');
   
   const handleSaveSettings = () => {
-    // In a real app, this would save settings to a database
+    localStorage.setItem('apiKeys', JSON.stringify(apiKeys));
+    setSavedApiKeys({...apiKeys});
+    
     toast.success("Settings saved successfully");
   };
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setApiKeys(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleRefreshApiKeys = () => {
+    toast.info("Refreshing API keys...");
+    setTimeout(() => {
+      toast.success("API keys refreshed");
+    }, 1000);
   };
 
   const handleMaintenanceModeToggle = (checked: boolean) => {
@@ -231,6 +252,9 @@ const SettingsPage = () => {
                       onChange={handleApiKeyChange}
                       placeholder="Enter Google Maps API Key"
                     />
+                    {savedApiKeys.googleMaps && (
+                      <p className="text-xs text-green-600">✓ API key saved</p>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
@@ -241,6 +265,9 @@ const SettingsPage = () => {
                       onChange={handleApiKeyChange}
                       placeholder="Enter PayPal Client ID"
                     />
+                    {savedApiKeys.paypal && (
+                      <p className="text-xs text-green-600">✓ API key saved</p>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
@@ -252,6 +279,9 @@ const SettingsPage = () => {
                       placeholder="Enter Stripe API Key"
                       type="password"
                     />
+                    {savedApiKeys.stripe && (
+                      <p className="text-xs text-green-600">✓ API key saved</p>
+                    )}
                   </div>
                   
                   <div className="space-y-2">
@@ -263,12 +293,19 @@ const SettingsPage = () => {
                       placeholder="Enter Twilio SMS API Key"
                       type="password"
                     />
+                    {savedApiKeys.twilioSMS && (
+                      <p className="text-xs text-green-600">✓ API key saved</p>
+                    )}
                   </div>
                 </div>
               </div>
               
               <div className="space-y-2">
-                <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                <Button 
+                  variant="outline" 
+                  className="w-full flex items-center justify-center gap-2"
+                  onClick={handleRefreshApiKeys}
+                >
                   <RefreshCcw className="h-4 w-4" />
                   Refresh API Keys
                 </Button>

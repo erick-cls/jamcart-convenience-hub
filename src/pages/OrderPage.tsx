@@ -14,6 +14,7 @@ import OrderReviewModal from '@/components/order/OrderReviewModal';
 import CancellationPolicyModal from '@/components/order/CancellationPolicyModal';
 import { parseOrderItems } from '@/utils/order/orderUtils';
 import { categories, mockStores, getCategoryById, getStoreById } from '@/utils/order/mockStoreData';
+import GoogleMap from '@/components/maps/GoogleMap';
 
 const OrderPage = () => {
   const { categoryId, storeId } = useParams<{ categoryId: string; storeId: string }>();
@@ -28,6 +29,29 @@ const OrderPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [isPolicyOpen, setIsPolicyOpen] = useState(false);
+  const [customerLocation, setCustomerLocation] = useState<{lat: number, lng: number} | null>(null);
+  
+  // Attempt to get user's location
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCustomerLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+        },
+        (error) => {
+          console.log("Geolocation error:", error);
+          // Use default location for Jamaica
+          setCustomerLocation({ lat: 18.0179, lng: -76.8099 });
+        }
+      );
+    } else {
+      // Fallback for browsers without geolocation
+      setCustomerLocation({ lat: 18.0179, lng: -76.8099 });
+    }
+  }, []);
   
   useEffect(() => {
     if (!categoryId || !storeId || !Object.keys(categories).includes(categoryId)) {
@@ -101,6 +125,11 @@ const OrderPage = () => {
       newOrder.storeName = store.name;
       newOrder.category = category.name;
       
+      // Save customer location with the order
+      if (customerLocation) {
+        newOrder.customerLocation = customerLocation;
+      }
+      
       toast({
         title: "Order submitted successfully!",
         description: "Your order has been sent to the admin for approval.",
@@ -146,6 +175,21 @@ const OrderPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="order-2 lg:order-1 lg:col-span-1">
               <StoreInfo store={store} category={category} />
+              
+              {/* Show map with store and customer locations */}
+              {customerLocation && (
+                <div className="mt-6 border rounded-lg overflow-hidden shadow-sm">
+                  <div className="p-4 bg-gray-50 border-b">
+                    <h3 className="font-medium">Your Location</h3>
+                  </div>
+                  <GoogleMap
+                    customerLocation={customerLocation}
+                    height="200px"
+                    zoom={13}
+                    showControls={false}
+                  />
+                </div>
+              )}
             </div>
             
             <div className="order-1 lg:order-2 lg:col-span-2">

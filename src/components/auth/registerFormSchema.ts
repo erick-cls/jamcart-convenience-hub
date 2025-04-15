@@ -2,34 +2,21 @@
 import { z } from "zod";
 
 export const registerSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  email: z.string().email({ message: "Invalid email address" }),
-  password: z.string().min(8, { message: "Password must be at least 8 characters" }),
-  phone: z.string().min(1, { message: "Phone number is required" }),
-  address: z.string().min(1, { message: "Address is required" }),
-  town: z.string().min(1, { message: "Town is required" }),
-  userType: z.enum(["customer", "rider"]),
-  // Payment fields are optional by default, but we'll validate them conditionally based on userType
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  address: z.string().min(5, "Address must be at least 5 characters"),
+  town: z.string().min(2, "Town must be at least 2 characters"),
+  userType: z.enum(["customer", "rider", "vendor"]),
+  
+  // Fields for customers only
   cardNumber: z.string().optional(),
   cardName: z.string().optional(),
   expiryDate: z.string().optional(),
   cvv: z.string().optional(),
-}).refine((data) => {
-  // If user type is customer, payment info is required
-  if (data.userType === 'customer') {
-    return (
-      !!data.cardNumber &&
-      !!data.cardName &&
-      !!data.expiryDate &&
-      !!data.cvv &&
-      /^\d{16}$/.test(data.cardNumber) &&
-      /^(0[1-9]|1[0-2])\/\d{2}$/.test(data.expiryDate) &&
-      /^\d{3,4}$/.test(data.cvv)
-    );
-  }
-  // For riders, no payment info validation needed
-  return true;
-}, {
-  message: "Payment information is required for customers",
-  path: ["cardNumber"], // Show error on the card number field
+  
+  // Fields for vendors only
+  storeName: z.string().optional(),
+  storeCategory: z.string().optional(),
 });

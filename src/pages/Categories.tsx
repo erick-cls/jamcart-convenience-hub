@@ -9,7 +9,7 @@ import { Store, ShoppingBag, Pill, Wrench, ShoppingCart, CreditCard, Droplet, Sm
 // Mock categories data
 const categories = [
   {
-    id: "minimart",
+    id: "mini-mart",
     name: "Mini Mart",
     description: "Snacks, drinks, and everyday essentials",
     icon: <Store className="h-6 w-6" />,
