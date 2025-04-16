@@ -51,12 +51,6 @@ const RegisterForm = ({ onSwitchToLogin, onRegisterSuccess }: RegisterFormProps)
         expiryDate: values.expiryDate,
         cvv: values.cvv
       } : undefined;
-
-      // Only process store info for vendors
-      const storeInfo = userType === 'vendor' ? {
-        storeName: values.storeName,
-        storeCategory: values.storeCategory
-      } : undefined;
       
       await registerUser({
         name: values.name,
@@ -67,7 +61,11 @@ const RegisterForm = ({ onSwitchToLogin, onRegisterSuccess }: RegisterFormProps)
         town: values.town,
         userType: values.userType,
         cardInfo: formattedCard,
-        storeInfo: storeInfo
+        // We won't pass storeInfo as it's not in the RegisterUserData type
+        ...(userType === 'vendor' && {
+          storeName: values.storeName,
+          storeCategory: values.storeCategory
+        })
       });
       
       onRegisterSuccess();

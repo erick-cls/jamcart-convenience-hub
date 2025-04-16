@@ -125,9 +125,10 @@ const OrderPage = () => {
       newOrder.storeName = store.name;
       newOrder.category = category.name;
       
-      // Save customer location with the order
+      // Save customer location with the order - add as extra property instead of accessing a non-existent property
       if (customerLocation) {
-        newOrder.customerLocation = customerLocation;
+        // Using type assertion to add the property
+        (newOrder as any).customerLocation = customerLocation;
       }
       
       toast({

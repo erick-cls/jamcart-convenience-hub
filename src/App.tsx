@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { MaintenanceProvider, useMaintenanceMode } from "@/context/MaintenanceContext";
 import LandingPage from "./pages/LandingPage";
@@ -55,83 +55,81 @@ const App = () => (
         <MaintenanceProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <Routes>
-              {/* Public routes accessible even during maintenance */}
-              <Route path="/maintenance" element={<MaintenancePage />} />
-              <Route path="/auth" element={<AuthPage />} />
-              
-              {/* Protected routes that redirect to maintenance when active */}
-              <Route path="/" element={
-                <MaintenanceGuard>
-                  <LandingPage />
-                </MaintenanceGuard>
-              } />
-              <Route path="/categories" element={
-                <MaintenanceGuard>
-                  <Categories />
-                </MaintenanceGuard>
-              } />
-              <Route path="/category/:categoryId" element={
-                <MaintenanceGuard>
-                  <CategoryPage />
-                </MaintenanceGuard>
-              } />
-              <Route path="/order/:categoryId/:storeId" element={
-                <MaintenanceGuard>
-                  <OrderPage />
-                </MaintenanceGuard>
-              } />
-              <Route path="/order/thank-you/:orderId?" element={
-                <MaintenanceGuard>
-                  <ThankYouPage />
-                </MaintenanceGuard>
-              } />
-              {/* Add the new route for /thankyou/:orderId */}
-              <Route path="/thankyou/:orderId?" element={
-                <MaintenanceGuard>
-                  <ThankYouPage />
-                </MaintenanceGuard>
-              } />
-              <Route path="/how-it-works" element={
-                <MaintenanceGuard>
-                  <HowItWorks />
-                </MaintenanceGuard>
-              } />
-              <Route path="/about" element={
-                <MaintenanceGuard>
-                  <About />
-                </MaintenanceGuard>
-              } />
-              <Route path="/profile" element={
-                <MaintenanceGuard>
-                  <ProfilePage />
-                </MaintenanceGuard>
-              } />
-              <Route path="/orders" element={
-                <MaintenanceGuard>
-                  <OrdersHistoryPage />
-                </MaintenanceGuard>
-              } />
-              
-              {/* Admin routes with layout - always accessible */}
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="orders" element={<OrdersPage />} />
-                <Route path="users" element={<UsersPage />} />
-                <Route path="settings" element={<SettingsPage />} />
-              </Route>
-              
-              {/* Rider routes with layout */}
-              <Route path="/rider" element={<RiderLayout />}>
-                <Route path="dashboard" element={<RiderDashboard />} />
-                <Route path="orders" element={<RiderOrdersPage />} />
-                <Route path="profile" element={<RiderProfilePage />} />
-              </Route>
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <Routes>
+            {/* Public routes accessible even during maintenance */}
+            <Route path="/maintenance" element={<MaintenancePage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            
+            {/* Protected routes that redirect to maintenance when active */}
+            <Route path="/" element={
+              <MaintenanceGuard>
+                <LandingPage />
+              </MaintenanceGuard>
+            } />
+            <Route path="/categories" element={
+              <MaintenanceGuard>
+                <Categories />
+              </MaintenanceGuard>
+            } />
+            <Route path="/category/:categoryId" element={
+              <MaintenanceGuard>
+                <CategoryPage />
+              </MaintenanceGuard>
+            } />
+            <Route path="/order/:categoryId/:storeId" element={
+              <MaintenanceGuard>
+                <OrderPage />
+              </MaintenanceGuard>
+            } />
+            <Route path="/order/thank-you/:orderId?" element={
+              <MaintenanceGuard>
+                <ThankYouPage />
+              </MaintenanceGuard>
+            } />
+            {/* Add the new route for /thankyou/:orderId */}
+            <Route path="/thankyou/:orderId?" element={
+              <MaintenanceGuard>
+                <ThankYouPage />
+              </MaintenanceGuard>
+            } />
+            <Route path="/how-it-works" element={
+              <MaintenanceGuard>
+                <HowItWorks />
+              </MaintenanceGuard>
+            } />
+            <Route path="/about" element={
+              <MaintenanceGuard>
+                <About />
+              </MaintenanceGuard>
+            } />
+            <Route path="/profile" element={
+              <MaintenanceGuard>
+                <ProfilePage />
+              </MaintenanceGuard>
+            } />
+            <Route path="/orders" element={
+              <MaintenanceGuard>
+                <OrdersHistoryPage />
+              </MaintenanceGuard>
+            } />
+            
+            {/* Admin routes with layout - always accessible */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="orders" element={<OrdersPage />} />
+              <Route path="users" element={<UsersPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+            </Route>
+            
+            {/* Rider routes with layout */}
+            <Route path="/rider" element={<RiderLayout />}>
+              <Route path="dashboard" element={<RiderDashboard />} />
+              <Route path="orders" element={<RiderOrdersPage />} />
+              <Route path="profile" element={<RiderProfilePage />} />
+            </Route>
+            
+            <Route path="*" element={<NotFound />} />
+          </Routes>
         </MaintenanceProvider>
       </AuthProvider>
     </TooltipProvider>

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useOrderDetails } from '@/hooks/useOrderDetails';
@@ -74,7 +75,7 @@ const ThankYouPage = () => {
               rider={orderDetails.rider} 
             />
             
-            {/* Google Map replacing the animation */}
+            {/* Google Map for tracking delivery */}
             <div className="p-4">
               <GoogleMap 
                 customerLocation={customerLocation}
