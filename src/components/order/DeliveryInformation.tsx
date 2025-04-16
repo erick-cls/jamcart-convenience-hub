@@ -1,7 +1,5 @@
 
 import { MapPin, Bike } from 'lucide-react';
-import { motion } from 'framer-motion';
-import ThankYouAnimation from '@/components/ThankYouAnimation';
 
 interface DeliveryInformationProps {
   delivery: string;
@@ -33,9 +31,7 @@ const DeliveryInformation = ({ delivery, rider }: DeliveryInformationProps) => {
           </div>
         </div>
       </div>
-      <div className="p-6 flex justify-center">
-        <ThankYouAnimation />
-      </div>
+      {/* Removed the animated SVG div */}
     </>
   );
 };
