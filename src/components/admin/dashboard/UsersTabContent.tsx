@@ -30,6 +30,7 @@ const UsersTabContent = ({
         {userStats.map((stat) => (
           <StatCard
             key={stat.id}
+            id={stat.id} // Added the id prop here to fix the error
             icon={stat.icon}
             label={stat.label}
             value={stat.value}
