@@ -33,16 +33,25 @@ const CancellationPolicyModal = ({ isOpen, onAgree }: CancellationPolicyModalPro
         <div className="p-5">
           <div className="space-y-4">
             <div className="flex items-start">
+              <div className="bg-red-100 p-2 rounded-full mr-3">
+                <AlertTriangle className="h-5 w-5 text-red-500" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Cancellation Fee</h3>
+                <p className="text-gray-700">
+                  A <strong>$1,000 JMD</strong> charge applies for order cancellations.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-start">
               <div className="bg-amber-100 p-2 rounded-full mr-3">
                 <Clock className="h-5 w-5 text-amber-500" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Cancellation Policy</h3>
+                <h3 className="font-semibold text-gray-900">Limited Cancellation Window</h3>
                 <p className="text-gray-700">
-                  After submission of your order you have a <strong>10-minute window</strong> for free cancellation.
-                </p>
-                <p className="text-gray-700 mt-2">
-                  Cancellation after 10 minutes will incur a <strong>$1,000 JMD</strong> cancellation fee.
+                  You have a <strong>10-minute window</strong> to cancel your order after submission.
                 </p>
               </div>
             </div>
