@@ -4,10 +4,11 @@ import GoogleMap from "@/components/maps/GoogleMap";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { mockRiders } from "@/pages/admin/orders/mockData";
+import { Rider } from "@/pages/admin/orders/types";
 
 const RidersManagement = () => {
-  // Mock rider location updates
-  const [riders, setRiders] = useState(mockRiders);
+  // Mock rider location updates with correct typing
+  const [riders, setRiders] = useState<Rider[]>(mockRiders);
 
   // Simulate rider location update for demo
   useEffect(() => {

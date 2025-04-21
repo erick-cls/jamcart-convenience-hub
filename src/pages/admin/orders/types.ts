@@ -21,6 +21,8 @@ export interface Rider {
   id: string;
   name: string;
   isAvailable: boolean;
+  lat?: number;
+  lng?: number;
 }
 
 // Mock users data for reference (keeping for consistent functionality)
