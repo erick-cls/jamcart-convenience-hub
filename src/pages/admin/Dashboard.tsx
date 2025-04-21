@@ -1,17 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingBag, Users, TrendingUp, Calendar } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import StatCard from '@/components/admin/dashboard/StatCard';
-import PendingOrdersCard from '@/components/admin/dashboard/PendingOrdersCard';
-import OrdersChart from '@/components/admin/dashboard/OrdersChart';
-import RecentOrdersCard from '@/components/admin/dashboard/RecentOrdersCard';
-import RecentUsers from '@/components/admin/dashboard/RecentUsers';
-import UserRegistrationsChart from '@/components/admin/dashboard/UserRegistrationsChart';
-import UserOverview from '@/components/admin/dashboard/UserOverview';
-import QuickActions from '@/components/admin/dashboard/QuickActions';
+import DashboardHeader from '@/components/admin/dashboard/DashboardHeader';
+import StatCardsSection from '@/components/admin/dashboard/StatCardsSection';
+import OrdersTabContent from '@/components/admin/dashboard/OrdersTabContent';
+import UsersTabContent from '@/components/admin/dashboard/UsersTabContent';
 import { OrderStatus } from '@/components/ui/OrderItem';
-import RidersManagement from "@/components/admin/dashboard/RidersManagement";
 
 type OrderItem = {
   id: string;
@@ -194,111 +188,25 @@ const Dashboard = () => {
   return (
     <div className="py-6 px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-wrap items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-1">Admin Dashboard</h1>
-            <p className="text-gray-600">Monitor orders, users, and business performance</p>
-          </div>
-          
-          <div className="flex space-x-4 bg-white rounded-lg shadow-sm p-1 border border-gray-100">
-            <button 
-              onClick={() => setActiveTab('orders')}
-              className={`px-4 py-2 rounded-md transition-colors ${
-                activeTab === 'orders' 
-                  ? 'bg-jamcart-red text-white' 
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <div className="flex items-center">
-                <ShoppingBag className="h-4 w-4 mr-2" />
-                Orders
-              </div>
-            </button>
-            <button 
-              onClick={() => setActiveTab('users')}
-              className={`px-4 py-2 rounded-md transition-colors ${
-                activeTab === 'users' 
-                  ? 'bg-jamcart-red text-white' 
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
-              <div className="flex items-center">
-                <Users className="h-4 w-4 mr-2" />
-                Users
-              </div>
-            </button>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {activeTab === 'orders' ? (
-            stats.map((stat) => (
-              <StatCard
-                key={stat.id}
-                id={stat.id}
-                label={stat.label}
-                value={stat.value}
-                icon={stat.icon}
-                color={stat.color}
-                percentChange="+12%"
-              />
-            ))
-          ) : (
-            userStats.map((stat) => (
-              <StatCard
-                key={stat.id}
-                id={stat.id}
-                label={stat.label}
-                value={stat.value}
-                icon={stat.icon}
-                color={stat.color}
-                percentChange="+8%"
-              />
-            ))
-          )}
-        </div>
-        {activeTab === 'users' && (
-          <div className="mb-8">
-            <RidersManagement />
-          </div>
-        )}
+        <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+        <StatCardsSection stats={stats} userStats={userStats} activeTab={activeTab} />
         {activeTab === 'orders' ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <PendingOrdersCard
-                pendingOrders={pendingOrders}
-                onViewDetails={handleViewOrderDetails}
-                onAcceptOrder={handleAcceptOrder}
-                onDeclineOrder={handleDeclineOrder}
-              />
-              
-              <OrdersChart chartData={chartData} />
-            </div>
-            
-            <div>
-              <RecentOrdersCard
-                recentOrders={recentOrders}
-                onViewDetails={handleViewOrderDetails}
-              />
-            </div>
-          </div>
+          <OrdersTabContent
+            pendingOrders={pendingOrders}
+            recentOrders={recentOrders}
+            chartData={chartData}
+            onViewOrderDetails={handleViewOrderDetails}
+            onAcceptOrder={handleAcceptOrder}
+            onDeclineOrder={handleDeclineOrder}
+          />
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <RecentUsers users={recentUsers} />
-              
-              <UserRegistrationsChart chartData={mockUserChartData} />
-            </div>
-            
-            <div>
-              <UserOverview progressItems={mockUserOverviewItems} />
-              
-              <QuickActions 
-                actions={mockQuickActions} 
-                onActionClick={handleQuickAction}
-              />
-            </div>
-          </div>
+          <UsersTabContent
+            recentUsers={recentUsers}
+            userChartData={mockUserChartData}
+            userOverviewItems={mockUserOverviewItems}
+            quickActions={mockQuickActions}
+            onQuickAction={handleQuickAction}
+          />
         )}
       </div>
     </div>
