@@ -20,7 +20,7 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
-  Bell,
+  Navigation,
 } from 'lucide-react';
 import AnimatedLogo from '@/components/ui/AnimatedLogo';
 import { Badge } from '@/components/ui/badge';
@@ -78,6 +78,18 @@ const AdminLayout = () => {
                   <ShoppingBag className="h-4 w-4" />
                   <span>Orders</span>
                   <Badge className="ml-auto bg-jamcart-red py-0 px-1.5 text-[10px]">New</Badge>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={() => navigate('/admin/riders')}
+                  isActive={window.location.pathname.includes('/admin/riders')}
+                  tooltip="Riders"
+                >
+                  <Navigation className="h-4 w-4" />
+                  <span>Riders</span>
+                  <Badge className="ml-auto bg-green-500 py-0 px-1.5 text-[10px]">Active</Badge>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               
