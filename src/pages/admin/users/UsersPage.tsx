@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
@@ -6,17 +5,19 @@ import { useToast } from '@/hooks/use-toast';
 import UserPermissionsDialog, { User } from '@/components/admin/users/UserPermissionsDialog';
 import UserTypeTag from '@/components/admin/users/UserTypeTag';
 import { Badge } from '@/components/ui/badge';
-import { Bell, UserPlus } from 'lucide-react';
+import { Bell, UserPlus, Trash2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthContext';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 
-// Generate a random user
 const generateRandomUser = (): User & { isNew: boolean; dateJoined: string } => {
   const userTypes = ['customer', 'customer', 'customer', 'rider', 'admin'] as const;
-  const userType = userTypes[Math.floor(Math.random() * userTypes.length)]; // All types, not just customers
+  const userType = userTypes[Math.floor(Math.random() * userTypes.length)];
   const now = new Date();
   
   return {
@@ -31,7 +32,6 @@ const generateRandomUser = (): User & { isNew: boolean; dateJoined: string } => 
   };
 };
 
-// Mock data (in a real app, this would come from an API)
 const mockUsers = [
   { 
     id: 'user-1', 
@@ -103,19 +103,19 @@ const UsersPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("user123");
-  
-  // Add new user on component mount for demo purposes
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [userTypeFilter, setUserTypeFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+
   useEffect(() => {
-    // Get any registered users from localStorage
     const allRegisteredUsers: (User & { isNew?: boolean; dateJoined: string })[] = [];
     
-    // Check for user data in localStorage (simulating database access)
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && key.startsWith('jamcart-user-')) {
         try {
           const userData = JSON.parse(localStorage.getItem(key) || '{}');
-          // Convert to the format expected by this component
           const userForDisplay: User & { isNew?: boolean; dateJoined: string } = {
             id: userData.id || `reg-${Date.now()}`,
             name: userData.name || 'Unknown User',
@@ -133,12 +133,10 @@ const UsersPage = () => {
       }
     }
     
-    // Also check the main user object
     const mainUserData = localStorage.getItem('jamcart-user');
     if (mainUserData) {
       try {
         const userData = JSON.parse(mainUserData);
-        // Only add if not already in the list
         if (!allRegisteredUsers.some(u => u.email === userData.email)) {
           const userForDisplay: User & { isNew?: boolean; dateJoined: string } = {
             id: userData.id || `main-${Date.now()}`,
@@ -157,25 +155,20 @@ const UsersPage = () => {
       }
     }
 
-    // Add a random new user
     const newUser = generateRandomUser();
     
-    // Combine registered users with mock users, ensuring no duplicates
     const combinedUsers = [...allRegisteredUsers];
     
-    // Add mock users if they don't exist in registered users
     mockUsers.forEach(mockUser => {
       if (!combinedUsers.some(u => u.email === mockUser.email)) {
         combinedUsers.push(mockUser);
       }
     });
     
-    // Add the new random user
     combinedUsers.unshift(newUser);
     
     setUsers(combinedUsers);
     
-    // Reset John Doe's password
     setTimeout(() => {
       const johnDoe = mockUsers.find(user => user.email === 'john.doe@example.com');
       if (johnDoe) {
@@ -210,16 +203,13 @@ const UsersPage = () => {
   };
 
   const handleResetPassword = (userId: string, newPassword: string) => {
-    // In a real app, this would call an API to update the password
     console.log(`Password for user ${userId} reset to: ${newPassword}`);
     
-    // Store the new password in localStorage for demo purposes
     const userEmail = users.find(u => u.id === userId)?.email;
     if (userEmail) {
       localStorage.setItem(`jamcart-password-${userEmail}`, newPassword);
     }
     
-    // Show success toast for password reset
     const user = users.find(u => u.id === userId);
     if (user) {
       toast({
@@ -243,7 +233,6 @@ const UsersPage = () => {
     const newUser = generateRandomUser();
     setUsers(prevUsers => [newUser, ...prevUsers]);
     
-    // Also store in localStorage for persistence
     const key = `jamcart-user-${newUser.id}`;
     localStorage.setItem(key, JSON.stringify({
       ...newUser,
@@ -259,7 +248,6 @@ const UsersPage = () => {
     });
   };
 
-  // Get new users (joined today)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   
@@ -267,6 +255,40 @@ const UsersPage = () => {
     const joinDate = new Date(user.dateJoined);
     return joinDate >= today || user.isNew;
   });
+
+  const filteredUsers = users.filter(user => {
+    const matchesUserType = userTypeFilter === 'all' || user.userType === userTypeFilter;
+    const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
+    return matchesUserType && matchesStatus;
+  });
+
+  const handleSelectUser = (userId: string, checked: boolean) => {
+    setSelectedUsers(prev => 
+      checked ? [...prev, userId] : prev.filter(id => id !== userId)
+    );
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    setSelectedUsers(checked ? filteredUsers.map(user => user.id) : []);
+  };
+
+  const handleDeleteSelected = () => {
+    setUsers(prev => prev.filter(user => !selectedUsers.includes(user.id)));
+    setSelectedUsers([]);
+    toast({
+      title: "Users Deleted",
+      description: `${selectedUsers.length} users have been deleted.`,
+    });
+    setIsDeleteDialogOpen(false);
+  };
+
+  const handleDeleteUser = (userId: string) => {
+    setUsers(prev => prev.filter(user => user.id !== userId));
+    toast({
+      title: "User Deleted",
+      description: "The user has been deleted successfully.",
+    });
+  };
 
   return (
     <div className="py-6 px-6">
@@ -328,15 +350,33 @@ const UsersPage = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-5 border-b border-gray-100 flex justify-between items-center">
             <h2 className="font-semibold text-lg">All Users</h2>
-            <Button onClick={handleAddTestUser} size="sm">
-              Add Test User
-            </Button>
+            <div className="flex gap-2">
+              {selectedUsers.length > 0 && (
+                <Button 
+                  variant="destructive" 
+                  size="sm"
+                  onClick={() => setIsDeleteDialogOpen(true)}
+                >
+                  <Trash2 className="mr-1 h-4 w-4" />
+                  Delete Selected ({selectedUsers.length})
+                </Button>
+              )}
+              <Button onClick={handleAddTestUser} size="sm">
+                Add Test User
+              </Button>
+            </div>
           </div>
           
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[50px]">
+                    <Checkbox 
+                      checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
+                      onCheckedChange={handleSelectAll}
+                    />
+                  </TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Date Joined</TableHead>
@@ -347,8 +387,14 @@ const UsersPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user) => (
+                {filteredUsers.map((user) => (
                   <TableRow key={user.id}>
+                    <TableCell>
+                      <Checkbox 
+                        checked={selectedUsers.includes(user.id)}
+                        onCheckedChange={(checked) => handleSelectUser(user.id, checked as boolean)}
+                      />
+                    </TableCell>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         {user.name}
@@ -381,11 +427,11 @@ const UsersPage = () => {
                         Manage User
                       </Button>
                       <Button 
-                        variant="outline" 
+                        variant="destructive" 
                         size="sm"
-                        onClick={() => handleShowResetDialog(user)}
+                        onClick={() => handleDeleteUser(user.id)}
                       >
-                        Reset Password
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -447,6 +493,21 @@ const UsersPage = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Selected Users</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {selectedUsers.length} selected users? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsDeleteDialogOpen(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteSelected}>Delete Users</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
