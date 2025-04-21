@@ -5,12 +5,51 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { categories } from "@/utils/order/mockStoreData";
 
+const UserTypeSelection = ({ form }: any) => {
+  return (
+    <div className="space-y-4">
+      <FormField
+        control={form.control}
+        name="userType"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>I am a:</FormLabel>
+            <FormControl>
+              <RadioGroup
+                defaultValue={field.value}
+                onValueChange={field.onChange}
+                className="flex flex-col space-y-1 sm:flex-row sm:space-y-0 sm:space-x-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="customer" id="customer" />
+                  <label htmlFor="customer" className="cursor-pointer">Customer</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="rider" id="rider" />
+                  <label htmlFor="rider" className="cursor-pointer">Delivery Personnel</label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="vendor" id="vendor" />
+                  <label htmlFor="vendor" className="cursor-pointer">Vendor</label>
+                </div>
+              </RadioGroup>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  );
+};
+
 const AccountInfoFields = ({ form }: any) => {
   const userType = form.watch('userType');
 
   return (
     <>
-      <div className="space-y-4">
+      <UserTypeSelection form={form} />
+
+      <div className="space-y-4 mt-6">
         <h3 className="font-medium">Account Information</h3>
         
         <FormField
@@ -56,7 +95,7 @@ const AccountInfoFields = ({ form }: any) => {
         />
       </div>
       
-      <div className="space-y-4">
+      <div className="space-y-4 mt-6">
         <h3 className="font-medium">Personal Information</h3>
         
         <FormField
@@ -102,39 +141,6 @@ const AccountInfoFields = ({ form }: any) => {
         />
       </div>
       
-      <div className="space-y-4">
-        <FormField
-          control={form.control}
-          name="userType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>I am a:</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  defaultValue={field.value}
-                  onValueChange={field.onChange}
-                  className="flex flex-col space-y-1 sm:flex-row sm:space-y-0 sm:space-x-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="customer" id="customer" />
-                    <label htmlFor="customer" className="cursor-pointer">Customer</label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="rider" id="rider" />
-                    <label htmlFor="rider" className="cursor-pointer">Delivery Personnel</label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="vendor" id="vendor" />
-                    <label htmlFor="vendor" className="cursor-pointer">Vendor</label>
-                  </div>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </div>
-
       {userType === 'vendor' && (
         <div className="space-y-4 border-t pt-4 mt-4">
           <h3 className="font-medium">Store Information</h3>
