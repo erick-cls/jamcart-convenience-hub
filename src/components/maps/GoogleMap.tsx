@@ -63,6 +63,7 @@ const GoogleMap = ({
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [customerMarker, setCustomerMarker] = useState<google.maps.Marker | null>(null);
   const [riderMarker, setRiderMarker] = useState<google.maps.Marker | null>(null);
+  const [directionsRenderer, setDirectionsRenderer] = useState<google.maps.DirectionsRenderer | null>(null);
 
   const apiKey = getApiKey();
   const { mapLoaded, mapLoadError } = useGoogleMapsScript({
@@ -78,81 +79,106 @@ const GoogleMap = ({
     },
   });
 
+  // Clean up function to remove markers and renderers
+  const cleanUpMap = () => {
+    if (customerMarker) customerMarker.setMap(null);
+    if (riderMarker) riderMarker.setMap(null);
+    if (directionsRenderer) directionsRenderer.setMap(null);
+  };
+
+  useEffect(() => {
+    return () => {
+      cleanUpMap();
+    };
+  }, []);
+
   useEffect(() => {
     if (!mapLoaded || !mapRef.current || !window.google || !window.google.maps) return;
 
-    // Clean up old markers
-    if (customerMarker) customerMarker.setMap(null);
-    if (riderMarker) riderMarker.setMap(null);
+    try {
+      // Clean up old markers
+      cleanUpMap();
 
-    const defaultCenter = { lat: 18.0179, lng: -76.8099 };
-    const center = customerLocation || riderLocation || defaultCenter;
+      const defaultCenter = { lat: 18.0179, lng: -76.8099 };
+      const center = customerLocation || riderLocation || defaultCenter;
 
-    const mapInstance = new window.google.maps.Map(mapRef.current, {
-      center,
-      zoom,
-      mapTypeControl: showControls,
-      streetViewControl: showControls,
-      fullscreenControl: showControls,
-      zoomControl: showControls,
-    });
-
-    setMap(mapInstance);
-
-    // Customer marker
-    let newCustomerMarker: google.maps.Marker | null = null;
-    if (customerLocation) {
-      const customerInitials = getInitials(customerName);
-      newCustomerMarker = createMarker({
-        map: mapInstance,
-        position: customerLocation,
-        title: "Customer: " + customerName,
-        initials: customerInitials,
-        color: "#3b82f6", // blue
-        infoWindowContent: `<div><strong>Customer Location</strong><div>${customerName}</div></div>`,
+      const mapInstance = new window.google.maps.Map(mapRef.current, {
+        center,
+        zoom,
+        mapTypeControl: showControls,
+        streetViewControl: showControls,
+        fullscreenControl: showControls,
+        zoomControl: showControls,
       });
-    }
-    setCustomerMarker(newCustomerMarker);
 
-    // Rider marker
-    let newRiderMarker: google.maps.Marker | null = null;
-    if (riderLocation) {
-      const riderInitials = getInitials(riderName);
-      newRiderMarker = createMarker({
-        map: mapInstance,
-        position: riderLocation,
-        title: "Rider: " + riderName,
-        initials: riderInitials,
-        color: "#22c55e", // green
-        infoWindowContent: `<div><strong>Rider Location</strong><div>${riderName}</div><div><small>On the way</small></div></div>`,
-      });
-    }
-    setRiderMarker(newRiderMarker);
+      setMap(mapInstance);
 
-    // Path
-    if (customerLocation && riderLocation) {
-      drawDirections({
-        map: mapInstance,
-        origin: riderLocation,
-        destination: customerLocation,
-      });
-    }
+      // Customer marker
+      let newCustomerMarker: google.maps.Marker | null = null;
+      if (customerLocation) {
+        const customerInitials = getInitials(customerName);
+        newCustomerMarker = createMarker({
+          map: mapInstance,
+          position: customerLocation,
+          title: "Customer: " + customerName,
+          initials: customerInitials,
+          color: "#3b82f6", // blue
+          infoWindowContent: `<div><strong>Customer Location</strong><div>${customerName}</div></div>`,
+        });
+        setCustomerMarker(newCustomerMarker);
+      }
 
-    return () => {
-      if (newCustomerMarker) newCustomerMarker.setMap(null);
-      if (newRiderMarker) newRiderMarker.setMap(null);
-    };
-    // eslint-disable-next-line
-    // reason: we want to re-instantiate map only on script load
-  }, [mapLoaded, customerLocation, riderLocation, zoom, showControls, customerName, riderName]);
+      // Rider marker
+      let newRiderMarker: google.maps.Marker | null = null;
+      if (riderLocation) {
+        const riderInitials = getInitials(riderName);
+        newRiderMarker = createMarker({
+          map: mapInstance,
+          position: riderLocation,
+          title: "Rider: " + riderName,
+          initials: riderInitials,
+          color: "#22c55e", // green
+          infoWindowContent: `<div><strong>Rider Location</strong><div>${riderName}</div><div><small>On the way</small></div></div>`,
+        });
+        setRiderMarker(newRiderMarker);
+      }
+
+      // Path
+      if (customerLocation && riderLocation) {
+        drawDirections({
+          map: mapInstance,
+          origin: riderLocation,
+          destination: customerLocation,
+        });
+      }
+    } catch (error) {
+      console.error("Error initializing map:", error);
+      onError?.();
+    }
+  }, [mapLoaded, customerLocation, riderLocation, zoom, showControls, customerName, riderName, onError]);
 
   useEffect(() => {
     if (!map) return;
-    if (customerLocation && customerMarker) {
-      customerMarker.setPosition(customerLocation);
-    }
-    if (riderLocation && riderMarker) {
-      riderMarker.setPosition(riderLocation);
+    
+    try {
+      if (customerLocation && customerMarker) {
+        customerMarker.setPosition(customerLocation);
+      }
+      
+      if (riderLocation && riderMarker) {
+        riderMarker.setPosition(riderLocation);
+      }
+      
+      // Update directions if both markers exist
+      if (customerLocation && riderLocation) {
+        drawDirections({
+          map: map,
+          origin: riderLocation,
+          destination: customerLocation,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating marker positions:", error);
     }
   }, [customerLocation, riderLocation, map, customerMarker, riderMarker]);
 

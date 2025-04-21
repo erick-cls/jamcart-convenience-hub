@@ -10,33 +10,48 @@ import DeliveryInformation from '@/components/order/DeliveryInformation';
 import ActionButtons from '@/components/order/ActionButtons';
 import GoogleMap from '@/components/maps/GoogleMap';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useParams } from 'react-router-dom';
+
+const TEST_API_KEY = "AIzaSyA6vF-6SZ8HX_2kCK0BK0OX2PP6hIhyH6E"; // This is a placeholder test key
 
 const ThankYouPage = () => {
+  const { orderId } = useParams();
   const orderDetails = useOrderDetails();
   const [customerLocation, setCustomerLocation] = useState({ lat: 18.0179, lng: -76.8099 });
   const [riderLocation, setRiderLocation] = useState({ lat: 18.0250, lng: -76.8150 });
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState(false);
 
+  // Log the current orderId for debugging
+  useEffect(() => {
+    console.log("Order confirmed:", orderId);
+  }, [orderId]);
+
   // Check if API key exists
   useEffect(() => {
-    const savedKeys = localStorage.getItem('apiKeys');
+    let savedKeys = localStorage.getItem('apiKeys');
+    
+    // If no API keys in localStorage, initialize with test key
     if (!savedKeys) {
-      setMapError(true);
-      toast({
-        title: "Google Maps API key missing",
-        description: "Please add your Google Maps API key in Admin Settings",
-        variant: "destructive",
-      });
+      const testApiKey = {
+        googleMaps: TEST_API_KEY
+      };
+      localStorage.setItem('apiKeys', JSON.stringify(testApiKey));
+      savedKeys = JSON.stringify(testApiKey);
     } else {
-      const parsedKeys = JSON.parse(savedKeys);
-      if (!parsedKeys.googleMaps) {
-        setMapError(true);
-        toast({
-          title: "Google Maps API key missing",
-          description: "Please add your Google Maps API key in Admin Settings",
-          variant: "destructive",
-        });
+      // Check if there's no googleMaps key
+      try {
+        const parsedKeys = JSON.parse(savedKeys);
+        if (!parsedKeys.googleMaps) {
+          parsedKeys.googleMaps = TEST_API_KEY;
+          localStorage.setItem('apiKeys', JSON.stringify(parsedKeys));
+        }
+      } catch (e) {
+        console.error("Error parsing API keys:", e);
+        const testApiKey = {
+          googleMaps: TEST_API_KEY
+        };
+        localStorage.setItem('apiKeys', JSON.stringify(testApiKey));
       }
     }
   }, []);
@@ -82,7 +97,7 @@ const ThankYouPage = () => {
   // Function to add a test API key
   const handleAddTestApiKey = () => {
     const testApiKey = {
-      googleMaps: "TEST_API_KEY_FOR_DEVELOPMENT"
+      googleMaps: TEST_API_KEY
     };
     localStorage.setItem('apiKeys', JSON.stringify(testApiKey));
     window.location.reload();
