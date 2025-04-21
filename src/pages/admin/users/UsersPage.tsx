@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -268,6 +269,18 @@ const UsersPage = () => {
   };
 
   const handleDeleteSelected = () => {
+    // Remove selected users from localStorage
+    selectedUsers.forEach(userId => {
+      const userToDelete = users.find(u => u.id === userId);
+      if (userToDelete) {
+        // Remove from localStorage
+        localStorage.removeItem(`jamcart-user-${userId}`);
+        if (userToDelete.email) {
+          localStorage.removeItem(`jamcart-password-${userToDelete.email}`);
+        }
+      }
+    });
+
     setUsers(prev => prev.filter(user => !selectedUsers.includes(user.id)));
     setSelectedUsers([]);
     toast({
@@ -278,6 +291,15 @@ const UsersPage = () => {
   };
 
   const handleDeleteUser = (userId: string) => {
+    const userToDelete = users.find(u => u.id === userId);
+    if (userToDelete) {
+      // Remove from localStorage
+      localStorage.removeItem(`jamcart-user-${userId}`);
+      if (userToDelete.email) {
+        localStorage.removeItem(`jamcart-password-${userToDelete.email}`);
+      }
+    }
+
     setUsers(prev => prev.filter(user => user.id !== userId));
     toast({
       title: "User Deleted",
