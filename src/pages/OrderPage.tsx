@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, MapPin } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { toast } from '@/hooks/use-toast';
@@ -15,6 +15,7 @@ import CancellationPolicyModal from '@/components/order/CancellationPolicyModal'
 import { parseOrderItems } from '@/utils/order/orderUtils';
 import { categories, mockStores, getCategoryById, getStoreById } from '@/utils/order/mockStoreData';
 import GoogleMap from '@/components/maps/GoogleMap';
+import { Button } from '@/components/ui/button';
 
 const OrderPage = () => {
   const { categoryId, storeId } = useParams<{ categoryId: string; storeId: string }>();
@@ -30,9 +31,14 @@ const OrderPage = () => {
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [isPolicyOpen, setIsPolicyOpen] = useState(false);
   const [customerLocation, setCustomerLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
   
-  // Attempt to get user's location
-  useEffect(() => {
+  // Function to get user's current location
+  const getCurrentLocation = () => {
+    setIsLoadingLocation(true);
+    setLocationError(null);
+    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -40,17 +46,41 @@ const OrderPage = () => {
             lat: position.coords.latitude,
             lng: position.coords.longitude
           });
+          setIsLoadingLocation(false);
+          toast({
+            title: "Location updated",
+            description: "Your current location has been set",
+          });
         },
         (error) => {
           console.log("Geolocation error:", error);
+          setIsLoadingLocation(false);
+          setLocationError("Couldn't get your location. Please enable location services.");
+          toast({
+            title: "Location error",
+            description: "Couldn't access your location. Please enable location services.",
+            variant: "destructive",
+          });
           // Use default location for Jamaica
           setCustomerLocation({ lat: 18.0179, lng: -76.8099 });
         }
       );
     } else {
       // Fallback for browsers without geolocation
+      setIsLoadingLocation(false);
+      setLocationError("Geolocation is not supported by your browser");
+      toast({
+        title: "Location not supported",
+        description: "Geolocation is not supported by your browser.",
+        variant: "destructive",
+      });
       setCustomerLocation({ lat: 18.0179, lng: -76.8099 });
     }
+  };
+  
+  useEffect(() => {
+    // Set default location on initial load
+    setCustomerLocation({ lat: 18.0179, lng: -76.8099 });
   }, []);
   
   useEffect(() => {
@@ -177,20 +207,36 @@ const OrderPage = () => {
             <div className="order-2 lg:order-1 lg:col-span-1">
               <StoreInfo store={store} category={category} />
               
-              {/* Show map with store and customer locations */}
-              {customerLocation && (
-                <div className="mt-6 border rounded-lg overflow-hidden shadow-sm">
-                  <div className="p-4 bg-gray-50 border-b">
-                    <h3 className="font-medium">Your Location</h3>
-                  </div>
-                  <GoogleMap
-                    customerLocation={customerLocation}
-                    height="200px"
-                    zoom={13}
-                    showControls={false}
-                  />
+              {/* Location section with map */}
+              <div className="mt-6 border rounded-lg overflow-hidden shadow-sm">
+                <div className="p-4 bg-gray-50 border-b flex justify-between items-center">
+                  <h3 className="font-medium">Your Location</h3>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex items-center gap-1" 
+                    onClick={getCurrentLocation}
+                    disabled={isLoadingLocation}
+                  >
+                    <MapPin className="h-4 w-4" />
+                    {isLoadingLocation ? "Getting Location..." : "Use Current Location"}
+                  </Button>
                 </div>
-              )}
+                
+                {locationError && (
+                  <div className="p-3 bg-red-50 border-b border-red-100 text-sm text-red-600">
+                    {locationError}
+                  </div>
+                )}
+                
+                <GoogleMap
+                  customerLocation={customerLocation || undefined}
+                  customerName={user?.name || "You"}
+                  height="200px"
+                  zoom={13}
+                  showControls={false}
+                />
+              </div>
             </div>
             
             <div className="order-1 lg:order-2 lg:col-span-2">

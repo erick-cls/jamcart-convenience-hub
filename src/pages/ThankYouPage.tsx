@@ -148,6 +148,8 @@ const ThankYouPage = () => {
                 <GoogleMap 
                   customerLocation={customerLocation}
                   riderLocation={riderLocation}
+                  customerName="You"
+                  riderName={orderDetails.rider?.name || "Rider"}
                   height="300px"
                   onLoad={() => setMapLoaded(true)}
                   onError={() => setMapError(true)}

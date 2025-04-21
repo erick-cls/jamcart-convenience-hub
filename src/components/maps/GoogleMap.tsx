@@ -9,9 +9,12 @@ interface Coordinates {
   lat: number;
   lng: number;
 }
+
 interface GoogleMapProps {
   customerLocation?: Coordinates;
   riderLocation?: Coordinates;
+  customerName?: string;
+  riderName?: string;
   height?: string;
   className?: string;
   zoom?: number;
@@ -34,9 +37,21 @@ const getApiKey = () => {
   return "";
 };
 
+// Helper function to get initials from name
+const getInitials = (name: string = ""): string => {
+  return name
+    .split(/\s+/)
+    .map(word => word[0])
+    .join("")
+    .toUpperCase()
+    .substring(0, 2);
+};
+
 const GoogleMap = ({
   customerLocation,
   riderLocation,
+  customerName = "Customer",
+  riderName = "Rider",
   height = "400px",
   className = "",
   zoom = 15,
@@ -87,12 +102,14 @@ const GoogleMap = ({
     // Customer marker
     let newCustomerMarker: google.maps.Marker | null = null;
     if (customerLocation) {
+      const customerInitials = getInitials(customerName);
       newCustomerMarker = createMarker({
         map: mapInstance,
         position: customerLocation,
-        title: "Customer",
-        iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-        infoWindowContent: "<div><strong>Customer Location</strong></div>",
+        title: "Customer: " + customerName,
+        initials: customerInitials,
+        color: "#3b82f6", // blue
+        infoWindowContent: `<div><strong>Customer Location</strong><div>${customerName}</div></div>`,
       });
     }
     setCustomerMarker(newCustomerMarker);
@@ -100,13 +117,14 @@ const GoogleMap = ({
     // Rider marker
     let newRiderMarker: google.maps.Marker | null = null;
     if (riderLocation) {
+      const riderInitials = getInitials(riderName);
       newRiderMarker = createMarker({
         map: mapInstance,
         position: riderLocation,
-        title: "Rider",
-        iconUrl: "https://maps.google.com/mapfiles/ms/icons/green-dot.png",
-        infoWindowContent:
-          "<div><strong>Rider Location</strong><div><small>On the way</small></div></div>",
+        title: "Rider: " + riderName,
+        initials: riderInitials,
+        color: "#22c55e", // green
+        infoWindowContent: `<div><strong>Rider Location</strong><div>${riderName}</div><div><small>On the way</small></div></div>`,
       });
     }
     setRiderMarker(newRiderMarker);
@@ -126,7 +144,7 @@ const GoogleMap = ({
     };
     // eslint-disable-next-line
     // reason: we want to re-instantiate map only on script load
-  }, [mapLoaded, customerLocation, riderLocation, zoom, showControls]);
+  }, [mapLoaded, customerLocation, riderLocation, zoom, showControls, customerName, riderName]);
 
   useEffect(() => {
     if (!map) return;
