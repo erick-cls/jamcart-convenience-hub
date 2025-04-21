@@ -24,7 +24,7 @@ const UsersDashboard = ({ onQuickAction }: UsersDashboardProps) => {
       userOverviewItems={mockUserOverviewItems}
       quickActions={mockQuickActions}
       onQuickAction={onQuickAction}
-      userStats={userStats} // This was used in StatCardsSection; if UsersTabContent needs it, but current code does not pass it.
+      userStats={userStats} // This is correctly passed now and matches the props interface
     />
   );
 };

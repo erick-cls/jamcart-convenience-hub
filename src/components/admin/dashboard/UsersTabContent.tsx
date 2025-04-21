@@ -11,6 +11,7 @@ interface UsersTabContentProps {
   userOverviewItems: any[];
   quickActions: any[];
   onQuickAction: (label: string) => void;
+  userStats: any[]; // Added the missing userStats prop
 }
 
 const UsersTabContent = ({
@@ -19,6 +20,7 @@ const UsersTabContent = ({
   userOverviewItems,
   quickActions,
   onQuickAction,
+  userStats, // Added to the destructuring
 }: UsersTabContentProps) => (
   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <div className="lg:col-span-2">
