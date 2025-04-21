@@ -3,6 +3,7 @@ import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useNavigate } from 'react-router-dom';
+import GoogleMap from '@/components/maps/GoogleMap';
 
 interface User {
   id: string;
@@ -11,6 +12,8 @@ interface User {
   dateJoined: string;
   status: string;
   orders: number;
+  lat?: number;
+  lng?: number;
 }
 
 interface RecentUsersProps {
@@ -23,6 +26,15 @@ const RecentUsers = ({ users }: RecentUsersProps) => {
   const handleViewAll = () => {
     navigate('/admin/users');
   };
+
+  // Filter users with valid coordinates for the map
+  const usersWithLocations = users
+    .filter(user => typeof user.lat === 'number' && typeof user.lng === 'number')
+    .map(user => ({
+      lat: user.lat as number,
+      lng: user.lng as number,
+      name: user.name
+    }));
   
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
@@ -36,6 +48,19 @@ const RecentUsers = ({ users }: RecentUsersProps) => {
           <ChevronRight className="h-4 w-4 ml-1" />
         </button>
       </div>
+
+      {/* Map Display */}
+      <div className="p-4 border-b border-gray-100">
+        <div className="h-[200px] w-full rounded-lg overflow-hidden">
+          <GoogleMap
+            riderLocations={usersWithLocations}
+            height="200px"
+            zoom={12}
+            showControls={false}
+          />
+        </div>
+      </div>
+
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
