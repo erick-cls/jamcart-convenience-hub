@@ -52,8 +52,8 @@ const UserOrdersList = ({ orders }: UserOrdersListProps) => {
     setSelectedOrder(null);
   };
   
-  const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
-    // For customer view, they can't change status
+  const handleStatusChange = () => {
+    // Removed status change functionality for users
     toast({
       title: "Not authorized",
       description: "You don't have permission to change order status.",

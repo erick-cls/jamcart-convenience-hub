@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { CheckCircle, XCircle, Clock, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { OrderStatus } from '@/components/ui/OrderItem';
+import { useAuth } from '@/context/AuthContext';
 
 interface OrderDetailsDialogProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ interface OrderDetailsDialogProps {
 const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDetailsDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
   
   if (!order) return null;
   
@@ -37,29 +39,38 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
   });
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
-    setIsSubmitting(true);
-    
-    try {
-      // In a real app, this would be an API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+    // Only allow status changes for admin or rider roles
+    if (user?.role === 'admin' || user?.role === 'rider') {
+      setIsSubmitting(true);
       
-      onStatusChange(order.id, newStatus);
-      
+      try {
+        // In a real app, this would be an API call
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        onStatusChange(order.id, newStatus);
+        
+        toast({
+          title: "Order status updated",
+          description: `Order #${order.id.slice(-6)} has been marked as ${newStatus}`,
+          variant: "default",
+        });
+        
+        onClose();
+      } catch (error) {
+        toast({
+          title: "Error updating order",
+          description: "There was a problem updating the order status. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    } else {
       toast({
-        title: "Order status updated",
-        description: `Order #${order.id.slice(-6)} has been marked as ${newStatus}`,
-        variant: "default",
+        title: "Not authorized",
+        description: "You don't have permission to change order status.",
+        variant: "destructive"
       });
-      
-      onClose();
-    } catch (error) {
-      toast({
-        title: "Error updating order",
-        description: "There was a problem updating the order status. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
     }
   };
   
@@ -145,28 +156,30 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
             </div>
           )}
           
-          <div className="pt-4 border-t">
-            <h3 className="text-sm font-medium mb-3">Update Order Status</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {statusActions.map((action) => (
-                <Button
-                  key={action.status}
-                  onClick={() => handleStatusChange(action.status as OrderStatus)}
-                  disabled={action.disabled || isSubmitting}
-                  variant={action.status === 'declined' || action.status === 'cancelled' ? 'outline' : 'default'}
-                  className={
-                    action.status === 'declined' || action.status === 'cancelled'
-                      ? 'border-gray-200 text-gray-700'
-                      : action.status === 'accepted'
-                      ? 'bg-jamcart-green hover:bg-jamcart-green/90'
-                      : ''
-                  }
-                >
-                  {action.label}
-                </Button>
-              ))}
+          {(user?.role === 'admin' || user?.role === 'rider') && (
+            <div className="pt-4 border-t">
+              <h3 className="text-sm font-medium mb-3">Update Order Status</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {statusActions.map((action) => (
+                  <Button
+                    key={action.status}
+                    onClick={() => handleStatusChange(action.status as OrderStatus)}
+                    disabled={action.disabled || isSubmitting}
+                    variant={action.status === 'declined' || action.status === 'cancelled' ? 'outline' : 'default'}
+                    className={
+                      action.status === 'declined' || action.status === 'cancelled'
+                        ? 'border-gray-200 text-gray-700'
+                        : action.status === 'accepted'
+                        ? 'bg-jamcart-green hover:bg-jamcart-green/90'
+                        : ''
+                    }
+                  >
+                    {action.label}
+                  </Button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
         
         <DialogFooter className="mt-6">
