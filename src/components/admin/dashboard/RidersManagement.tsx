@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import GoogleMap from "@/components/maps/GoogleMap";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -7,16 +6,13 @@ import { mockRiders } from "@/pages/admin/orders/mockData";
 import { Rider } from "@/pages/admin/orders/types";
 
 const RidersManagement = () => {
-  // Mock rider location updates with correct typing
   const [riders, setRiders] = useState<Rider[]>(mockRiders);
 
-  // Simulate rider location update for demo
   useEffect(() => {
     const interval = setInterval(() => {
       setRiders(prev =>
         prev.map(rider => ({
           ...rider,
-          // randomly jitter the lat/lng slightly for demo
           lat: rider.lat ? rider.lat + (Math.random() - 0.5) * 0.001 : 18.01 + Math.random() * 0.02,
           lng: rider.lng ? rider.lng + (Math.random() - 0.5) * 0.001 : -76.81 + Math.random() * 0.02,
         }))
@@ -25,10 +21,18 @@ const RidersManagement = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Center map on first rider if exists, or Kingston
   const firstLocation = riders.length
     ? { lat: riders[0].lat || 18.0179, lng: riders[0].lng || -76.8099 }
     : { lat: 18.0179, lng: -76.8099 };
+
+  const riderLocations =
+    riders
+      .filter(r => typeof r.lat === "number" && typeof r.lng === "number")
+      .map(r => ({
+        lat: r.lat as number,
+        lng: r.lng as number,
+        name: r.name
+      }));
 
   return (
     <Card>
@@ -38,7 +42,8 @@ const RidersManagement = () => {
       <CardContent>
         <div className="mb-4 h-[300px] w-full">
           <GoogleMap
-            riderLocation={firstLocation} // Will show just the first marker for now; could be extended to show all
+            riderLocations={riderLocations}
+            riderLocation={firstLocation}
             riderName={riders[0]?.name || "Rider"}
             height="100%"
             showControls={false}

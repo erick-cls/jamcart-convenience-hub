@@ -9,10 +9,12 @@ interface Coordinates {
   lat: number;
   lng: number;
 }
+interface RiderPin extends Coordinates { name: string }
 
 interface GoogleMapProps {
   customerLocation?: Coordinates;
   riderLocation?: Coordinates;
+  riderLocations?: RiderPin[]; // <-- new: show all riders
   customerName?: string;
   riderName?: string;
   height?: string;
@@ -50,6 +52,7 @@ const getInitials = (name: string = ""): string => {
 const GoogleMap = ({
   customerLocation,
   riderLocation,
+  riderLocations, // NEW
   customerName = "Customer",
   riderName = "Rider",
   height = "400px",
@@ -62,7 +65,9 @@ const GoogleMap = ({
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [customerMarker, setCustomerMarker] = useState<google.maps.Marker | null>(null);
-  const [riderMarker, setRiderMarker] = useState<google.maps.Marker | null>(null);
+
+  // --- Track all rendered rider markers for cleanup
+  const [riderMarkers, setRiderMarkers] = useState<google.maps.Marker[]>([]);
   const [directionsRenderer, setDirectionsRenderer] = useState<google.maps.DirectionsRenderer | null>(null);
 
   const apiKey = getApiKey();
@@ -82,7 +87,7 @@ const GoogleMap = ({
   // Clean up function to remove markers and renderers
   const cleanUpMap = () => {
     if (customerMarker) customerMarker.setMap(null);
-    if (riderMarker) riderMarker.setMap(null);
+    riderMarkers.forEach(marker => marker.setMap(null));
     if (directionsRenderer) directionsRenderer.setMap(null);
   };
 
@@ -90,6 +95,7 @@ const GoogleMap = ({
     return () => {
       cleanUpMap();
     };
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
@@ -100,7 +106,10 @@ const GoogleMap = ({
       cleanUpMap();
 
       const defaultCenter = { lat: 18.0179, lng: -76.8099 };
-      const center = customerLocation || riderLocation || defaultCenter;
+      let center = customerLocation || riderLocation || defaultCenter;
+      if (riderLocations && riderLocations.length) {
+        center = { lat: riderLocations[0].lat, lng: riderLocations[0].lng };
+      }
 
       const mapInstance = new window.google.maps.Map(mapRef.current, {
         center,
@@ -128,22 +137,36 @@ const GoogleMap = ({
         setCustomerMarker(newCustomerMarker);
       }
 
-      // Rider marker
-      let newRiderMarker: google.maps.Marker | null = null;
-      if (riderLocation) {
-        const riderInitials = getInitials(riderName);
-        newRiderMarker = createMarker({
+      // Rider markers (multi-pin)
+      let newRiderMarkers: google.maps.Marker[] = [];
+      if (riderLocations && riderLocations.length) {
+        newRiderMarkers = riderLocations.map((r, i) =>
+          createMarker({
+            map: mapInstance,
+            position: { lat: r.lat, lng: r.lng },
+            title: "Rider: " + r.name,
+            initials: getInitials(r.name),
+            color: "#22c55e", // green
+            infoWindowContent: `<div><strong>Rider Location</strong><div>${r.name}</div><div><small>On the way</small></div></div>`,
+          })
+        ).filter(Boolean) as google.maps.Marker[];
+        setRiderMarkers(newRiderMarkers);
+      } else if (riderLocation) {
+        // fallback: single rider marker for old usage
+        const singleRiderMarker = createMarker({
           map: mapInstance,
           position: riderLocation,
           title: "Rider: " + riderName,
-          initials: riderInitials,
+          initials: getInitials(riderName),
           color: "#22c55e", // green
           infoWindowContent: `<div><strong>Rider Location</strong><div>${riderName}</div><div><small>On the way</small></div></div>`,
         });
-        setRiderMarker(newRiderMarker);
+        setRiderMarkers(singleRiderMarker ? [singleRiderMarker] : []);
+      } else {
+        setRiderMarkers([]);
       }
 
-      // Path
+      // Path (only if single rider, preserve old logic & UI for details page)
       if (customerLocation && riderLocation) {
         drawDirections({
           map: mapInstance,
@@ -155,21 +178,28 @@ const GoogleMap = ({
       console.error("Error initializing map:", error);
       onError?.();
     }
-  }, [mapLoaded, customerLocation, riderLocation, zoom, showControls, customerName, riderName, onError]);
+    // eslint-disable-next-line
+  }, [mapLoaded, customerLocation, riderLocation, riderLocations, zoom, showControls, customerName, riderName, onError]);
 
   useEffect(() => {
     if (!map) return;
-    
+
     try {
       if (customerLocation && customerMarker) {
         customerMarker.setPosition(customerLocation);
       }
-      
-      if (riderLocation && riderMarker) {
-        riderMarker.setPosition(riderLocation);
+
+      // Multi-rider pin update
+      if (riderLocations && riderLocations.length && riderMarkers.length === riderLocations.length) {
+        riderMarkers.forEach((marker, i) => {
+          const loc = riderLocations[i];
+          marker.setPosition({ lat: loc.lat, lng: loc.lng });
+        });
+      } else if (riderLocation && riderMarkers.length === 1) {
+        riderMarkers[0].setPosition(riderLocation);
       }
-      
-      // Update directions if both markers exist
+
+      // Update directions if both markers exist (single rider mode)
       if (customerLocation && riderLocation) {
         drawDirections({
           map: map,
@@ -180,7 +210,8 @@ const GoogleMap = ({
     } catch (error) {
       console.error("Error updating marker positions:", error);
     }
-  }, [customerLocation, riderLocation, map, customerMarker, riderMarker]);
+    // eslint-disable-next-line
+  }, [customerLocation, riderLocation, riderLocations, map, customerMarker, riderMarkers]);
 
   if (mapLoadError) {
     return (
@@ -215,3 +246,4 @@ const GoogleMap = ({
 };
 
 export default GoogleMap;
+
