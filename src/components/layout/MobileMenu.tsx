@@ -27,7 +27,7 @@ export function MobileMenu({ isOpen, close }: MobileMenuProps) {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
-          className="md:hidden bg-white dark:bg-gray-900 border-t dark:border-gray-800 overflow-hidden"
+          className="md:hidden bg-white border-t overflow-hidden"
         >
           <div className="app-container py-4">
             <nav className="flex flex-col space-y-4">
@@ -38,7 +38,7 @@ export function MobileMenu({ isOpen, close }: MobileMenuProps) {
                   className={`text-sm font-medium transition-colors hover:text-primary ${
                     location.pathname === item.path
                       ? "text-primary"
-                      : "text-gray-700 dark:text-gray-200"
+                      : "text-gray-700"
                   }`}
                   onClick={close}
                 >
@@ -50,14 +50,14 @@ export function MobileMenu({ isOpen, close }: MobileMenuProps) {
                 <>
                   <Link
                     to="/profile"
-                    className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary"
+                    className="text-sm font-medium text-gray-700 hover:text-primary"
                     onClick={close}
                   >
                     Profile
                   </Link>
                   <Link
                     to="/orders"
-                    className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary"
+                    className="text-sm font-medium text-gray-700 hover:text-primary"
                     onClick={close}
                   >
                     Orders

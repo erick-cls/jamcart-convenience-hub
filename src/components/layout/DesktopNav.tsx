@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "./ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { ShoppingCart, User, LogOut } from "lucide-react";
 
@@ -27,17 +26,12 @@ export function DesktopNav() {
           className={`text-sm font-medium transition-colors hover:text-primary ${
             location.pathname === item.path
               ? "text-primary"
-              : "text-gray-700 dark:text-gray-200"
+              : "text-gray-700"
           }`}
         >
           {item.name}
         </Link>
       ))}
-
-      {/* Theme Toggle */}
-      <div className="hidden md:flex items-center">
-        <ThemeToggle />
-      </div>
 
       {user ? (
         <Sheet>

@@ -29,8 +29,8 @@ const Header = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         hasScrolled
-          ? "bg-white dark:bg-gray-900 shadow-sm py-3"
-          : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg py-4"
+          ? "bg-white shadow-sm py-3"
+          : "bg-white/80 backdrop-blur-lg py-4"
       }`}
     >
       <div className="app-container">
@@ -41,7 +41,7 @@ const Header = () => {
           </div>
           {/* Desktop Navigation */}
           <DesktopNav />
-          {/* Mobile Navigation Toggle + Theme Toggle */}
+          {/* Mobile Navigation Toggle */}
           <MobileNavToggle isOpen={isOpen} toggle={toggle} />
         </div>
       </div>

@@ -1,6 +1,5 @@
 
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "./ThemeToggle";
 import { Menu, X } from "lucide-react";
 
 interface MobileNavToggleProps {
@@ -11,11 +10,10 @@ interface MobileNavToggleProps {
 export function MobileNavToggle({ isOpen, toggle }: MobileNavToggleProps) {
   return (
     <div className="flex md:hidden items-center gap-2">
-      <ThemeToggle />
       <Button
         variant="ghost"
         size="icon"
-        className="text-gray-700 dark:text-gray-200"
+        className="text-gray-700"
         onClick={toggle}
       >
         {isOpen ? (
