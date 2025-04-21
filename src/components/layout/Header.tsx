@@ -1,295 +1,238 @@
 
 import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ShoppingCart, User, LogOut, Bike, Package } from "lucide-react";
-import AnimatedLogo from "../ui/AnimatedLogo";
-import ActionButton from "../ui/ActionButton";
+import { useLocation, Link } from "react-router-dom";
+import { Menu, X, ShoppingCart, User, LogOut } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { useMobileMenu } from "@/hooks/use-mobile";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ThemeToggle } from "./ThemeToggle";
 
 const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { isOpen, toggle, close } = useMobileMenu();
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      const scrollTop = window.scrollY;
+      setHasScrolled(scrollTop > 10);
     };
 
     window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   useEffect(() => {
-    setIsOpen(false);
-  }, [location]);
+    close();
+  }, [location.pathname, close]);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
-
-  const navigationItems = [
+  const navItems = [
     { name: "Home", path: "/" },
     { name: "Categories", path: "/categories" },
     { name: "How It Works", path: "/how-it-works" },
     { name: "About", path: "/about" },
   ];
 
-  // Get user initials for avatar
-  const getUserInitials = () => {
-    if (!user?.name) return "U";
-    return user.name
-      .split(" ")
-      .map(part => part[0])
-      .join("")
-      .toUpperCase()
-      .substring(0, 2);
-  };
-
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white/90 shadow-sm backdrop-blur-md py-3" : "bg-transparent py-5"
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        hasScrolled
+          ? "bg-white dark:bg-gray-900 shadow-sm py-3"
+          : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg py-4"
       }`}
     >
-      <div className="app-container flex items-center justify-between">
-        <Link to="/" className="flex items-center">
-          <AnimatedLogo size="sm" />
-        </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
-          {navigationItems.map((item) => (
-            <Link
-              key={item.name}
-              to={item.path}
-              className={`text-sm font-medium transition-colors relative ${
-                location.pathname === item.path ? "text-jamcart-red" : "text-gray-800 hover:text-jamcart-red"
-              }`}
-            >
-              {item.name}
-              {location.pathname === item.path && (
-                <motion.div
-                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-jamcart-red"
-                  layoutId="navbar-indicator"
-                  transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
-                />
-              )}
+      <div className="app-container">
+        <div className="flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center">
+            <Link to="/" className="flex items-center">
+              <span className="text-2xl font-bold text-primary">JamCart</span>
             </Link>
-          ))}
-        </nav>
+          </div>
 
-        {/* Desktop Auth Buttons */}
-        <div className="hidden md:flex items-center space-x-4">
-          {user ? (
-            <div className="flex items-center space-x-4">
-              <Link to="/orders" className="text-gray-800 hover:text-jamcart-red">
-                <ShoppingCart className="h-5 w-5" />
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  location.pathname === item.path
+                    ? "text-primary"
+                    : "text-gray-700 dark:text-gray-200"
+                }`}
+              >
+                {item.name}
               </Link>
-              
-              {/* Improved profile dropdown using shadcn components */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center justify-center h-9 w-9 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none">
+            ))}
+
+            {/* Theme Toggle */}
+            <div className="hidden md:flex items-center">
+              <ThemeToggle />
+            </div>
+
+            {user ? (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-jamcart-red text-white text-xs">
-                        {getUserInitials()}
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {user.name
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("")}
                       </AvatarFallback>
                     </Avatar>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <div className="px-2 py-1.5">
-                    <p className="text-sm font-medium">{user.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile" className="cursor-pointer">
-                      Your Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  {user.isAdmin && (
-                    <DropdownMenuItem asChild>
-                      <Link to="/admin/dashboard" className="cursor-pointer">
-                        Admin Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
-                  {user.isRider && (
-                    <>
-                      <DropdownMenuItem asChild>
-                        <Link to="/rider/dashboard" className="cursor-pointer">
-                          <Bike className="mr-2 h-4 w-4" />
-                          Rider Dashboard
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/rider/orders" className="cursor-pointer">
-                          <Package className="mr-2 h-4 w-4" />
-                          Rider Orders
-                        </Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-red-600 cursor-pointer">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Sign out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          ) : (
-            <>
-              <Link to="/auth?mode=login">
-                <ActionButton variant="ghost" size="sm">
-                  Sign In
-                </ActionButton>
-              </Link>
-              <Link to="/auth?mode=register">
-                <ActionButton variant="primary" size="sm">
-                  Get Started
-                </ActionButton>
-              </Link>
-            </>
-          )}
-        </div>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="w-[300px] sm:w-[400px]">
+                  <div className="py-6">
+                    <div className="flex items-center mb-6">
+                      <Avatar className="h-12 w-12 mr-4">
+                        <AvatarFallback className="bg-primary text-primary-foreground">
+                          {user.name
+                            ?.split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="font-medium">{user.name}</h3>
+                        <p className="text-sm text-gray-500">{user.email}</p>
+                      </div>
+                    </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden flex items-center"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label={isOpen ? "Close menu" : "Open menu"}
-        >
-          {isOpen ? (
-            <X className="h-6 w-6 text-gray-800" />
-          ) : (
-            <Menu className="h-6 w-6 text-gray-800" />
-          )}
-        </button>
+                    <div className="space-y-1">
+                      <Link to="/profile">
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start"
+                        >
+                          <User className="mr-2 h-4 w-4" />
+                          My Profile
+                        </Button>
+                      </Link>
+                      <Link to="/orders">
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-start"
+                        >
+                          <ShoppingCart className="mr-2 h-4 w-4" />
+                          My Orders
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50"
+                        onClick={logout}
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
+                      </Button>
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            ) : (
+              <div className="hidden md:block">
+                <Link to="/auth">
+                  <Button variant="ghost">Log in</Button>
+                </Link>
+                <Link to="/auth?tab=register">
+                  <Button>Sign up</Button>
+                </Link>
+              </div>
+            )}
+          </nav>
+
+          {/* Mobile Navigation Toggle + Theme Toggle */}
+          <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-700 dark:text-gray-200"
+              onClick={toggle}
+            >
+              {isOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="fixed inset-0 z-40 bg-white pt-20"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden bg-white dark:bg-gray-900 border-t dark:border-gray-800 overflow-hidden"
           >
-            <div className="app-container py-5 flex flex-col space-y-6">
-              <nav className="flex flex-col space-y-5">
-                {navigationItems.map((item) => (
+            <div className="app-container py-4">
+              <nav className="flex flex-col space-y-4">
+                {navItems.map((item) => (
                   <Link
-                    key={item.name}
+                    key={item.path}
                     to={item.path}
-                    className={`text-lg font-medium transition-colors ${
-                      location.pathname === item.path ? "text-jamcart-red" : "text-gray-800"
+                    className={`text-sm font-medium transition-colors hover:text-primary ${
+                      location.pathname === item.path
+                        ? "text-primary"
+                        : "text-gray-700 dark:text-gray-200"
                     }`}
+                    onClick={close}
                   >
                     {item.name}
                   </Link>
                 ))}
-              </nav>
 
-              <div className="border-t border-gray-100 pt-5">
                 {user ? (
-                  <div className="flex flex-col space-y-4">
+                  <>
                     <Link
                       to="/profile"
-                      className="flex items-center text-lg font-medium text-gray-800"
+                      className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary"
+                      onClick={close}
                     >
-                      <User className="h-5 w-5 mr-3" />
-                      Your Profile
+                      Profile
                     </Link>
                     <Link
                       to="/orders"
-                      className="flex items-center text-lg font-medium text-gray-800"
+                      className="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary"
+                      onClick={close}
                     >
-                      <ShoppingCart className="h-5 w-5 mr-3" />
-                      Your Orders
+                      Orders
                     </Link>
-                    {user.isAdmin && (
-                      <Link
-                        to="/admin/dashboard"
-                        className="flex items-center text-lg font-medium text-gray-800"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 mr-3"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                          />
-                        </svg>
-                        Admin Dashboard
-                      </Link>
-                    )}
-                    {user.isRider && (
-                      <>
-                        <Link
-                          to="/rider/dashboard"
-                          className="flex items-center text-lg font-medium text-gray-800"
-                        >
-                          <Bike className="h-5 w-5 mr-3" />
-                          Rider Dashboard
-                        </Link>
-                        <Link
-                          to="/rider/orders"
-                          className="flex items-center text-lg font-medium text-gray-800"
-                        >
-                          <Package className="h-5 w-5 mr-3" />
-                          Rider Orders
-                        </Link>
-                      </>
-                    )}
                     <button
-                      onClick={handleLogout}
-                      className="flex items-center text-lg font-medium text-jamcart-red"
+                      className="text-sm font-medium text-red-500 hover:text-red-600 text-left"
+                      onClick={() => {
+                        logout();
+                        close();
+                      }}
                     >
-                      <LogOut className="h-5 w-5 mr-3" />
-                      Sign out
+                      Logout
                     </button>
-                  </div>
+                  </>
                 ) : (
-                  <div className="flex flex-col space-y-3">
-                    <Link to="/auth?mode=login">
-                      <ActionButton variant="outline" size="lg" className="w-full">
-                        Sign In
-                      </ActionButton>
+                  <div className="pt-2 flex flex-col space-y-2">
+                    <Link to="/auth" onClick={close}>
+                      <Button variant="outline" className="w-full">
+                        Log in
+                      </Button>
                     </Link>
-                    <Link to="/auth?mode=register">
-                      <ActionButton variant="primary" size="lg" className="w-full">
-                        Get Started
-                      </ActionButton>
+                    <Link to="/auth?tab=register" onClick={close}>
+                      <Button className="w-full">Sign up</Button>
                     </Link>
                   </div>
                 )}
-              </div>
+              </nav>
             </div>
           </motion.div>
         )}

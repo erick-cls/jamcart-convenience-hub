@@ -5,12 +5,14 @@ export function createMarker({
   title,
   iconUrl,
   infoWindowContent,
+  label,
 }: {
   map: google.maps.Map;
   position: google.maps.LatLngLiteral;
   title: string;
   iconUrl: string;
   infoWindowContent: string;
+  label?: string;
 }) {
   if (!window.google || !window.google.maps) return null;
 
@@ -21,6 +23,12 @@ export function createMarker({
     icon: {
       url: iconUrl,
     },
+    label: label ? {
+      text: label,
+      color: 'white',
+      fontWeight: 'bold',
+      fontSize: '14px',
+    } : undefined,
   });
 
   if (infoWindowContent) {

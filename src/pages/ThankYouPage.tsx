@@ -10,9 +10,11 @@ import DeliveryInformation from '@/components/order/DeliveryInformation';
 import ActionButtons from '@/components/order/ActionButtons';
 import GoogleMap from '@/components/maps/GoogleMap';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useAuth } from '@/context/AuthContext';
 
 const ThankYouPage = () => {
   const orderDetails = useOrderDetails();
+  const { user } = useAuth();
   const [customerLocation, setCustomerLocation] = useState({ lat: 18.0179, lng: -76.8099 });
   const [riderLocation, setRiderLocation] = useState({ lat: 18.0250, lng: -76.8150 });
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -88,6 +90,11 @@ const ThankYouPage = () => {
     window.location.reload();
   };
 
+  // Function to handle location updates from the GoogleMap component
+  const handleLocationUpdate = (location: { lat: number, lng: number }) => {
+    setCustomerLocation(location);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <ThankYouHeader />
@@ -151,6 +158,9 @@ const ThankYouPage = () => {
                   height="300px"
                   onLoad={() => setMapLoaded(true)}
                   onError={() => setMapError(true)}
+                  onLocationUpdate={handleLocationUpdate}
+                  customerName={user?.name || "Customer"}
+                  riderName={orderDetails.rider?.name || "Rider"}
                 />
               )}
             </div>
