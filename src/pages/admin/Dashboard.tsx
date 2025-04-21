@@ -11,6 +11,7 @@ import UserRegistrationsChart from '@/components/admin/dashboard/UserRegistratio
 import UserOverview from '@/components/admin/dashboard/UserOverview';
 import QuickActions from '@/components/admin/dashboard/QuickActions';
 import { OrderStatus } from '@/components/ui/OrderItem';
+import RidersManagement from "@/components/admin/dashboard/RidersManagement";
 
 type OrderItem = {
   id: string;
@@ -256,7 +257,11 @@ const Dashboard = () => {
             ))
           )}
         </div>
-        
+        {activeTab === 'users' && (
+          <div className="mb-8">
+            <RidersManagement />
+          </div>
+        )}
         {activeTab === 'orders' ? (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
