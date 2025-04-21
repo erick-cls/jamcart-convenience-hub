@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -40,7 +39,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
     // Only allow status changes for admin or rider roles
-    if (user?.role === 'admin' || user?.role === 'rider') {
+    if (user?.userType === 'admin' || user?.userType === 'rider') {
       setIsSubmitting(true);
       
       try {
@@ -156,7 +155,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
             </div>
           )}
           
-          {(user?.role === 'admin' || user?.role === 'rider') && (
+          {(user?.userType === 'admin' || user?.userType === 'rider') && (
             <div className="pt-4 border-t">
               <h3 className="text-sm font-medium mb-3">Update Order Status</h3>
               <div className="grid grid-cols-2 gap-3">
