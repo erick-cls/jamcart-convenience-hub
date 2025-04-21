@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import UserPermissionsDialog, { User } from '@/components/admin/users/UserPermissionsDialog';
-import UserTypeTag from '@/components/admin/users/UserTypeTag';
-import { Badge } from '@/components/ui/badge';
-import { Bell, UserPlus, Trash2 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Trash2, UserPlus } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { useAuth } from '@/context/AuthContext';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
+import NewUsersCard from '@/components/admin/users/NewUsersCard';
+import UsersFilters from '@/components/admin/users/UsersFilters';
+import UsersTable from '@/components/admin/users/UsersTable';
 
 const generateRandomUser = (): User & { isNew: boolean; dateJoined: string } => {
   const userTypes = ['customer', 'customer', 'customer', 'rider', 'admin'] as const;
@@ -97,7 +93,6 @@ const mockUsers = [
 
 const UsersPage = () => {
   const { toast } = useToast();
-  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<(User & { isNew?: boolean; dateJoined: string })[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -298,54 +293,10 @@ const UsersPage = () => {
           <p className="text-gray-600">Manage users and their permissions</p>
         </div>
         
-        {newUsers.length > 0 && (
-          <Card className="mb-6">
-            <CardHeader className="py-4">
-              <CardTitle className="text-lg flex items-center">
-                <UserPlus className="h-5 w-5 mr-2 text-jamcart-green" />
-                New Sign Ups
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>User Type</TableHead>
-                      <TableHead>Joined</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {newUsers.map(user => (
-                      <TableRow key={user.id}>
-                        <TableCell className="font-medium">{user.name}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>
-                          <UserTypeTag userType={user.userType} />
-                        </TableCell>
-                        <TableCell>
-                          {new Date(user.dateJoined).toLocaleString()}
-                        </TableCell>
-                        <TableCell>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleShowResetDialog(user)}
-                          >
-                            Reset Password
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        <NewUsersCard 
+          users={newUsers}
+          onResetPassword={handleShowResetDialog}
+        />
         
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-5 border-b border-gray-100 flex justify-between items-center">
@@ -367,77 +318,24 @@ const UsersPage = () => {
             </div>
           </div>
           
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px]">
-                    <Checkbox 
-                      checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
-                      onCheckedChange={handleSelectAll}
-                    />
-                  </TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Date Joined</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>User Type</TableHead>
-                  <TableHead>Orders</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>
-                      <Checkbox 
-                        checked={selectedUsers.includes(user.id)}
-                        onCheckedChange={(checked) => handleSelectUser(user.id, checked as boolean)}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        {user.name}
-                        {user.isNew && (
-                          <Badge className="bg-blue-500">New</Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>{new Date(user.dateJoined).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        user.status === 'active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {user.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      {user.userType && <UserTypeTag userType={user.userType} />}
-                    </TableCell>
-                    <TableCell>{user.orders}</TableCell>
-                    <TableCell className="space-x-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleManagePermissions(user)}
-                      >
-                        Manage User
-                      </Button>
-                      <Button 
-                        variant="destructive" 
-                        size="sm"
-                        onClick={() => handleDeleteUser(user.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div className="p-5">
+            <UsersFilters
+              userTypeFilter={userTypeFilter}
+              statusFilter={statusFilter}
+              onUserTypeFilterChange={setUserTypeFilter}
+              onStatusFilterChange={setStatusFilter}
+            />
+            
+            <div className="overflow-x-auto">
+              <UsersTable
+                users={filteredUsers}
+                selectedUsers={selectedUsers}
+                onSelectUser={handleSelectUser}
+                onSelectAll={handleSelectAll}
+                onManageUser={handleManagePermissions}
+                onDeleteUser={handleDeleteUser}
+              />
+            </div>
           </div>
         </div>
       </div>
