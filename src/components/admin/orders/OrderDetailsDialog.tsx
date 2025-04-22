@@ -28,10 +28,15 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
   const { toast } = useToast();
   const { user } = useAuth();
   
-  // Add a check to ensure the dialog doesn't try to render with a null order
+  // Call hooks before any conditional returns to comply with React's rules of hooks
+  const { isSubmitting, handleStatusChange } = useOrderStatus(
+    order?.id || '', 
+    onStatusChange,
+    onClose
+  );
+  
+  // Now we can safely return null if needed
   if (!isOpen || !order) return null;
-
-  const { isSubmitting, handleStatusChange } = useOrderStatus(order.id, onStatusChange, onClose);
   
   const formattedDate = new Date(order.date).toLocaleDateString('en-US', {
     year: 'numeric',
