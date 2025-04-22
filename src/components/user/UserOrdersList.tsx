@@ -1,10 +1,10 @@
+
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { OrderStatus } from '@/components/ui/OrderItem';
-import OrderItem from '@/components/ui/OrderItem';
 import OrderDetailsDialog from '@/components/admin/orders/OrderDetailsDialog';
 import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
+import EmptyOrdersList from './EmptyOrdersList';
+import OrdersSection from './OrdersSection';
 
 interface Order {
   id: string;
@@ -27,7 +27,6 @@ interface UserOrdersListProps {
 }
 
 const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
-  const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -88,32 +87,20 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
           });
         }
       }
-      
-      if (onOrderUpdate) {
-        onOrderUpdate();
-      }
     } else {
       toast({
         title: "Status updated",
         description: `Order status has been updated to ${newStatus}.`
       });
-      
-      if (onOrderUpdate) {
-        onOrderUpdate();
-      }
+    }
+    
+    if (onOrderUpdate) {
+      onOrderUpdate();
     }
   };
   
   if (localOrders.length === 0) {
-    return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-6 md:p-8 text-center">
-        <h3 className="text-base md:text-lg font-medium mb-2">No orders found</h3>
-        <p className="text-sm md:text-base text-gray-500 mb-4 md:mb-6">
-          You haven't placed any orders yet.
-        </p>
-        <Button onClick={() => navigate('/categories')}>Browse Categories</Button>
-      </div>
-    );
+    return <EmptyOrdersList />;
   }
   
   const today = new Date();
@@ -142,69 +129,9 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   
   return (
     <>
-      {todayOrders.length > 0 && (
-        <div className="mb-8">
-          <h3 className="text-lg font-medium mb-4">Today</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {todayOrders.map((order) => (
-              <OrderItem
-                key={order.id}
-                id={order.id}
-                storeName={order.storeName}
-                category={order.category}
-                date={order.date}
-                status={order.status}
-                items={order.items}
-                total={order.total}
-                onViewDetails={handleViewDetails}
-                isNew={order.isNew}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {yesterdayOrders.length > 0 && (
-        <div className="mb-8">
-          <h3 className="text-lg font-medium mb-4">Yesterday</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {yesterdayOrders.map((order) => (
-              <OrderItem
-                key={order.id}
-                id={order.id}
-                storeName={order.storeName}
-                category={order.category}
-                date={order.date}
-                status={order.status}
-                items={order.items}
-                total={order.total}
-                onViewDetails={handleViewDetails}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-      
-      {earlierOrders.length > 0 && (
-        <div>
-          <h3 className="text-lg font-medium mb-4">Earlier</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {earlierOrders.map((order) => (
-              <OrderItem
-                key={order.id}
-                id={order.id}
-                storeName={order.storeName}
-                category={order.category}
-                date={order.date}
-                status={order.status}
-                items={order.items}
-                total={order.total}
-                onViewDetails={handleViewDetails}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      <OrdersSection title="Today" orders={todayOrders} onViewDetails={handleViewDetails} />
+      <OrdersSection title="Yesterday" orders={yesterdayOrders} onViewDetails={handleViewDetails} />
+      <OrdersSection title="Earlier" orders={earlierOrders} onViewDetails={handleViewDetails} />
       
       <OrderDetailsDialog
         isOpen={isDialogOpen}
