@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
@@ -34,7 +33,6 @@ const OrderPage = () => {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
   
-  // Function to get user's current location
   const getCurrentLocation = () => {
     setIsLoadingLocation(true);
     setLocationError(null);
@@ -61,12 +59,10 @@ const OrderPage = () => {
             description: "Couldn't access your location. Please enable location services.",
             variant: "destructive",
           });
-          // Use default location for Jamaica
           setCustomerLocation({ lat: 18.0179, lng: -76.8099 });
         }
       );
     } else {
-      // Fallback for browsers without geolocation
       setIsLoadingLocation(false);
       setLocationError("Geolocation is not supported by your browser");
       toast({
@@ -79,7 +75,6 @@ const OrderPage = () => {
   };
   
   useEffect(() => {
-    // Set default location on initial load
     setCustomerLocation({ lat: 18.0179, lng: -76.8099 });
   }, []);
   
@@ -115,13 +110,11 @@ const OrderPage = () => {
   };
   
   const handleReviewConfirmation = () => {
-    // Close review modal and open policy modal
     setIsReviewOpen(false);
     setIsPolicyOpen(true);
   };
   
   const handlePolicyAgreement = () => {
-    // User agreed to policy, proceed with order
     setIsPolicyOpen(false);
     processOrder();
   };
@@ -142,22 +135,16 @@ const OrderPage = () => {
     try {
       const orderItems = parseOrderItems(orderText);
       
-      // Check if there are any items after filtering
       if (orderItems.length === 0) {
-        // If no valid items found, add a default item
         orderItems.push("Unspecified item");
       }
       
-      // Pass the parsed order items directly to createTestOrder
       const newOrder = createTestOrder(user.id, user.name || 'Anonymous', orderItems);
       
-      // Update order store and category info
       newOrder.storeName = store.name;
       newOrder.category = category.name;
       
-      // Save customer location with the order - add as extra property instead of accessing a non-existent property
       if (customerLocation) {
-        // Using type assertion to add the property
         (newOrder as any).customerLocation = customerLocation;
       }
       
@@ -207,8 +194,7 @@ const OrderPage = () => {
             <div className="order-2 lg:order-1 lg:col-span-1">
               <StoreInfo store={store} category={category} />
               
-              {/* Location section with map */}
-              <div className="mt-6 border rounded-lg overflow-hidden shadow-sm">
+              <div className="mt-6 border rounded-lg overflow-hidden shadow-sm sticky top-24">
                 <div className="p-4 bg-gray-50 border-b flex justify-between items-center">
                   <h3 className="font-medium">Your Location</h3>
                   <Button 

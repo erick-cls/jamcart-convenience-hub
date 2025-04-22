@@ -38,19 +38,17 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
   });
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
-    // Only allow status changes for admin or rider roles
-    if (user?.userType === 'admin' || user?.userType === 'rider') {
+    if (user?.userType === 'admin' || user?.userType === 'rider' || 
+       (user?.userType === 'user' && newStatus === 'cancelled')) {
       setIsSubmitting(true);
       
       try {
-        // In a real app, this would be an API call
         await new Promise(resolve => setTimeout(resolve, 500));
-        
         onStatusChange(order.id, newStatus);
         
         toast({
           title: "Order status updated",
-          description: `Order #${order.id.slice(-6)} has been marked as ${newStatus}`,
+          description: `Order #${order.id.slice(-6)} has been ${newStatus}`,
           variant: "default",
         });
         
@@ -152,6 +150,19 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
             <div className="flex justify-between items-center pt-2 border-t">
               <span className="font-medium">Total:</span>
               <span className="font-semibold text-jamcart-green">${order.total.toFixed(2)}</span>
+            </div>
+          )}
+          
+          {user?.userType === 'user' && order.status === 'pending' && (
+            <div className="pt-4 border-t">
+              <Button
+                onClick={() => handleStatusChange('cancelled')}
+                variant="destructive"
+                className="w-full"
+                disabled={isSubmitting}
+              >
+                Cancel Order
+              </Button>
             </div>
           )}
           
