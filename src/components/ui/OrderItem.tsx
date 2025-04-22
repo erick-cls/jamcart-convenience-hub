@@ -62,7 +62,9 @@ const OrderItem = ({
     }
   };
   
-  const currentStatus = statusConfig[status];
+  // Ensure we're using the correct status config (or fall back to pending if invalid)
+  const currentStatus = status && statusConfig[status] ? statusConfig[status] : statusConfig.pending;
+  
   const formattedDate = new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',

@@ -41,4 +41,3 @@ export const useOrderFilters = (orders: Order[]) => {
     earlierOrders
   };
 };
-

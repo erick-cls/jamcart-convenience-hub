@@ -62,6 +62,7 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
     console.log(`Status changed for order ${orderId} to ${newStatus}`);
     
+    // Update local state immediately
     setLocalOrders(prevOrders => 
       prevOrders.map(order => 
         order.id === orderId 

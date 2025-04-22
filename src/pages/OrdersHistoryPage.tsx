@@ -21,8 +21,8 @@ const OrdersHistoryPage = () => {
       setIsRefreshing(true);
       try {
         const orders = getUserOrders(user.id);
+        console.log("Fetched user orders:", orders);
         setUserOrders(orders);
-        console.log("User orders fetched:", orders, "for user:", user.id);
       } catch (error) {
         console.error("Error fetching user orders:", error);
         toast({
@@ -61,7 +61,7 @@ const OrdersHistoryPage = () => {
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Set up periodic refresh every 15 seconds (reduced from 30 for more responsive updates)
+    // Set up periodic refresh every 15 seconds
     const refreshInterval = setInterval(fetchUserOrders, 15000);
     
     return () => {
