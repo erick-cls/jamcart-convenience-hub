@@ -27,14 +27,16 @@ export const useOrderStatus = (
       // Force a refresh of the order data
       window.dispatchEvent(new Event('storage'));
       
-      onClose();
+      // Add a small delay before closing to ensure UI updates
+      setTimeout(() => {
+        onClose();
+      }, 300);
     } catch (error) {
       toast({
         title: "Error updating order",
         description: "There was a problem updating the order status. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -71,14 +73,16 @@ export const useOrderStatus = (
       // Force a refresh of the order data
       window.dispatchEvent(new Event('storage'));
       
-      onClose();
+      // Add a small delay before closing to ensure UI updates
+      setTimeout(() => {
+        onClose();
+      }, 300);
     } catch (error) {
       toast({
         title: "Error cancelling order",
         description: "There was a problem cancelling your order. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsSubmitting(false);
     }
   };

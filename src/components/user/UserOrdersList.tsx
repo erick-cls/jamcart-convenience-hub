@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { OrderStatus } from '@/components/ui/OrderItem';
 import OrderItem from '@/components/ui/OrderItem';
@@ -31,10 +31,15 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const { toast } = useToast();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [localOrders, setLocalOrders] = useState<Order[]>([]);
+  
+  useEffect(() => {
+    setLocalOrders(orders);
+  }, [orders]);
   
   const handleViewDetails = (id: string) => {
     console.log("View details clicked for order:", id);
-    const order = orders.find(order => order.id === id);
+    const order = localOrders.find(order => order.id === id);
     
     if (order) {
       setSelectedOrder(order);
@@ -56,8 +61,16 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
     console.log(`Status changed for order ${orderId} to ${newStatus}`);
     
+    setLocalOrders(prevOrders => 
+      prevOrders.map(order => 
+        order.id === orderId 
+          ? { ...order, status: newStatus } 
+          : order
+      )
+    );
+    
     if (newStatus === 'cancelled') {
-      const order = orders.find(o => o.id === orderId);
+      const order = localOrders.find(o => o.id === orderId);
       if (order) {
         const orderTime = new Date(order.date).getTime();
         const currentTime = Date.now();
@@ -84,10 +97,14 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
         title: "Status updated",
         description: `Order status has been updated to ${newStatus}.`
       });
+      
+      if (onOrderUpdate) {
+        onOrderUpdate();
+      }
     }
   };
   
-  if (orders.length === 0) {
+  if (localOrders.length === 0) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden p-6 md:p-8 text-center">
         <h3 className="text-base md:text-lg font-medium mb-2">No orders found</h3>
@@ -105,19 +122,19 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
   
-  const todayOrders = orders.filter(order => {
+  const todayOrders = localOrders.filter(order => {
     const orderDate = new Date(order.date);
     orderDate.setHours(0, 0, 0, 0);
     return orderDate.getTime() === today.getTime();
   });
   
-  const yesterdayOrders = orders.filter(order => {
+  const yesterdayOrders = localOrders.filter(order => {
     const orderDate = new Date(order.date);
     orderDate.setHours(0, 0, 0, 0);
     return orderDate.getTime() === yesterday.getTime();
   });
   
-  const earlierOrders = orders.filter(order => {
+  const earlierOrders = localOrders.filter(order => {
     const orderDate = new Date(order.date);
     orderDate.setHours(0, 0, 0, 0);
     return orderDate.getTime() < yesterday.getTime();
