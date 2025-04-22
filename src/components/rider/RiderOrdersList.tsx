@@ -34,6 +34,7 @@ const RiderOrdersList = ({
   const { toast } = useToast();
   
   const handleViewDetails = (id: string) => {
+    console.log("View details clicked for order:", id);
     // Find the order by id
     const order = orders.find(order => order.id === id);
     

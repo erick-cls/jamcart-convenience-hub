@@ -6,6 +6,9 @@ interface OrderItemsListProps {
 }
 
 const OrderItemsList = ({ items }: OrderItemsListProps) => {
+  // Ensure items is always an array
+  const orderItems = Array.isArray(items) ? items : [];
+  
   return (
     <div>
       <h3 className="text-sm font-medium mb-2">Order Items</h3>
@@ -16,11 +19,17 @@ const OrderItemsList = ({ items }: OrderItemsListProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {items.map((item, index) => (
-            <TableRow key={index}>
-              <TableCell>{item}</TableCell>
+          {orderItems.length > 0 ? (
+            orderItems.map((item, index) => (
+              <TableRow key={index}>
+                <TableCell>{item}</TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell className="text-gray-500">No items found</TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
     </div>

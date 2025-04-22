@@ -28,7 +28,8 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
   const { toast } = useToast();
   const { user } = useAuth();
   
-  if (!order) return null;
+  // Add a check to ensure the dialog doesn't try to render with a null order
+  if (!isOpen || !order) return null;
 
   const { isSubmitting, handleStatusChange } = useOrderStatus(order.id, onStatusChange, onClose);
   
@@ -70,7 +71,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
             <OrderStatusBadge status={order.status} />
           </div>
           
-          <OrderItemsList items={order.items} />
+          <OrderItemsList items={order.items || []} />
           
           {order.total && (
             <div className="flex justify-between items-center pt-2 border-t">
