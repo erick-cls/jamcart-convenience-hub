@@ -1,7 +1,7 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { ChevronLeft, MapPin } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { toast } from '@/hooks/use-toast';
@@ -11,10 +11,10 @@ import StoreInfo from '@/components/order/StoreInfo';
 import ShoppingListForm from '@/components/order/ShoppingListForm';
 import OrderReviewModal from '@/components/order/OrderReviewModal';
 import CancellationPolicyModal from '@/components/order/CancellationPolicyModal';
+import OrderPageHeader from '@/components/order/OrderPageHeader';
+import CustomerLocation from '@/components/order/CustomerLocation';
 import { parseOrderItems } from '@/utils/order/orderUtils';
-import { categories, mockStores, getCategoryById, getStoreById } from '@/utils/order/mockStoreData';
-import GoogleMap from '@/components/maps/GoogleMap';
-import { Button } from '@/components/ui/button';
+import { categories, mockStores } from '@/utils/order/mockStoreData';
 
 const OrderPage = () => {
   const { categoryId, storeId } = useParams<{ categoryId: string; storeId: string }>();
@@ -32,47 +32,6 @@ const OrderPage = () => {
   const [customerLocation, setCustomerLocation] = useState<{lat: number, lng: number} | null>(null);
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
-  
-  const getCurrentLocation = () => {
-    setIsLoadingLocation(true);
-    setLocationError(null);
-    
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCustomerLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-          setIsLoadingLocation(false);
-          toast({
-            title: "Location updated",
-            description: "Your current location has been set",
-          });
-        },
-        (error) => {
-          console.log("Geolocation error:", error);
-          setIsLoadingLocation(false);
-          setLocationError("Couldn't get your location. Please enable location services.");
-          toast({
-            title: "Location error",
-            description: "Couldn't access your location. Please enable location services.",
-            variant: "destructive",
-          });
-          setCustomerLocation({ lat: 18.0179, lng: -76.8099 });
-        }
-      );
-    } else {
-      setIsLoadingLocation(false);
-      setLocationError("Geolocation is not supported by your browser");
-      toast({
-        title: "Location not supported",
-        description: "Geolocation is not supported by your browser.",
-        variant: "destructive",
-      });
-      setCustomerLocation({ lat: 18.0179, lng: -76.8099 });
-    }
-  };
   
   useEffect(() => {
     setCustomerLocation({ lat: 18.0179, lng: -76.8099 });
@@ -94,8 +53,6 @@ const OrderPage = () => {
     setCategory(categories[categoryId as keyof typeof categories]);
   }, [categoryId, storeId, navigate]);
   
-  if (!store || !category) return null;
-  
   const handleSubmitOrder = () => {
     if (!orderText.trim()) {
       toast({
@@ -105,7 +62,6 @@ const OrderPage = () => {
       });
       return;
     }
-    
     setIsReviewOpen(true);
   };
   
@@ -165,64 +121,35 @@ const OrderPage = () => {
     }
   };
   
-  const handleCancelReview = () => {
-    setIsReviewOpen(false);
-  };
+  if (!store || !category) return null;
   
   return (
     <>
       <Header />
       <div className="min-h-screen pt-20 pb-10">
         <div className="app-container">
-          <div className="flex items-center mb-6">
-            <button
-              className="p-2 rounded-full hover:bg-gray-200 mr-3"
-              onClick={() => navigate(`/category/${categoryId}`)}
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold">{store?.name}</h1>
-              <p className="text-gray-600 flex items-center">
-                <span className="mr-2">{category?.icon}</span>
-                {category?.name}
-              </p>
-            </div>
-          </div>
+          <OrderPageHeader 
+            storeName={store.name}
+            categoryIcon={category.icon}
+            categoryName={category.name}
+            categoryId={categoryId as string}
+          />
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="order-2 lg:order-1 lg:col-span-1">
               <StoreInfo store={store} category={category} />
               
-              <div className="mt-6 border rounded-lg overflow-hidden shadow-sm sticky top-24">
-                <div className="p-4 bg-gray-50 border-b flex justify-between items-center">
-                  <h3 className="font-medium">Your Location</h3>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex items-center gap-1" 
-                    onClick={getCurrentLocation}
-                    disabled={isLoadingLocation}
-                  >
-                    <MapPin className="h-4 w-4" />
-                    {isLoadingLocation ? "Getting Location..." : "Use Current Location"}
-                  </Button>
-                </div>
-                
-                {locationError && (
-                  <div className="p-3 bg-red-50 border-b border-red-100 text-sm text-red-600">
-                    {locationError}
-                  </div>
-                )}
-                
-                <GoogleMap
-                  customerLocation={customerLocation || undefined}
-                  customerName={user?.name || "You"}
-                  height="200px"
-                  zoom={13}
-                  showControls={false}
-                />
-              </div>
+              <CustomerLocation 
+                customerLocation={customerLocation}
+                customerName={user?.name}
+                isLoadingLocation={isLoadingLocation}
+                locationError={locationError}
+                onLocationUpdate={(location) => {
+                  setCustomerLocation(location);
+                  setIsLoadingLocation(false);
+                  setLocationError(null);
+                }}
+              />
             </div>
             
             <div className="order-1 lg:order-2 lg:col-span-2">
@@ -243,7 +170,7 @@ const OrderPage = () => {
             orderText={orderText}
             user={user}
             isSubmitting={isSubmitting}
-            onCancel={handleCancelReview}
+            onCancel={() => setIsReviewOpen(false)}
             onConfirm={handleReviewConfirmation}
           />
         )}
