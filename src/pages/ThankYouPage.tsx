@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useOrderDetails } from '@/hooks/useOrderDetails';
@@ -21,6 +20,12 @@ const ThankYouPage = () => {
   const [riderLocation, setRiderLocation] = useState({ lat: 18.0250, lng: -76.8150 });
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapError, setMapError] = useState(false);
+
+  // Modify the initial rider state to be null
+  const [riderDetails, setRiderDetails] = useState<{
+    name: string;
+    phone: string;
+  } | null>(null);
 
   // Log the current orderId for debugging
   useEffect(() => {
@@ -103,6 +108,19 @@ const ThankYouPage = () => {
     window.location.reload();
   };
 
+  // Simulated rider assignment logic (you can modify this based on your actual requirements)
+  useEffect(() => {
+    // Simulate finding a rider after some time
+    const findRider = setTimeout(() => {
+      setRiderDetails({
+        name: orderDetails.rider?.name || 'John Rider',
+        phone: orderDetails.rider?.phone || '+1 (876) 123-4567'
+      });
+    }, 5000); // Simulates searching for 5 seconds
+
+    return () => clearTimeout(findRider);
+  }, [orderDetails.rider]);
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <ThankYouHeader />
@@ -123,7 +141,7 @@ const ThankYouPage = () => {
             </div>
             <DeliveryInformation 
               delivery={orderDetails.delivery} 
-              rider={orderDetails.rider} 
+              rider={riderDetails} 
             />
             
             {/* Google Map for tracking delivery */}

@@ -3,10 +3,10 @@ import { MapPin, Bike } from 'lucide-react';
 
 interface DeliveryInformationProps {
   delivery: string;
-  rider: {
+  rider?: {
     name: string;
     phone: string;
-  };
+  } | null;
 }
 
 const DeliveryInformation = ({ delivery, rider }: DeliveryInformationProps) => {
@@ -26,12 +26,15 @@ const DeliveryInformation = ({ delivery, rider }: DeliveryInformationProps) => {
             <Bike className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
             <div>
               <p className="font-medium">Your Delivery Rider</p>
-              <p className="text-gray-600">{rider.name} • {rider.phone}</p>
+              <p className="text-gray-600">
+                {rider 
+                  ? `${rider.name} • ${rider.phone}` 
+                  : "Searching for Riders within your Area..."}
+              </p>
             </div>
           </div>
         </div>
       </div>
-      {/* Removed the animated SVG div */}
     </>
   );
 };
