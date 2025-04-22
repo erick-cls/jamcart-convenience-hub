@@ -13,18 +13,19 @@ const OrdersHistoryPage = () => {
   const { getUserOrders } = useOrdersState();
   const [userOrders, setUserOrders] = useState<Order[]>([]);
 
+  const fetchUserOrders = () => {
+    if (user) {
+      const orders = getUserOrders(user.id);
+      setUserOrders(orders);
+      console.log("User orders fetched:", orders, "for user:", user.id);
+    }
+  };
+
   useEffect(() => {
     if (!user) {
       navigate('/auth?mode=login');
       return;
     }
-    
-    // Get orders for the current user and set state
-    const fetchUserOrders = () => {
-      const orders = getUserOrders(user.id);
-      setUserOrders(orders);
-      console.log("User orders fetched:", orders, "for user:", user.id);
-    };
     
     fetchUserOrders();
     
@@ -62,7 +63,10 @@ const OrdersHistoryPage = () => {
               <CardDescription>View and track all your orders</CardDescription>
             </CardHeader>
             <CardContent>
-              <UserOrdersList orders={userOrders} />
+              <UserOrdersList 
+                orders={userOrders} 
+                onOrderUpdate={fetchUserOrders} 
+              />
             </CardContent>
           </Card>
         </div>

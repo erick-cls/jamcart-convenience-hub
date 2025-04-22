@@ -23,9 +23,10 @@ interface Order {
 
 interface UserOrdersListProps {
   orders: Order[];
+  onOrderUpdate?: () => void;
 }
 
-const UserOrdersList = ({ orders }: UserOrdersListProps) => {
+const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -55,7 +56,6 @@ const UserOrdersList = ({ orders }: UserOrdersListProps) => {
   const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
     console.log(`Status changed for order ${orderId} to ${newStatus}`);
     
-    // Check if cancellation should incur a penalty
     if (newStatus === 'cancelled') {
       const order = orders.find(o => o.id === orderId);
       if (order) {
@@ -74,6 +74,10 @@ const UserOrdersList = ({ orders }: UserOrdersListProps) => {
             description: "Your order has been cancelled. A $1000 JMD penalty fee has been charged to your card.",
           });
         }
+      }
+      
+      if (onOrderUpdate) {
+        onOrderUpdate();
       }
     } else {
       toast({
@@ -187,7 +191,12 @@ const UserOrdersList = ({ orders }: UserOrdersListProps) => {
       
       <OrderDetailsDialog
         isOpen={isDialogOpen}
-        onClose={handleCloseDialog}
+        onClose={() => {
+          handleCloseDialog();
+          if (onOrderUpdate) {
+            onOrderUpdate();
+          }
+        }}
         order={selectedOrder}
         onStatusChange={handleStatusChange}
       />
