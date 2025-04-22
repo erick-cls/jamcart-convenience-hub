@@ -1,8 +1,9 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { OrderStatus } from '@/components/ui/OrderItem';
 import OrderDetailsDialog from '@/components/admin/orders/OrderDetailsDialog';
 import { useToast } from '@/hooks/use-toast';
+import { useOrderFilters } from '@/hooks/useOrderFilters';
 import EmptyOrdersList from './EmptyOrdersList';
 import OrdersSection from './OrdersSection';
 
@@ -30,11 +31,7 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const { toast } = useToast();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [localOrders, setLocalOrders] = useState<Order[]>([]);
-  
-  useEffect(() => {
-    setLocalOrders(orders);
-  }, [orders]);
+  const { localOrders, setLocalOrders, todayOrders, yesterdayOrders, earlierOrders } = useOrderFilters(orders);
   
   const handleViewDetails = (id: string) => {
     console.log("View details clicked for order:", id);
@@ -103,30 +100,6 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     return <EmptyOrdersList />;
   }
   
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-  
-  const todayOrders = localOrders.filter(order => {
-    const orderDate = new Date(order.date);
-    orderDate.setHours(0, 0, 0, 0);
-    return orderDate.getTime() === today.getTime();
-  });
-  
-  const yesterdayOrders = localOrders.filter(order => {
-    const orderDate = new Date(order.date);
-    orderDate.setHours(0, 0, 0, 0);
-    return orderDate.getTime() === yesterday.getTime();
-  });
-  
-  const earlierOrders = localOrders.filter(order => {
-    const orderDate = new Date(order.date);
-    orderDate.setHours(0, 0, 0, 0);
-    return orderDate.getTime() < yesterday.getTime();
-  });
-  
   return (
     <>
       <OrdersSection title="Today" orders={todayOrders} onViewDetails={handleViewDetails} />
@@ -149,3 +122,4 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
 };
 
 export default UserOrdersList;
+
