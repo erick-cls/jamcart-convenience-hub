@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { OrderStatus } from '@/components/ui/OrderItem';
 import { useOrdersState, Order } from './useOrdersState';
 import OrderDetailsDialog from '@/components/admin/orders/OrderDetailsDialog';
@@ -7,6 +6,7 @@ import PendingOrdersSection from './components/PendingOrdersSection';
 import AcceptedOrdersSection from './components/AcceptedOrdersSection';
 import CompletedOrdersSection from './components/CompletedOrdersSection';
 import AssignRiderDialog from './components/AssignRiderDialog';
+import { autoCancelPendingOrders } from './orderActions';
 
 interface OrdersListProps {
   orders: Order[];
@@ -17,17 +17,23 @@ interface OrdersListProps {
 }
 
 const OrdersList = ({ 
-  orders, 
+  orders: initialOrders, 
   onViewDetails, 
   onStatusChange,
   onAssignRider,
   showUserInfo = false
 }: OrdersListProps) => {
   const { getAvailableRiders } = useOrdersState();
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isAssignRiderDialogOpen, setIsAssignRiderDialogOpen] = useState(false);
   
+  useEffect(() => {
+    const updatedOrders = autoCancelPendingOrders(initialOrders);
+    setOrders(updatedOrders);
+  }, [initialOrders]);
+
   const handleViewDetails = (id: string) => {
     const order = orders.find(order => order.id === id);
     

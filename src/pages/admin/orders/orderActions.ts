@@ -93,3 +93,31 @@ export const createTestOrder = (
   console.log("Created new order:", newOrder);
   return newOrder;
 };
+
+// Auto-cancel pending orders that are older than 1 hour or from yesterday
+export const autoCancelPendingOrders = (orders: Order[]): Order[] => {
+  const currentTime = new Date().getTime();
+  const oneHourInMs = 60 * 60 * 1000;
+
+  const updatedOrders = orders.map(order => {
+    if (order.status === 'pending') {
+      const orderTime = new Date(order.date).getTime();
+      const timeDiff = currentTime - orderTime;
+      
+      if (timeDiff > oneHourInMs) {
+        return {
+          ...order,
+          status: 'cancelled' as OrderStatus
+        };
+      }
+    }
+    return order;
+  });
+
+  // Save updated orders to storage if there were any changes
+  if (JSON.stringify(orders) !== JSON.stringify(updatedOrders)) {
+    saveOrdersToStorage(updatedOrders);
+  }
+
+  return updatedOrders;
+};
