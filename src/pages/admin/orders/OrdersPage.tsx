@@ -35,10 +35,35 @@ const OrdersPage = () => {
   const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
     updateOrderStatus(orderId, newStatus);
     
-    toast({
-      title: "Order updated",
-      description: `Order #${orderId.slice(-6)} status changed to ${newStatus}`,
-    });
+    // Add additional notification for admins when a customer cancels within free period
+    if (newStatus === 'cancelled') {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        const orderTime = new Date(order.date).getTime();
+        const currentTime = Date.now();
+        const minutesSinceOrder = (currentTime - orderTime) / (1000 * 60);
+        
+        if (minutesSinceOrder <= 10) {
+          toast({
+            title: "Free cancellation",
+            description: `Order #${orderId.slice(-6)} was cancelled within the free period (${minutesSinceOrder.toFixed(1)} minutes)`,
+            variant: "default",
+          });
+        } else {
+          toast({
+            title: "Cancellation with penalty",
+            description: `Order #${orderId.slice(-6)} was cancelled after the free period (${minutesSinceOrder.toFixed(1)} minutes)`,
+            variant: "default",
+          });
+        }
+      }
+    } else {
+      toast({
+        title: "Order updated",
+        description: `Order #${orderId.slice(-6)} status changed to ${newStatus}`,
+        variant: "default",
+      });
+    }
   };
 
   const handleAssignRider = (orderId: string, riderId: string) => {
@@ -47,6 +72,7 @@ const OrdersPage = () => {
     toast({
       title: "Rider assigned",
       description: `Rider has been assigned to order #${orderId.slice(-6)}`,
+      variant: "default",
     });
   };
 

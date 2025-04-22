@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { OrderStatus } from '@/components/ui/OrderItem';
@@ -55,11 +54,33 @@ const UserOrdersList = ({ orders }: UserOrdersListProps) => {
   
   const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
     console.log(`Status changed for order ${orderId} to ${newStatus}`);
-    // Add proper implementation if needed
-    toast({
-      title: "Status updated",
-      description: `Order status has been updated to ${newStatus}.`
-    });
+    
+    // Check if cancellation should incur a penalty
+    if (newStatus === 'cancelled') {
+      const order = orders.find(o => o.id === orderId);
+      if (order) {
+        const orderTime = new Date(order.date).getTime();
+        const currentTime = Date.now();
+        const minutesSinceOrder = (currentTime - orderTime) / (1000 * 60);
+        
+        if (minutesSinceOrder <= 10) {
+          toast({
+            title: "Order cancelled",
+            description: "Your order has been cancelled without penalty.",
+          });
+        } else {
+          toast({
+            title: "Order cancelled with penalty",
+            description: "Your order has been cancelled. A $1000 JMD penalty fee has been charged to your card.",
+          });
+        }
+      }
+    } else {
+      toast({
+        title: "Status updated",
+        description: `Order status has been updated to ${newStatus}.`
+      });
+    }
   };
   
   if (orders.length === 0) {
@@ -74,7 +95,6 @@ const UserOrdersList = ({ orders }: UserOrdersListProps) => {
     );
   }
   
-  // Group orders by date (today, yesterday, earlier)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   

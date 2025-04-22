@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import OrderStatusBadge from './details/OrderStatusBadge';
 import OrderItemsList from './details/OrderItemsList';
 import OrderStatusActions from './details/OrderStatusActions';
+import OrderCancellationTimer from './details/OrderCancellationTimer';
 import { useOrderStatus } from './hooks/useOrderStatus';
 
 interface OrderDetailsDialogProps {
@@ -29,7 +30,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
   const { user } = useAuth();
   
   // Call hooks before any conditional returns to comply with React's rules of hooks
-  const { isSubmitting, handleStatusChange } = useOrderStatus(
+  const { isSubmitting, handleStatusChange, handleCancellation } = useOrderStatus(
     order?.id || '', 
     onStatusChange,
     onClose
@@ -57,6 +58,19 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
         variant: "destructive"
       });
     }
+  };
+
+  const handleOrderCancellation = async () => {
+    // Get elapsed time since order creation
+    const orderCreationTime = new Date(order.date).getTime();
+    const currentTime = Date.now();
+    const elapsedMinutes = (currentTime - orderCreationTime) / (1000 * 60);
+    
+    // Check if cancellation is within free period (10 minutes)
+    const isPenaltyFree = elapsedMinutes <= 10;
+    
+    // Process cancellation with appropriate penalty flag
+    await handleCancellation(isPenaltyFree);
   };
   
   return (
@@ -87,14 +101,12 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
           
           {user?.userType === 'customer' && order.status === 'pending' && (
             <div className="pt-4 border-t">
-              <Button
-                onClick={() => handleStatusChangeWithAuth('cancelled')}
-                variant="destructive"
-                className="w-full"
-                disabled={isSubmitting}
-              >
-                Cancel Order
-              </Button>
+              <OrderCancellationTimer 
+                orderId={order.id}
+                orderDate={order.date}
+                onCancel={handleOrderCancellation}
+                isSubmitting={isSubmitting}
+              />
             </div>
           )}
           
@@ -103,6 +115,9 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
               currentStatus={order.status}
               onStatusChange={handleStatusChangeWithAuth}
               isSubmitting={isSubmitting}
+              isPastCancellationPeriod={(order.status === 'cancelled') ? 
+                ((Date.now() - new Date(order.date).getTime()) > (10 * 60 * 1000)) : false}
+              orderId={order.id}
             />
           )}
         </div>

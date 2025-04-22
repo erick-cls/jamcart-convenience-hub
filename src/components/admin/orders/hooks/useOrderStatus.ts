@@ -36,8 +36,49 @@ export const useOrderStatus = (
     }
   };
 
+  const handleCancellation = async (isPenaltyFree: boolean) => {
+    setIsSubmitting(true);
+    
+    try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      onStatusChange(orderId, 'cancelled');
+      
+      const description = isPenaltyFree 
+        ? `Order #${orderId.slice(-6)} has been cancelled without penalty`
+        : `Order #${orderId.slice(-6)} has been cancelled with a $1000 JMD penalty fee`;
+      
+      toast({
+        title: "Order cancelled",
+        description,
+        variant: "default",
+      });
+      
+      if (!isPenaltyFree) {
+        // Simulate API call to charge card for penalty
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        toast({
+          title: "Penalty applied",
+          description: "$1000 JMD has been charged to your card",
+          variant: "default",
+        });
+      }
+      
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Error cancelling order",
+        description: "There was a problem cancelling your order. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return {
     isSubmitting,
-    handleStatusChange
+    handleStatusChange,
+    handleCancellation
   };
 };
