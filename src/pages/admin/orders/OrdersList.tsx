@@ -1,12 +1,12 @@
+
 import { useState } from 'react';
 import { OrderStatus } from '@/components/ui/OrderItem';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { useOrdersState, Order } from './useOrdersState';
 import OrderDetailsDialog from '@/components/admin/orders/OrderDetailsDialog';
 import PendingOrdersSection from './components/PendingOrdersSection';
 import AcceptedOrdersSection from './components/AcceptedOrdersSection';
 import CompletedOrdersSection from './components/CompletedOrdersSection';
+import AssignRiderDialog from './components/AssignRiderDialog';
 
 interface OrdersListProps {
   orders: Order[];
@@ -102,41 +102,13 @@ const OrdersList = ({
         onStatusChange={handleStatusChange}
       />
 
-      <Dialog open={isAssignRiderDialogOpen} onOpenChange={setIsAssignRiderDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Assign Rider to Order #{selectedOrder?.id.slice(-6)}</DialogTitle>
-          </DialogHeader>
-          
-          <div className="py-4">
-            {availableRiders.length > 0 ? (
-              <div className="space-y-3">
-                {availableRiders.map(rider => (
-                  <Button
-                    key={rider.id}
-                    variant="outline"
-                    className="w-full justify-start text-left"
-                    onClick={() => handleRiderSelection(rider.id)}
-                  >
-                    {rider.name}
-                  </Button>
-                ))}
-              </div>
-            ) : (
-              <p className="text-center text-gray-500">No available riders.</p>
-            )}
-          </div>
-          
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setIsAssignRiderDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <AssignRiderDialog
+        isOpen={isAssignRiderDialogOpen}
+        onClose={() => setIsAssignRiderDialogOpen(false)}
+        selectedOrder={selectedOrder}
+        availableRiders={availableRiders}
+        onAssignRider={handleRiderSelection}
+      />
     </>
   );
 };
