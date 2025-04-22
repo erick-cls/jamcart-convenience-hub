@@ -24,6 +24,9 @@ export const useOrderStatus = (
         variant: "default",
       });
       
+      // Force a refresh of the order data
+      window.dispatchEvent(new Event('storage'));
+      
       onClose();
     } catch (error) {
       toast({
@@ -41,6 +44,7 @@ export const useOrderStatus = (
     
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
+      // Explicitly call with 'cancelled' status to ensure it gets set correctly
       onStatusChange(orderId, 'cancelled');
       
       const description = isPenaltyFree 
@@ -63,6 +67,9 @@ export const useOrderStatus = (
           variant: "default",
         });
       }
+      
+      // Force a refresh of the order data
+      window.dispatchEvent(new Event('storage'));
       
       onClose();
     } catch (error) {

@@ -1,4 +1,3 @@
-
 import { Order, OrderStatus } from './types';
 import { saveOrdersToStorage, getStoredOrders } from './orderStorage';
 
@@ -12,8 +11,11 @@ export const updateOrderStatus = (
     order.id === orderId ? { ...order, status: newStatus } : order
   );
   
-  // Save to localStorage
+  // Save to localStorage immediately to ensure persistence
   saveOrdersToStorage(updatedOrders);
+  
+  // Dispatch a storage event to notify other components about the change
+  window.dispatchEvent(new Event('storage'));
   
   return updatedOrders;
 };

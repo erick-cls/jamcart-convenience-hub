@@ -29,16 +29,18 @@ const OrdersHistoryPage = () => {
     fetchUserOrders();
     
     // Add an event listener for storage changes to refresh orders when updated
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'jamcart_orders') {
-        fetchUserOrders();
-      }
+    const handleStorageChange = () => {
+      fetchUserOrders();
     };
     
     window.addEventListener('storage', handleStorageChange);
     
+    // Set up periodic refresh every 30 seconds
+    const refreshInterval = setInterval(fetchUserOrders, 30000);
+    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      clearInterval(refreshInterval);
     };
   }, [user, navigate, getUserOrders]);
 
