@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -39,7 +40,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
     if (user?.userType === 'admin' || user?.userType === 'rider' || 
-       (user?.userType === 'user' && newStatus === 'cancelled')) {
+       (user?.userType === 'customer' && newStatus === 'cancelled')) {
       setIsSubmitting(true);
       
       try {
@@ -153,7 +154,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
             </div>
           )}
           
-          {user?.userType === 'user' && order.status === 'pending' && (
+          {user?.userType === 'customer' && order.status === 'pending' && (
             <div className="pt-4 border-t">
               <Button
                 onClick={() => handleStatusChange('cancelled')}
