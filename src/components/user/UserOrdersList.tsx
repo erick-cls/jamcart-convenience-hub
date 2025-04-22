@@ -52,6 +52,11 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const handleCloseDialog = () => {
     setIsDialogOpen(false);
     setSelectedOrder(null);
+    
+    // Ensure we update parent component when dialog closes
+    if (onOrderUpdate) {
+      onOrderUpdate();
+    }
   };
   
   const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
@@ -91,9 +96,13 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
       });
     }
     
+    // Always trigger the onOrderUpdate callback when status changes
     if (onOrderUpdate) {
       onOrderUpdate();
     }
+    
+    // Force refresh of order data locally and globally
+    window.dispatchEvent(new Event('storage'));
   };
   
   if (localOrders.length === 0) {
@@ -108,12 +117,7 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
       
       <OrderDetailsDialog
         isOpen={isDialogOpen}
-        onClose={() => {
-          handleCloseDialog();
-          if (onOrderUpdate) {
-            onOrderUpdate();
-          }
-        }}
+        onClose={handleCloseDialog}
         order={selectedOrder}
         onStatusChange={handleStatusChange}
       />
@@ -122,4 +126,3 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
 };
 
 export default UserOrdersList;
-
