@@ -20,8 +20,9 @@ const OrdersHistoryPage = () => {
     if (user) {
       setIsRefreshing(true);
       try {
+        console.log("Fetching orders for user:", user.id);
         const orders = getUserOrders(user.id);
-        console.log("Fetched user orders:", orders);
+        console.log("Found", orders.length, "orders for user", user.id, ":", orders);
         setUserOrders(orders);
       } catch (error) {
         console.error("Error fetching user orders:", error);
@@ -61,8 +62,8 @@ const OrdersHistoryPage = () => {
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Set up periodic refresh every 15 seconds
-    const refreshInterval = setInterval(fetchUserOrders, 15000);
+    // Set up periodic refresh every 10 seconds (reduced from 15 for more responsive updates)
+    const refreshInterval = setInterval(fetchUserOrders, 10000);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);

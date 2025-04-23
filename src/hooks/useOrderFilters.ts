@@ -5,7 +5,9 @@ import { Order } from '@/pages/admin/orders/types';
 export const useOrderFilters = (orders: Order[]) => {
   const [localOrders, setLocalOrders] = useState<Order[]>([]);
   
+  // Make sure we update local orders whenever the input orders change
   useEffect(() => {
+    console.log("useOrderFilters received updated orders:", orders);
     setLocalOrders(orders);
   }, [orders]);
   

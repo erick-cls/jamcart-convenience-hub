@@ -31,11 +31,11 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const { toast } = useToast();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { localOrders, setLocalOrders, todayOrders, yesterdayOrders, earlierOrders } = useOrderFilters(orders);
+  const { todayOrders, yesterdayOrders, earlierOrders } = useOrderFilters(orders);
   
   const handleViewDetails = (id: string) => {
     console.log("View details clicked for order:", id);
-    const order = localOrders.find(order => order.id === id);
+    const order = orders.find(order => order.id === id);
     
     if (order) {
       setSelectedOrder(order);
@@ -62,17 +62,8 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
     console.log(`Status changed for order ${orderId} to ${newStatus}`);
     
-    // Update local state immediately
-    setLocalOrders(prevOrders => 
-      prevOrders.map(order => 
-        order.id === orderId 
-          ? { ...order, status: newStatus } 
-          : order
-      )
-    );
-    
     if (newStatus === 'cancelled') {
-      const order = localOrders.find(o => o.id === orderId);
+      const order = orders.find(o => o.id === orderId);
       if (order) {
         const orderTime = new Date(order.date).getTime();
         const currentTime = Date.now();
@@ -106,7 +97,7 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     window.dispatchEvent(new Event('storage'));
   };
   
-  if (localOrders.length === 0) {
+  if (orders.length === 0) {
     return <EmptyOrdersList />;
   }
   

@@ -35,7 +35,8 @@ export const statusConfigs = {
 };
 
 const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => {
-  const currentStatus = statusConfigs[status];
+  // Ensure status is a valid key or default to pending
+  const currentStatus = statusConfigs[status] || statusConfigs.pending;
   
   return (
     <div className={`px-3 py-1 rounded-full text-sm font-medium flex items-center ${currentStatus.color} bg-opacity-10`}>

@@ -62,8 +62,11 @@ const OrderItem = ({
     }
   };
   
-  // Ensure we're using the correct status config (or fall back to pending if invalid)
+  // Make sure we handle invalid status values and default to pending
   const currentStatus = status && statusConfig[status] ? statusConfig[status] : statusConfig.pending;
+  
+  // Debug the status to ensure it's being passed correctly
+  console.log(`Rendering order ${id} with status: ${status}`);
   
   const formattedDate = new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
