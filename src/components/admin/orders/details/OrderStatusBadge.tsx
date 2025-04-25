@@ -39,11 +39,12 @@ const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => {
   // Use local state to ensure updates
   const [displayStatus, setDisplayStatus] = useState<OrderStatus>(status);
   
-  // Update display status when props change
+  // Update display status when props change - with high priority
   useEffect(() => {
     console.log(`OrderStatusBadge: Status updated from ${displayStatus} to ${status}`);
+    // Use immediate update without batching for faster UI reflection
     setDisplayStatus(status);
-  }, [status, displayStatus]);
+  }, [status]);
   
   // Ensure status is a valid key or default to pending
   const currentStatus = statusConfigs[displayStatus] || statusConfigs.pending;

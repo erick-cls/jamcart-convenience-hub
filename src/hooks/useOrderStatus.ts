@@ -16,9 +16,12 @@ export const useOrderStatus = (
     
     try {
       console.log(`useOrderStatus: Changing order ${orderId} status to ${newStatus}`);
-      // Shorter delay for better responsiveness
-      await new Promise(resolve => setTimeout(resolve, 200)); 
+      
+      // Call onStatusChange immediately for instant UI update
       onStatusChange(orderId, newStatus);
+      
+      // Simulate API delay - much shorter for better responsiveness
+      await new Promise(resolve => setTimeout(resolve, 100)); 
       
       toast({
         title: "Order status updated",
@@ -27,9 +30,11 @@ export const useOrderStatus = (
       });
       
       // Force multiple refresh events to ensure updates propagate
+      // Using more frequent intervals for better responsiveness
       window.dispatchEvent(new Event('storage'));
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 300);
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 50);
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 150);
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 250);
       
       // Add a smaller delay before closing to ensure UI updates
       setTimeout(() => {
@@ -50,11 +55,12 @@ export const useOrderStatus = (
     
     try {
       console.log(`useOrderStatus: Cancelling order ${orderId}, penalty-free: ${isPenaltyFree}`);
-      // Shorter delay for better responsiveness
-      await new Promise(resolve => setTimeout(resolve, 200)); 
       
-      // Explicitly call with 'cancelled' status to ensure it gets set correctly
+      // Call onStatusChange immediately for instant UI update - don't wait for timeout
       onStatusChange(orderId, 'cancelled');
+      
+      // Simulate API delay - much shorter for better responsiveness
+      await new Promise(resolve => setTimeout(resolve, 100)); 
       
       const description = isPenaltyFree 
         ? `Order #${orderId.slice(-6)} has been cancelled without penalty`
@@ -68,7 +74,7 @@ export const useOrderStatus = (
       
       if (!isPenaltyFree) {
         // Simulate API call to charge card for penalty with shorter delay
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         toast({
           title: "Penalty applied",
@@ -77,16 +83,17 @@ export const useOrderStatus = (
         });
       }
       
-      // Force multiple refresh events to ensure updates propagate
+      // Force multiple refresh events with more frequent intervals to ensure updates propagate
       window.dispatchEvent(new Event('storage'));
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 300);
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 500);
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 50);
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 150);
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 250);
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 350);
       
-      // Add a small delay before closing to ensure UI updates
+      // Add a smaller delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-      }, 150);
+      }, 100);
     } catch (error) {
       toast({
         title: "Error cancelling order",

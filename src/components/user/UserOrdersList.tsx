@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { OrderStatus } from '@/components/ui/OrderItem';
 import OrderDetailsDialog from '@/components/admin/orders/OrderDetailsDialog';
 import { useToast } from '@/hooks/use-toast';
@@ -40,11 +40,11 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     setLocalOrders(orders);
   }, [orders]);
   
-  // Force update every 2 seconds to make sure UI stays in sync
+  // Force update every second to make sure UI stays in sync
   useEffect(() => {
     const intervalId = setInterval(() => {
       setLocalOrders(prevOrders => [...prevOrders]);
-    }, 2000);
+    }, 1000);
     
     return () => clearInterval(intervalId);
   }, []);
@@ -65,7 +65,7 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     }
   };
   
-  const handleCloseDialog = () => {
+  const handleCloseDialog = useCallback(() => {
     setIsDialogOpen(false);
     setSelectedOrder(null);
     
@@ -73,9 +73,9 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     if (onOrderUpdate) {
       onOrderUpdate();
     }
-  };
+  }, [onOrderUpdate]);
   
-  const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
+  const handleStatusChange = useCallback((orderId: string, newStatus: OrderStatus) => {
     console.log(`Status changed for order ${orderId} to ${newStatus}`);
     
     // Update local state immediately for instant UI feedback
@@ -120,12 +120,12 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     }
     
     // Force refresh of order data locally and globally
-    // Use multiple events for maximum compatibility
+    // Use multiple events for maximum compatibility with more frequent intervals
     window.dispatchEvent(new Event('storage'));
     setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
+    setTimeout(() => window.dispatchEvent(new Event('storage')), 300);
     setTimeout(() => window.dispatchEvent(new Event('storage')), 500);
-    setTimeout(() => window.dispatchEvent(new Event('storage')), 1000);
-  };
+  }, [localOrders, toast, onOrderUpdate]);
   
   if (localOrders.length === 0) {
     return <EmptyOrdersList />;

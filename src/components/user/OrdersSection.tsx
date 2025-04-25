@@ -27,8 +27,19 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
   useEffect(() => {
     console.log(`OrdersSection (${title}): Received ${orders.length} orders with statuses:`, 
       orders.map(o => `${o.id.slice(-6)}: ${o.status}`).join(', '));
-    setDisplayedOrders(orders);
+    setDisplayedOrders([...orders]); // Create new array to ensure state update
   }, [orders, title]);
+
+  // Additional force refresh effect for better reactivity
+  useEffect(() => {
+    const handleStorageEvent = () => {
+      console.log(`OrdersSection (${title}): Force refresh triggered`);
+      setDisplayedOrders(current => [...current]); // Force a re-render
+    };
+    
+    window.addEventListener('storage', handleStorageEvent);
+    return () => window.removeEventListener('storage', handleStorageEvent);
+  }, [title]);
   
   if (displayedOrders.length === 0) return null;
   

@@ -26,14 +26,9 @@ const OrdersHistoryPage = () => {
         console.log("Found", orders.length, "orders for user", user.id, ":", 
           orders.map(o => `${o.id.slice(-6)}: ${o.status}`).join(', '));
         
-        // Only update state if orders are different or it's been more than 2 seconds
-        // This prevents excessive re-renders while ensuring updates
-        const currentTime = Date.now();
-        if (currentTime - lastRefresh > 2000 || 
-            JSON.stringify(orders) !== JSON.stringify(userOrders)) {
-          setUserOrders(orders);
-          setLastRefresh(currentTime);
-        }
+        // Update state more aggressively - always update on fetch
+        setUserOrders(orders);
+        setLastRefresh(Date.now());
       } catch (error) {
         console.error("Error fetching user orders:", error);
         toast({
@@ -45,7 +40,7 @@ const OrdersHistoryPage = () => {
         setIsRefreshing(false);
       }
     }
-  }, [user, getUserOrders, toast, userOrders, lastRefresh]);
+  }, [user, getUserOrders, toast]);
 
   // Force refresh of orders
   const forceRefresh = useCallback(() => {
@@ -72,8 +67,8 @@ const OrdersHistoryPage = () => {
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Set up frequent refresh every 3 seconds for more responsive updates
-    const refreshInterval = setInterval(fetchUserOrders, 3000);
+    // Set up more frequent refresh every 1 second for more responsive updates
+    const refreshInterval = setInterval(fetchUserOrders, 1000);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
