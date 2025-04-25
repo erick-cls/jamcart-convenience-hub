@@ -36,9 +36,18 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   
   // Update local orders when the parent component's orders change
   useEffect(() => {
-    console.log("UserOrdersList received updated orders:", orders);
+    console.log("UserOrdersList received updated orders:", orders.map(o => `${o.id.slice(-6)}: ${o.status}`).join(', '));
     setLocalOrders(orders);
   }, [orders]);
+  
+  // Force update every 2 seconds to make sure UI stays in sync
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setLocalOrders(prevOrders => [...prevOrders]);
+    }, 2000);
+    
+    return () => clearInterval(intervalId);
+  }, []);
   
   const handleViewDetails = (id: string) => {
     console.log("View details clicked for order:", id);
@@ -106,11 +115,16 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     
     // Always trigger the onOrderUpdate callback when status changes
     if (onOrderUpdate) {
+      console.log("Triggering onOrderUpdate callback");
       onOrderUpdate();
     }
     
     // Force refresh of order data locally and globally
+    // Use multiple events for maximum compatibility
     window.dispatchEvent(new Event('storage'));
+    setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
+    setTimeout(() => window.dispatchEvent(new Event('storage')), 500);
+    setTimeout(() => window.dispatchEvent(new Event('storage')), 1000);
   };
   
   if (localOrders.length === 0) {

@@ -15,7 +15,9 @@ export const useOrderStatus = (
     setIsSubmitting(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 300)); // Shorter delay for better responsiveness
+      console.log(`useOrderStatus: Changing order ${orderId} status to ${newStatus}`);
+      // Shorter delay for better responsiveness
+      await new Promise(resolve => setTimeout(resolve, 200)); 
       onStatusChange(orderId, newStatus);
       
       toast({
@@ -24,13 +26,15 @@ export const useOrderStatus = (
         variant: "default",
       });
       
-      // Force a refresh of the order data
+      // Force multiple refresh events to ensure updates propagate
       window.dispatchEvent(new Event('storage'));
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 300);
       
       // Add a smaller delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-      }, 200);
+      }, 100);
     } catch (error) {
       toast({
         title: "Error updating order",
@@ -45,7 +49,10 @@ export const useOrderStatus = (
     setIsSubmitting(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 300)); // Shorter delay for better responsiveness
+      console.log(`useOrderStatus: Cancelling order ${orderId}, penalty-free: ${isPenaltyFree}`);
+      // Shorter delay for better responsiveness
+      await new Promise(resolve => setTimeout(resolve, 200)); 
+      
       // Explicitly call with 'cancelled' status to ensure it gets set correctly
       onStatusChange(orderId, 'cancelled');
       
@@ -61,7 +68,7 @@ export const useOrderStatus = (
       
       if (!isPenaltyFree) {
         // Simulate API call to charge card for penalty with shorter delay
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise(resolve => setTimeout(resolve, 200));
         
         toast({
           title: "Penalty applied",
@@ -72,12 +79,14 @@ export const useOrderStatus = (
       
       // Force multiple refresh events to ensure updates propagate
       window.dispatchEvent(new Event('storage'));
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
       setTimeout(() => window.dispatchEvent(new Event('storage')), 300);
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 500);
       
       // Add a small delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-      }, 250);
+      }, 150);
     } catch (error) {
       toast({
         title: "Error cancelling order",

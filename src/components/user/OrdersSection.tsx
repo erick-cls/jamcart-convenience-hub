@@ -25,7 +25,8 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
   
   // Update displayed orders whenever parent orders change
   useEffect(() => {
-    console.log(`OrdersSection (${title}): Received ${orders.length} orders`);
+    console.log(`OrdersSection (${title}): Received ${orders.length} orders with statuses:`, 
+      orders.map(o => `${o.id.slice(-6)}: ${o.status}`).join(', '));
     setDisplayedOrders(orders);
   }, [orders, title]);
   
@@ -37,7 +38,7 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayedOrders.map((order) => (
           <OrderItem
-            key={`${order.id}-${order.status}`} // Add status to key to force re-render on status change
+            key={`${order.id}-${order.status}-${Date.now()}`} // Add timestamp to force re-render on any change
             id={order.id}
             storeName={order.storeName}
             category={order.category}

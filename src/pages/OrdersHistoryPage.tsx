@@ -15,6 +15,7 @@ const OrdersHistoryPage = () => {
   const { toast } = useToast();
   const [userOrders, setUserOrders] = useState<Order[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState<number>(Date.now());
 
   const fetchUserOrders = useCallback(() => {
     if (user) {
@@ -22,8 +23,17 @@ const OrdersHistoryPage = () => {
       try {
         console.log("Fetching orders for user:", user.id);
         const orders = getUserOrders(user.id);
-        console.log("Found", orders.length, "orders for user", user.id, ":", orders);
-        setUserOrders(orders);
+        console.log("Found", orders.length, "orders for user", user.id, ":", 
+          orders.map(o => `${o.id.slice(-6)}: ${o.status}`).join(', '));
+        
+        // Only update state if orders are different or it's been more than 2 seconds
+        // This prevents excessive re-renders while ensuring updates
+        const currentTime = Date.now();
+        if (currentTime - lastRefresh > 2000 || 
+            JSON.stringify(orders) !== JSON.stringify(userOrders)) {
+          setUserOrders(orders);
+          setLastRefresh(currentTime);
+        }
       } catch (error) {
         console.error("Error fetching user orders:", error);
         toast({
@@ -35,7 +45,7 @@ const OrdersHistoryPage = () => {
         setIsRefreshing(false);
       }
     }
-  }, [user, getUserOrders, toast]);
+  }, [user, getUserOrders, toast, userOrders, lastRefresh]);
 
   // Force refresh of orders
   const forceRefresh = useCallback(() => {
@@ -62,8 +72,8 @@ const OrdersHistoryPage = () => {
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Set up frequent refresh every 5 seconds for more responsive updates
-    const refreshInterval = setInterval(fetchUserOrders, 5000);
+    // Set up frequent refresh every 3 seconds for more responsive updates
+    const refreshInterval = setInterval(fetchUserOrders, 3000);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);

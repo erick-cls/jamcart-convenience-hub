@@ -1,6 +1,7 @@
 
 import { Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { OrderStatus } from '@/components/ui/OrderItem';
+import { useEffect, useState } from 'react';
 
 interface OrderStatusBadgeProps {
   status: OrderStatus;
@@ -35,8 +36,17 @@ export const statusConfigs = {
 };
 
 const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => {
+  // Use local state to ensure updates
+  const [displayStatus, setDisplayStatus] = useState<OrderStatus>(status);
+  
+  // Update display status when props change
+  useEffect(() => {
+    console.log(`OrderStatusBadge: Status updated from ${displayStatus} to ${status}`);
+    setDisplayStatus(status);
+  }, [status, displayStatus]);
+  
   // Ensure status is a valid key or default to pending
-  const currentStatus = statusConfigs[status] || statusConfigs.pending;
+  const currentStatus = statusConfigs[displayStatus] || statusConfigs.pending;
   
   return (
     <div className={`px-3 py-1 rounded-full text-sm font-medium flex items-center ${currentStatus.color} bg-opacity-10`}>
