@@ -23,26 +23,12 @@ interface OrdersSectionProps {
 const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => {
   const [displayedOrders, setDisplayedOrders] = useState<Order[]>([]);
   
-  // Update displayed orders whenever parent orders change - without frequent force updates
+  // Update displayed orders only when orders prop changes
   useEffect(() => {
-    console.log(`OrdersSection (${title}): Received ${orders.length} orders with statuses:`, 
-      orders.map(o => `${o.id.slice(-6)}: ${o.status}`).join(', '));
-    
+    console.log(`OrdersSection (${title}): Received ${orders.length} orders`);
     setDisplayedOrders(orders);
   }, [orders, title]);
 
-  // Listen for storage events but WITHOUT the frequent interval refreshes
-  useEffect(() => {
-    const handleStorageEvent = () => {
-      console.log(`OrdersSection (${title}): Storage event detected`);
-    };
-    
-    window.addEventListener('storage', handleStorageEvent);
-    return () => {
-      window.removeEventListener('storage', handleStorageEvent);
-    };
-  }, [title]);
-  
   if (displayedOrders.length === 0) return null;
   
   return (
@@ -51,7 +37,7 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {displayedOrders.map((order) => (
           <OrderItem
-            key={`${order.id}-${order.status}`}
+            key={order.id}
             id={order.id}
             storeName={order.storeName}
             category={order.category}

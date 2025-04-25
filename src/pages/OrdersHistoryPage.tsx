@@ -22,8 +22,7 @@ const OrdersHistoryPage = () => {
       try {
         console.log("Fetching orders for user:", user.id);
         const orders = getUserOrders(user.id);
-        console.log("Found", orders.length, "orders for user", user.id, ":", 
-          orders.map(o => `${o.id.slice(-6)}: ${o.status}`).join(', '));
+        console.log("Found", orders.length, "orders for user", user.id);
         
         setUserOrders([...orders]);
       } catch (error) {
@@ -46,8 +45,6 @@ const OrdersHistoryPage = () => {
       title: "Orders refreshed",
       description: "Your order list has been updated with the latest status.",
     });
-    
-    window.dispatchEvent(new Event('storage'));
   }, [fetchUserOrders, toast]);
 
   useEffect(() => {

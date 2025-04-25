@@ -17,7 +17,7 @@ export const useOrderStatus = (
     try {
       console.log(`useOrderStatus: Changing order ${orderId} status to ${newStatus}`);
       
-      // Call onStatusChange immediately for instant UI update - don't wait for simulated API
+      // Call onStatusChange immediately for instant UI update
       onStatusChange(orderId, newStatus);
       
       toast({
@@ -26,14 +26,11 @@ export const useOrderStatus = (
         variant: "default",
       });
       
-      // Single event dispatch to notify components
+      // Single storage event to notify components
       window.dispatchEvent(new Event('storage'));
       
-      // Add a small delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-        // One more dispatch after dialog closes
-        window.dispatchEvent(new Event('storage'));
       }, 100);
     } catch (error) {
       toast({
@@ -65,7 +62,6 @@ export const useOrderStatus = (
       });
       
       if (!isPenaltyFree) {
-        // No delay for penalty notification
         toast({
           title: "Penalty applied",
           description: "$1000 JMD has been charged to your card",
@@ -76,11 +72,8 @@ export const useOrderStatus = (
       // Single event dispatch to notify components
       window.dispatchEvent(new Event('storage'));
       
-      // Add a small delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-        // One more dispatch after dialog closes
-        window.dispatchEvent(new Event('storage'));
       }, 100);
     } catch (error) {
       toast({

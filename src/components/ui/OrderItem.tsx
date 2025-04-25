@@ -1,7 +1,8 @@
+
 import { motion } from 'framer-motion';
 import { Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import ActionButton from './ActionButton';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 
 export type OrderStatus = 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
 
@@ -32,25 +33,6 @@ const OrderItem = ({
   metadata,
   actionButton
 }: OrderItemProps) => {
-  const [currentStatus, setCurrentStatus] = useState<OrderStatus>(status);
-  const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
-  
-  useEffect(() => {
-    console.log(`OrderItem ${id}: Status updated from ${currentStatus} to ${status}`);
-    setCurrentStatus(status);
-    setLastUpdate(Date.now());
-  }, [id, status]);
-  
-  useEffect(() => {
-    const handleStorageEvent = () => {
-      console.log(`OrderItem ${id}: Force refresh triggered, current status: ${currentStatus}`);
-      setLastUpdate(Date.now());
-    };
-    
-    window.addEventListener('storage', handleStorageEvent);
-    return () => window.removeEventListener('storage', handleStorageEvent);
-  }, [id, currentStatus]);
-  
   const statusConfig = {
     pending: {
       icon: <Clock className="h-5 w-5" />,
@@ -79,9 +61,7 @@ const OrderItem = ({
     }
   };
   
-  const displayStatus = statusConfig[currentStatus] ? statusConfig[currentStatus] : statusConfig.pending;
-  
-  console.log(`Rendering order ${id} with status: ${currentStatus}, last updated: ${new Date(lastUpdate).toISOString()}`);
+  const displayStatus = statusConfig[status] ? statusConfig[status] : statusConfig.pending;
   
   const formattedDate = new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -93,7 +73,6 @@ const OrderItem = ({
   
   return (
     <motion.div 
-      key={`order-${id}-${currentStatus}-${lastUpdate}`}
       className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
