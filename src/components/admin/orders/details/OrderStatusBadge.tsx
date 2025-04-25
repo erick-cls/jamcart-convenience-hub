@@ -36,27 +36,13 @@ export const statusConfigs = {
 };
 
 const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => {
-  // Use local state to ensure updates with key-based forced refresh
+  // Use local state to track status changes
   const [displayStatus, setDisplayStatus] = useState<OrderStatus>(status);
-  const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
   
-  // Update display status when props change - with high priority and state refresh
+  // Update display status when props change
   useEffect(() => {
     console.log(`OrderStatusBadge: Status updated from ${displayStatus} to ${status}`);
-    // Force immediate update
     setDisplayStatus(status);
-    setLastUpdate(Date.now());
-  }, [status]);
-
-  // Set up storage event listener to catch status changes
-  useEffect(() => {
-    const handleStorageEvent = () => {
-      console.log(`OrderStatusBadge: Force refresh triggered for ${status}`);
-      setLastUpdate(Date.now()); // Force a re-render without changing state
-    };
-    
-    window.addEventListener('storage', handleStorageEvent);
-    return () => window.removeEventListener('storage', handleStorageEvent);
   }, [status]);
   
   // Ensure status is a valid key or default to pending
@@ -64,7 +50,6 @@ const OrderStatusBadge = ({ status }: OrderStatusBadgeProps) => {
   
   return (
     <div 
-      key={`${displayStatus}-${lastUpdate}`} 
       className={`px-3 py-1 rounded-full text-sm font-medium flex items-center ${currentStatus.color} bg-opacity-10`}
     >
       {currentStatus.icon}

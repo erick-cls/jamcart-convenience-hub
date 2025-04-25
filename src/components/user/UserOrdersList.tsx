@@ -32,32 +32,23 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [localOrders, setLocalOrders] = useState<Order[]>(orders);
-  const [forceUpdateKey, setForceUpdateKey] = useState<number>(Date.now());
   const { todayOrders, yesterdayOrders, earlierOrders } = useOrderFilters(localOrders);
   
   // Update local orders when the parent component's orders change - with immediate effect
   useEffect(() => {
     console.log("UserOrdersList received updated orders:", orders.map(o => `${o.id.slice(-6)}: ${o.status}`).join(', '));
     setLocalOrders(orders);
-    setForceUpdateKey(Date.now()); // Force re-render of entire component
   }, [orders]);
   
-  // Force update very frequently (every 300ms) to ensure UI stays in sync
+  // Listen for storage events but without the frequent interval refreshes
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setForceUpdateKey(Date.now());
-    }, 300);
-    
-    // Also listen for storage events to force updates
     const handleStorageEvent = () => {
       console.log("UserOrdersList: Storage event triggered refresh");
-      setForceUpdateKey(Date.now());
     };
     
     window.addEventListener('storage', handleStorageEvent);
     
     return () => {
-      clearInterval(intervalId);
       window.removeEventListener('storage', handleStorageEvent);
     };
   }, []);
@@ -88,12 +79,8 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
       onOrderUpdate();
     }
     
-    // Force immediate refresh after dialog closes
-    setForceUpdateKey(Date.now());
-    // Dispatch multiple storage events to ensure all components update
+    // Dispatch single storage event to trigger refresh
     window.dispatchEvent(new Event('storage'));
-    setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
-    setTimeout(() => window.dispatchEvent(new Event('storage')), 300);
   }, [onOrderUpdate]);
   
   const handleStatusChange = useCallback((orderId: string, newStatus: OrderStatus) => {
@@ -107,9 +94,6 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
           : order
       )
     );
-    
-    // Force immediate refresh after status change
-    setForceUpdateKey(Date.now());
     
     if (newStatus === 'cancelled') {
       const order = localOrders.find(o => o.id === orderId);
@@ -143,12 +127,8 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
       onOrderUpdate();
     }
     
-    // Force refresh of order data locally and globally with multiple events
-    // Use multiple events for maximum compatibility with more frequent intervals
+    // Single dispatch event instead of multiple
     window.dispatchEvent(new Event('storage'));
-    setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
-    setTimeout(() => window.dispatchEvent(new Event('storage')), 300);
-    setTimeout(() => window.dispatchEvent(new Event('storage')), 500);
   }, [localOrders, toast, onOrderUpdate]);
   
   if (localOrders.length === 0) {
@@ -156,7 +136,7 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   }
   
   return (
-    <div key={`user-orders-list-${forceUpdateKey}`}>
+    <div>
       <OrdersSection title="Today" orders={todayOrders} onViewDetails={handleViewDetails} />
       <OrdersSection title="Yesterday" orders={yesterdayOrders} onViewDetails={handleViewDetails} />
       <OrdersSection title="Earlier" orders={earlierOrders} onViewDetails={handleViewDetails} />

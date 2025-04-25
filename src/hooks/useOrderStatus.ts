@@ -20,27 +20,19 @@ export const useOrderStatus = (
       // Call onStatusChange immediately for instant UI update - don't wait for simulated API
       onStatusChange(orderId, newStatus);
       
-      // No API delay - just update UI immediately
-      // This is key to making status changes appear instantly
-      
       toast({
         title: "Order status updated",
         description: `Order #${orderId.slice(-6)} has been ${newStatus}`,
         variant: "default",
       });
       
-      // Force multiple refresh events to ensure updates propagate
-      // Using very frequent intervals for maximum reactivity
+      // Single event dispatch to notify components
       window.dispatchEvent(new Event('storage'));
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 50);
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 150);
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 250);
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 350);
       
       // Add a small delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-        // Trigger one more refresh after dialog closes
+        // One more dispatch after dialog closes
         window.dispatchEvent(new Event('storage'));
       }, 100);
     } catch (error) {
@@ -59,11 +51,8 @@ export const useOrderStatus = (
     try {
       console.log(`useOrderStatus: Cancelling order ${orderId}, penalty-free: ${isPenaltyFree}`);
       
-      // Call onStatusChange immediately for instant UI update - don't wait for timeout
+      // Call onStatusChange immediately for instant UI update
       onStatusChange(orderId, 'cancelled');
-      
-      // No API delay - just update UI immediately
-      // This is key to making cancellations appear instantly
       
       const description = isPenaltyFree 
         ? `Order #${orderId.slice(-6)} has been cancelled without penalty`
@@ -84,18 +73,13 @@ export const useOrderStatus = (
         });
       }
       
-      // Force multiple refresh events with more frequent intervals to ensure updates propagate
+      // Single event dispatch to notify components
       window.dispatchEvent(new Event('storage'));
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 50);
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 150);
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 250);
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 350);
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 450);
       
-      // Add a smaller delay before closing to ensure UI updates
+      // Add a small delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-        // Trigger one more refresh after dialog closes
+        // One more dispatch after dialog closes
         window.dispatchEvent(new Event('storage'));
       }, 100);
     } catch (error) {

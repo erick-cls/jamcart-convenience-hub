@@ -15,7 +15,6 @@ const OrdersHistoryPage = () => {
   const { toast } = useToast();
   const [userOrders, setUserOrders] = useState<Order[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [lastRefresh, setLastRefresh] = useState<number>(Date.now());
 
   const fetchUserOrders = useCallback(() => {
     if (user) {
@@ -26,9 +25,7 @@ const OrdersHistoryPage = () => {
         console.log("Found", orders.length, "orders for user", user.id, ":", 
           orders.map(o => `${o.id.slice(-6)}: ${o.status}`).join(', '));
         
-        // Always update on fetch for maximum reactivity
-        setUserOrders([...orders]); // Create new array reference
-        setLastRefresh(Date.now());
+        setUserOrders([...orders]);
       } catch (error) {
         console.error("Error fetching user orders:", error);
         toast({
@@ -50,9 +47,7 @@ const OrdersHistoryPage = () => {
       description: "Your order list has been updated with the latest status.",
     });
     
-    // Dispatch storage events to ensure all components update
     window.dispatchEvent(new Event('storage'));
-    setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
   }, [fetchUserOrders, toast]);
 
   useEffect(() => {
@@ -63,7 +58,6 @@ const OrdersHistoryPage = () => {
     
     fetchUserOrders();
     
-    // Add multiple event listeners for storage changes to refresh orders
     const handleStorageChange = () => {
       console.log("Storage change detected, refreshing orders...");
       fetchUserOrders();
@@ -71,12 +65,8 @@ const OrdersHistoryPage = () => {
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Set up more frequent refresh every 300ms for more responsive updates
-    const refreshInterval = setInterval(fetchUserOrders, 300);
-    
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      clearInterval(refreshInterval);
     };
   }, [user, navigate, fetchUserOrders]);
 
