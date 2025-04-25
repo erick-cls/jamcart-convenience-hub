@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import AnimatedLogo from '@/components/ui/AnimatedLogo';
@@ -59,11 +58,7 @@ const LandingPage = () => {
       <Header />
       <div className="min-h-screen">
         {/* Hero Section */}
-        <section className="pt-24 pb-16 md:pt-32 md:pb-24 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-jamcart-red/5 to-jamcart-yellow/5 pointer-events-none"></div>
-          <div className="absolute top-20 right-0 w-96 h-96 bg-jamcart-yellow/10 rounded-full filter blur-3xl pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-jamcart-red/10 rounded-full filter blur-3xl pointer-events-none"></div>
-          
+        <section className="pt-24 pb-16 md:pt-32 md:pb-24 relative overflow-hidden bg-black">
           <div className="app-container relative">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <motion.div
@@ -75,11 +70,11 @@ const LandingPage = () => {
                 <span className="inline-block bg-jamcart-red/10 text-jamcart-red rounded-full px-4 py-1.5 text-sm font-medium mb-6">
                   Convenience at your fingertips
                 </span>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
                   Your One-Stop <br className="hidden md:block" />
                   <span className="text-jamcart-red">Convenience Hub</span>
                 </h1>
-                <p className="text-lg text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0">
+                <p className="text-lg text-white mb-8 max-w-lg mx-auto lg:mx-0">
                   Get groceries, food, pharmaceuticals, and more delivered right to your doorstep with a simple click.
                 </p>
                 <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
@@ -95,6 +90,7 @@ const LandingPage = () => {
                     variant="outline" 
                     size="lg" 
                     onClick={() => navigate('/how-it-works')}
+                    className="border-white text-white hover:bg-[#1da751] hover:border-[#1da751]"
                   >
                     How It Works
                   </ActionButton>
@@ -114,8 +110,8 @@ const LandingPage = () => {
                     ))}
                   </div>
                   <div className="text-sm">
-                    <span className="font-semibold">500+ people</span>
-                    <span className="text-gray-500 ml-1">already using JAMCart</span>
+                    <span className="text-white font-semibold">500+ people</span>
+                    <span className="text-[#1da751] ml-1">already using JAMCart</span>
                   </div>
                 </div>
               </motion.div>
