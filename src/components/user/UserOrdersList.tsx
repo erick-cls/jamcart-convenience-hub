@@ -32,21 +32,34 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [localOrders, setLocalOrders] = useState<Order[]>(orders);
+  const [forceUpdateKey, setForceUpdateKey] = useState<number>(Date.now());
   const { todayOrders, yesterdayOrders, earlierOrders } = useOrderFilters(localOrders);
   
-  // Update local orders when the parent component's orders change
+  // Update local orders when the parent component's orders change - with immediate effect
   useEffect(() => {
     console.log("UserOrdersList received updated orders:", orders.map(o => `${o.id.slice(-6)}: ${o.status}`).join(', '));
     setLocalOrders(orders);
+    setForceUpdateKey(Date.now()); // Force re-render of entire component
   }, [orders]);
   
-  // Force update every second to make sure UI stays in sync
+  // Force update very frequently (every 300ms) to ensure UI stays in sync
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setLocalOrders(prevOrders => [...prevOrders]);
-    }, 1000);
+      setForceUpdateKey(Date.now());
+    }, 300);
     
-    return () => clearInterval(intervalId);
+    // Also listen for storage events to force updates
+    const handleStorageEvent = () => {
+      console.log("UserOrdersList: Storage event triggered refresh");
+      setForceUpdateKey(Date.now());
+    };
+    
+    window.addEventListener('storage', handleStorageEvent);
+    
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener('storage', handleStorageEvent);
+    };
   }, []);
   
   const handleViewDetails = (id: string) => {
@@ -71,8 +84,16 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     
     // Ensure we update parent component when dialog closes
     if (onOrderUpdate) {
+      console.log("UserOrdersList: Triggering onOrderUpdate callback after dialog close");
       onOrderUpdate();
     }
+    
+    // Force immediate refresh after dialog closes
+    setForceUpdateKey(Date.now());
+    // Dispatch multiple storage events to ensure all components update
+    window.dispatchEvent(new Event('storage'));
+    setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
+    setTimeout(() => window.dispatchEvent(new Event('storage')), 300);
   }, [onOrderUpdate]);
   
   const handleStatusChange = useCallback((orderId: string, newStatus: OrderStatus) => {
@@ -86,6 +107,9 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
           : order
       )
     );
+    
+    // Force immediate refresh after status change
+    setForceUpdateKey(Date.now());
     
     if (newStatus === 'cancelled') {
       const order = localOrders.find(o => o.id === orderId);
@@ -115,11 +139,11 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     
     // Always trigger the onOrderUpdate callback when status changes
     if (onOrderUpdate) {
-      console.log("Triggering onOrderUpdate callback");
+      console.log("UserOrdersList: Triggering onOrderUpdate callback after status change");
       onOrderUpdate();
     }
     
-    // Force refresh of order data locally and globally
+    // Force refresh of order data locally and globally with multiple events
     // Use multiple events for maximum compatibility with more frequent intervals
     window.dispatchEvent(new Event('storage'));
     setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
@@ -132,18 +156,20 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   }
   
   return (
-    <>
+    <div key={`user-orders-list-${forceUpdateKey}`}>
       <OrdersSection title="Today" orders={todayOrders} onViewDetails={handleViewDetails} />
       <OrdersSection title="Yesterday" orders={yesterdayOrders} onViewDetails={handleViewDetails} />
       <OrdersSection title="Earlier" orders={earlierOrders} onViewDetails={handleViewDetails} />
       
-      <OrderDetailsDialog
-        isOpen={isDialogOpen}
-        onClose={handleCloseDialog}
-        order={selectedOrder}
-        onStatusChange={handleStatusChange}
-      />
-    </>
+      {selectedOrder && (
+        <OrderDetailsDialog
+          isOpen={isDialogOpen}
+          onClose={handleCloseDialog}
+          order={selectedOrder}
+          onStatusChange={handleStatusChange}
+        />
+      )}
+    </div>
   );
 };
 

@@ -17,11 +17,11 @@ export const useOrderStatus = (
     try {
       console.log(`useOrderStatus: Changing order ${orderId} status to ${newStatus}`);
       
-      // Call onStatusChange immediately for instant UI update
+      // Call onStatusChange immediately for instant UI update - don't wait for simulated API
       onStatusChange(orderId, newStatus);
       
-      // Simulate API delay - much shorter for better responsiveness
-      await new Promise(resolve => setTimeout(resolve, 100)); 
+      // No API delay - just update UI immediately
+      // This is key to making status changes appear instantly
       
       toast({
         title: "Order status updated",
@@ -30,15 +30,18 @@ export const useOrderStatus = (
       });
       
       // Force multiple refresh events to ensure updates propagate
-      // Using more frequent intervals for better responsiveness
+      // Using very frequent intervals for maximum reactivity
       window.dispatchEvent(new Event('storage'));
       setTimeout(() => window.dispatchEvent(new Event('storage')), 50);
       setTimeout(() => window.dispatchEvent(new Event('storage')), 150);
       setTimeout(() => window.dispatchEvent(new Event('storage')), 250);
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 350);
       
-      // Add a smaller delay before closing to ensure UI updates
+      // Add a small delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
+        // Trigger one more refresh after dialog closes
+        window.dispatchEvent(new Event('storage'));
       }, 100);
     } catch (error) {
       toast({
@@ -59,8 +62,8 @@ export const useOrderStatus = (
       // Call onStatusChange immediately for instant UI update - don't wait for timeout
       onStatusChange(orderId, 'cancelled');
       
-      // Simulate API delay - much shorter for better responsiveness
-      await new Promise(resolve => setTimeout(resolve, 100)); 
+      // No API delay - just update UI immediately
+      // This is key to making cancellations appear instantly
       
       const description = isPenaltyFree 
         ? `Order #${orderId.slice(-6)} has been cancelled without penalty`
@@ -73,9 +76,7 @@ export const useOrderStatus = (
       });
       
       if (!isPenaltyFree) {
-        // Simulate API call to charge card for penalty with shorter delay
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
+        // No delay for penalty notification
         toast({
           title: "Penalty applied",
           description: "$1000 JMD has been charged to your card",
@@ -89,10 +90,13 @@ export const useOrderStatus = (
       setTimeout(() => window.dispatchEvent(new Event('storage')), 150);
       setTimeout(() => window.dispatchEvent(new Event('storage')), 250);
       setTimeout(() => window.dispatchEvent(new Event('storage')), 350);
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 450);
       
       // Add a smaller delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
+        // Trigger one more refresh after dialog closes
+        window.dispatchEvent(new Event('storage'));
       }, 100);
     } catch (error) {
       toast({

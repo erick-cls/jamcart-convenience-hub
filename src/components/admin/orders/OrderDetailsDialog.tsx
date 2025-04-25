@@ -32,12 +32,14 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
   
   // Use local state to track order status for immediate UI updates
   const [currentStatus, setCurrentStatus] = useState<OrderStatus | null>(null);
+  const [statusUpdateTime, setStatusUpdateTime] = useState<number>(Date.now());
   
   // Update current status when order changes
   useEffect(() => {
     if (order) {
-      setCurrentStatus(order.status);
       console.log(`OrderDetailsDialog: Order ${order.id} status is ${order.status}`);
+      setCurrentStatus(order.status);
+      setStatusUpdateTime(Date.now());
     }
   }, [order]);
   
@@ -47,11 +49,27 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
     (orderId, newStatus) => {
       // Update local state immediately
       setCurrentStatus(newStatus);
+      setStatusUpdateTime(Date.now());
       // Call the parent handler
       onStatusChange(orderId, newStatus);
+      
+      // Trigger storage events to ensure all components update
+      window.dispatchEvent(new Event('storage'));
+      setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
     },
     onClose
   );
+  
+  // Set up additional listener for storage events
+  useEffect(() => {
+    const handleStorageEvent = () => {
+      console.log("OrderDetailsDialog: Storage event detected");
+      setStatusUpdateTime(Date.now()); // Force re-render
+    };
+    
+    window.addEventListener('storage', handleStorageEvent);
+    return () => window.removeEventListener('storage', handleStorageEvent);
+  }, []);
   
   // Now we can safely return null if needed
   if (!isOpen || !order) return null;

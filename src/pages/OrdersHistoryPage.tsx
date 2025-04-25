@@ -26,8 +26,8 @@ const OrdersHistoryPage = () => {
         console.log("Found", orders.length, "orders for user", user.id, ":", 
           orders.map(o => `${o.id.slice(-6)}: ${o.status}`).join(', '));
         
-        // Update state more aggressively - always update on fetch
-        setUserOrders(orders);
+        // Always update on fetch for maximum reactivity
+        setUserOrders([...orders]); // Create new array reference
         setLastRefresh(Date.now());
       } catch (error) {
         console.error("Error fetching user orders:", error);
@@ -42,13 +42,17 @@ const OrdersHistoryPage = () => {
     }
   }, [user, getUserOrders, toast]);
 
-  // Force refresh of orders
+  // Force refresh of orders with user feedback
   const forceRefresh = useCallback(() => {
     fetchUserOrders();
     toast({
       title: "Orders refreshed",
       description: "Your order list has been updated with the latest status.",
     });
+    
+    // Dispatch storage events to ensure all components update
+    window.dispatchEvent(new Event('storage'));
+    setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
   }, [fetchUserOrders, toast]);
 
   useEffect(() => {
@@ -59,7 +63,7 @@ const OrdersHistoryPage = () => {
     
     fetchUserOrders();
     
-    // Add an event listener for storage changes to refresh orders when updated
+    // Add multiple event listeners for storage changes to refresh orders
     const handleStorageChange = () => {
       console.log("Storage change detected, refreshing orders...");
       fetchUserOrders();
@@ -67,8 +71,8 @@ const OrdersHistoryPage = () => {
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Set up more frequent refresh every 1 second for more responsive updates
-    const refreshInterval = setInterval(fetchUserOrders, 1000);
+    // Set up more frequent refresh every 300ms for more responsive updates
+    const refreshInterval = setInterval(fetchUserOrders, 300);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);

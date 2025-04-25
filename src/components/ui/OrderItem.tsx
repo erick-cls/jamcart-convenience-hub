@@ -1,8 +1,7 @@
-
 import { motion } from 'framer-motion';
 import { Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import ActionButton from './ActionButton';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 export type OrderStatus = 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
 
@@ -33,6 +32,24 @@ const OrderItem = ({
   metadata,
   actionButton
 }: OrderItemProps) => {
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus>(status);
+  const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
+  
+  useEffect(() => {
+    console.log(`OrderItem ${id}: Status updated from ${currentStatus} to ${status}`);
+    setCurrentStatus(status);
+    setLastUpdate(Date.now());
+  }, [id, status]);
+  
+  useEffect(() => {
+    const handleStorageEvent = () => {
+      console.log(`OrderItem ${id}: Force refresh triggered, current status: ${currentStatus}`);
+      setLastUpdate(Date.now());
+    };
+    
+    window.addEventListener('storage', handleStorageEvent);
+    return () => window.removeEventListener('storage', handleStorageEvent);
+  }, [id, currentStatus]);
   
   const statusConfig = {
     pending: {
@@ -62,11 +79,9 @@ const OrderItem = ({
     }
   };
   
-  // Make sure we handle invalid status values and default to pending
-  const currentStatus = status && statusConfig[status] ? statusConfig[status] : statusConfig.pending;
+  const displayStatus = statusConfig[currentStatus] ? statusConfig[currentStatus] : statusConfig.pending;
   
-  // Debug the status to ensure it's being passed correctly
-  console.log(`Rendering order ${id} with status: ${status}`);
+  console.log(`Rendering order ${id} with status: ${currentStatus}, last updated: ${new Date(lastUpdate).toISOString()}`);
   
   const formattedDate = new Date(date).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -78,6 +93,7 @@ const OrderItem = ({
   
   return (
     <motion.div 
+      key={`order-${id}-${currentStatus}-${lastUpdate}`}
       className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -89,9 +105,9 @@ const OrderItem = ({
             <h3 className="font-semibold text-gray-900">Order #{id.slice(-6)}</h3>
             <p className="text-sm text-gray-500">{formattedDate}</p>
           </div>
-          <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center ${currentStatus.color}`}>
-            {currentStatus.icon}
-            <span className="ml-1">{currentStatus.text}</span>
+          <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center ${displayStatus.color}`}>
+            {displayStatus.icon}
+            <span className="ml-1">{displayStatus.text}</span>
           </div>
         </div>
         
