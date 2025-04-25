@@ -19,7 +19,7 @@ export const AnimatedLogo = ({ size = 'md', className = '' }: AnimatedLogoProps)
   }, []);
   
   const sizeClasses = {
-    sm: 'h-8',
+    sm: 'h-16', // Updated from h-8
     md: 'h-12',
     lg: 'h-16',
     xl: 'h-24'

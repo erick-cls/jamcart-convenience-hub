@@ -40,7 +40,7 @@ const CategoriesSection = () => {
   const navigate = useNavigate();
   
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-black">
       <div className="app-container">
         <div className="text-center mb-12">
           <span className="inline-block bg-jamcart-red/10 text-jamcart-red rounded-full px-4 py-1.5 text-sm font-medium mb-4">
