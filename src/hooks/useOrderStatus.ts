@@ -15,8 +15,6 @@ export const useOrderStatus = (
     setIsSubmitting(true);
     
     try {
-      console.log(`useOrderStatus: Changing order ${orderId} status to ${newStatus}`);
-      
       // Call onStatusChange immediately for instant UI update
       onStatusChange(orderId, newStatus);
       
@@ -29,9 +27,7 @@ export const useOrderStatus = (
       // Single storage event to notify components
       window.dispatchEvent(new Event('storage'));
       
-      setTimeout(() => {
-        onClose();
-      }, 100);
+      onClose();
     } catch (error) {
       toast({
         title: "Error updating order",
@@ -46,8 +42,6 @@ export const useOrderStatus = (
     setIsSubmitting(true);
     
     try {
-      console.log(`useOrderStatus: Cancelling order ${orderId}, penalty-free: ${isPenaltyFree}`);
-      
       // Call onStatusChange immediately for instant UI update
       onStatusChange(orderId, 'cancelled');
       
@@ -72,9 +66,7 @@ export const useOrderStatus = (
       // Single event dispatch to notify components
       window.dispatchEvent(new Event('storage'));
       
-      setTimeout(() => {
-        onClose();
-      }, 100);
+      onClose();
     } catch (error) {
       toast({
         title: "Error cancelling order",
