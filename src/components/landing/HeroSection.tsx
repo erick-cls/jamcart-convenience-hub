@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import ActionButton from '@/components/ui/ActionButton';
@@ -78,7 +79,7 @@ const HeroSection = () => {
           </motion.div>
           
           <div className="relative">
-            <div className="absolute inset-0 bg-[#fced87] rounded-3xl transform rotate-3 scale-105" />
+            <div className="absolute inset-0 bg-[#fced87] rounded-3xl transform rotate-3 scale-105"></div>
             <HeroPreview />
           </div>
         </div>

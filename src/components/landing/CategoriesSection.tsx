@@ -46,8 +46,8 @@ const CategoriesSection = () => {
           <span className="inline-block bg-jamcart-red/10 text-jamcart-red rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             Browse Categories
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Explore Our Services</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Explore Our Services</h2>
+          <p className="text-[#1da751] max-w-2xl mx-auto">
             From groceries to bill payments, we've got all your convenience needs covered in one place.
           </p>
         </div>
