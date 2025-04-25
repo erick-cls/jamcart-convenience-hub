@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -50,7 +49,6 @@ const Header = () => {
     { name: "About", path: "/about" },
   ];
 
-  // Get user initials for avatar
   const getUserInitials = () => {
     if (!user?.name) return "U";
     return user.name
@@ -64,7 +62,7 @@ const Header = () => {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white/90 shadow-sm backdrop-blur-md py-3" : "bg-transparent py-5"
+        isScrolled ? "bg-black shadow-sm backdrop-blur-md py-3" : "bg-transparent py-5"
       }`}
     >
       <div className="app-container flex items-center justify-between">
@@ -72,20 +70,23 @@ const Header = () => {
           <AnimatedLogo size="sm" />
         </Link>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
           {navigationItems.map((item) => (
             <Link
               key={item.name}
               to={item.path}
               className={`text-sm font-medium transition-colors relative ${
-                location.pathname === item.path ? "text-jamcart-red" : "text-gray-800 hover:text-jamcart-red"
+                location.pathname === item.path 
+                  ? "text-[#1da751]" 
+                  : isScrolled 
+                    ? "text-white hover:text-[#1da751]"
+                    : "text-white hover:text-[#1da751]"
               }`}
             >
               {item.name}
               {location.pathname === item.path && (
                 <motion.div
-                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-jamcart-red"
+                  className="absolute -bottom-1 left-0 right-0 h-0.5 bg-[#1da751]"
                   layoutId="navbar-indicator"
                   transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
                 />
@@ -94,7 +95,6 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Desktop Auth Buttons */}
         <div className="hidden md:flex items-center space-x-4">
           {user ? (
             <div className="flex items-center space-x-4">
@@ -102,7 +102,6 @@ const Header = () => {
                 <ShoppingCart className="h-5 w-5" />
               </Link>
               
-              {/* Improved profile dropdown using shadcn components */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center justify-center h-9 w-9 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none">
@@ -158,7 +157,15 @@ const Header = () => {
           ) : (
             <>
               <Link to="/auth?mode=login">
-                <ActionButton variant="ghost" size="sm">
+                <ActionButton 
+                  variant="ghost" 
+                  size="sm"
+                  className={`${
+                    isScrolled 
+                      ? "text-[#1da751] hover:text-white" 
+                      : "text-white hover:text-[#1da751]"
+                  }`}
+                >
                   Sign In
                 </ActionButton>
               </Link>
@@ -171,7 +178,6 @@ const Header = () => {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
         <button
           className="md:hidden flex items-center"
           onClick={() => setIsOpen(!isOpen)}
@@ -185,7 +191,6 @@ const Header = () => {
         </button>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div

@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import ActionButton from '@/components/ui/ActionButton';
@@ -29,7 +28,7 @@ const HeroSection = () => {
             transition={{ duration: 0.5 }}
             className="text-center lg:text-left"
           >
-            <span className="inline-block bg-jamcart-red/10 text-jamcart-red rounded-full px-4 py-1.5 text-sm font-medium mb-6">
+            <span className="inline-block bg-jamcart-red text-white rounded-full px-4 py-1.5 text-sm font-medium mb-6">
               Convenience at your fingertips
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-white">
@@ -78,7 +77,10 @@ const HeroSection = () => {
             </div>
           </motion.div>
           
-          <HeroPreview />
+          <div className="relative">
+            <div className="absolute inset-0 bg-[#fced87] rounded-3xl transform rotate-3 scale-105" />
+            <HeroPreview />
+          </div>
         </div>
       </div>
     </section>
