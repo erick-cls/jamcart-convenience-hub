@@ -5,6 +5,7 @@ import ActionButton from '@/components/ui/ActionButton';
 import { ArrowRight } from 'lucide-react';
 import AnimatedLogo from '@/components/ui/AnimatedLogo';
 import { useAuth } from '@/context/AuthContext';
+import HeroPreview from './HeroPreview';
 
 const HeroSection = () => {
   const navigate = useNavigate();
