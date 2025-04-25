@@ -62,8 +62,8 @@ const OrdersHistoryPage = () => {
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Set up periodic refresh every 10 seconds (reduced from 15 for more responsive updates)
-    const refreshInterval = setInterval(fetchUserOrders, 10000);
+    // Set up frequent refresh every 5 seconds for more responsive updates
+    const refreshInterval = setInterval(fetchUserOrders, 5000);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);

@@ -1,4 +1,5 @@
 
+import { useState, useEffect } from 'react';
 import { OrderStatus } from '@/components/ui/OrderItem';
 import OrderItem from '@/components/ui/OrderItem';
 
@@ -20,15 +21,23 @@ interface OrdersSectionProps {
 }
 
 const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => {
-  if (orders.length === 0) return null;
+  const [displayedOrders, setDisplayedOrders] = useState<Order[]>([]);
+  
+  // Update displayed orders whenever parent orders change
+  useEffect(() => {
+    console.log(`OrdersSection (${title}): Received ${orders.length} orders`);
+    setDisplayedOrders(orders);
+  }, [orders, title]);
+  
+  if (displayedOrders.length === 0) return null;
   
   return (
     <div className="mb-8">
       <h3 className="text-lg font-medium mb-4">{title}</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {orders.map((order) => (
+        {displayedOrders.map((order) => (
           <OrderItem
-            key={order.id}
+            key={`${order.id}-${order.status}`} // Add status to key to force re-render on status change
             id={order.id}
             storeName={order.storeName}
             category={order.category}

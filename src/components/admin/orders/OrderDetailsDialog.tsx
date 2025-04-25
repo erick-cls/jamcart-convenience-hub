@@ -9,6 +9,7 @@ import OrderItemsList from './details/OrderItemsList';
 import OrderStatusActions from './details/OrderStatusActions';
 import OrderCancellationTimer from './details/OrderCancellationTimer';
 import { useOrderStatus } from './hooks/useOrderStatus';
+import { useEffect, useState } from 'react';
 
 interface OrderDetailsDialogProps {
   isOpen: boolean;
@@ -29,15 +30,34 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
   const { toast } = useToast();
   const { user } = useAuth();
   
+  // Use local state to track order status for immediate UI updates
+  const [currentStatus, setCurrentStatus] = useState<OrderStatus | null>(null);
+  
+  // Update current status when order changes
+  useEffect(() => {
+    if (order) {
+      setCurrentStatus(order.status);
+      console.log(`OrderDetailsDialog: Order ${order.id} status is ${order.status}`);
+    }
+  }, [order]);
+  
   // Call hooks before any conditional returns to comply with React's rules of hooks
   const { isSubmitting, handleStatusChange, handleCancellation } = useOrderStatus(
     order?.id || '', 
-    onStatusChange,
+    (orderId, newStatus) => {
+      // Update local state immediately
+      setCurrentStatus(newStatus);
+      // Call the parent handler
+      onStatusChange(orderId, newStatus);
+    },
     onClose
   );
   
   // Now we can safely return null if needed
   if (!isOpen || !order) return null;
+  
+  // Use our local status if available, otherwise fall back to the prop
+  const displayStatus = currentStatus || order.status;
   
   const formattedDate = new Date(order.date).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -87,7 +107,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
               <p className="text-base mt-1">{order.storeName}</p>
               <p className="text-sm text-gray-600">{order.category}</p>
             </div>
-            <OrderStatusBadge status={order.status} />
+            <OrderStatusBadge status={displayStatus} />
           </div>
           
           <OrderItemsList items={order.items || []} />
@@ -99,7 +119,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
             </div>
           )}
           
-          {user?.userType === 'customer' && order.status === 'pending' && (
+          {user?.userType === 'customer' && displayStatus === 'pending' && (
             <div className="pt-4 border-t">
               <OrderCancellationTimer 
                 orderId={order.id}
@@ -112,10 +132,10 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
           
           {(user?.userType === 'admin' || user?.userType === 'rider') && (
             <OrderStatusActions
-              currentStatus={order.status}
+              currentStatus={displayStatus}
               onStatusChange={handleStatusChangeWithAuth}
               isSubmitting={isSubmitting}
-              isPastCancellationPeriod={(order.status === 'cancelled') ? 
+              isPastCancellationPeriod={(displayStatus === 'cancelled') ? 
                 ((Date.now() - new Date(order.date).getTime()) > (10 * 60 * 1000)) : false}
               orderId={order.id}
             />
