@@ -90,8 +90,8 @@ const Categories = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">All Categories</h1>
-            <p className="text-gray-600 mb-8">Browse all available service categories</p>
+            <h1 className="text-3xl md:text-4xl font-bold mb-3 text-[#fced87]">All Categories</h1>
+            <p className="text-white mb-8">Browse all available service categories</p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {categories.map((category) => (
