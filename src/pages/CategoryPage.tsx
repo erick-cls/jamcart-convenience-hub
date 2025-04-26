@@ -68,11 +68,11 @@ const CategoryPage = () => {
                 <ChevronLeft className="h-5 w-5" />
               </button>
               <div>
-                <h1 className="text-3xl font-bold flex items-center">
+                <h1 className="text-3xl font-bold flex items-center text-white">
                   <span className="mr-3 text-4xl">{category.icon}</span>
                   {category.name}
                 </h1>
-                <p className="text-gray-600">{category.description}</p>
+                <p className="text-gray-400">{category.description}</p>
               </div>
             </div>
             
