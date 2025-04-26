@@ -20,6 +20,7 @@ interface OrdersSectionProps {
   onViewDetails: (id: string) => void;
 }
 
+// Using React.memo with a custom comparison function to ensure proper re-rendering
 const OrdersSection = memo(({ title, orders, onViewDetails }: OrdersSectionProps) => {
   if (orders.length === 0) return null;
   
@@ -44,6 +45,21 @@ const OrdersSection = memo(({ title, orders, onViewDetails }: OrdersSectionProps
       </div>
     </div>
   );
+}, (prevProps, nextProps) => {
+  // Custom comparison function to ensure component re-renders when order status changes
+  if (prevProps.orders.length !== nextProps.orders.length) {
+    return false; // Not equal, should re-render
+  }
+  
+  // Compare each order's id and status
+  for (let i = 0; i < prevProps.orders.length; i++) {
+    if (prevProps.orders[i].id !== nextProps.orders[i].id ||
+        prevProps.orders[i].status !== nextProps.orders[i].status) {
+      return false; // Not equal, should re-render
+    }
+  }
+  
+  return true; // Equal, no need to re-render
 });
 
 OrdersSection.displayName = 'OrdersSection';
