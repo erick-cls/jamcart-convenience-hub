@@ -20,7 +20,7 @@ const UserMenuDropdown = ({ user, handleLogout, getUserInitials }: UserMenuDropd
   return (
     <div className="flex items-center space-x-4">
       <Link to="/orders" className="text-gray-800 hover:text-jamcart-red">
-        <ShoppingCart className="h-5 w-5" />
+        <ShoppingCart className="h-5 w-5" color="#fced87" />
       </Link>
       
       <DropdownMenu>
@@ -79,3 +79,4 @@ const UserMenuDropdown = ({ user, handleLogout, getUserInitials }: UserMenuDropd
 };
 
 export default UserMenuDropdown;
+
