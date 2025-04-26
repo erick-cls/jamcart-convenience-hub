@@ -21,7 +21,15 @@ const CtaSection = () => {
 };
 
 const AppStoreButton = ({ store }: { store: 'apple' | 'google' }) => (
-  <a href="#" className="bg-black rounded-xl px-6 py-3 flex items-center hover:bg-black/80 transition-colors">
+  <motion.a 
+    href="#" 
+    className="bg-black rounded-xl px-6 py-3 flex items-center hover:bg-black/80 transition-colors"
+    whileHover={{ 
+      scale: 1.05, 
+      transition: { duration: 0.2 } 
+    }}
+    whileTap={{ scale: 0.95 }}
+  >
     {store === 'apple' ? (
       <>
         <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mr-3" viewBox="0 0 24 24" fill="currentColor">
@@ -43,7 +51,8 @@ const AppStoreButton = ({ store }: { store: 'apple' | 'google' }) => (
         </div>
       </>
     )}
-  </a>
+  </motion.a>
 );
 
 export default CtaSection;
+
