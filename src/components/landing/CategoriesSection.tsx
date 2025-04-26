@@ -43,7 +43,7 @@ const CategoriesSection = () => {
     <section className="py-16 bg-black">
       <div className="app-container">
         <div className="text-center mb-12">
-          <span className="inline-block bg-jamcart-red/10 text-jamcart-red rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+          <span className="inline-block bg-jamcart-red text-white rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             Browse Categories
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Explore Our Services</h2>

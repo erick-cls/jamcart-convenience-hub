@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import ActionButton from '@/components/ui/ActionButton';
@@ -11,7 +10,7 @@ const HowItWorksSection = () => {
     <section className="py-16 bg-black">
       <div className="app-container">
         <div className="text-center mb-12">
-          <span className="inline-block bg-[#fdf7d5] text-white rounded-full px-4 py-1.5 text-sm font-medium mb-4">
+          <span className="inline-block bg-[#fdf7d5] text-black rounded-full px-4 py-1.5 text-sm font-medium mb-4">
             Simple Process
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">How JAMCart Works</h2>
