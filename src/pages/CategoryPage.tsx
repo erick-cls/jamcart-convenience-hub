@@ -24,7 +24,20 @@ const CategoryPage = () => {
     
     setIsLoading(true);
     setTimeout(() => {
-      setStores(mockStores[categoryId] || []);
+      // Convert mockStores data to Store[] type for the selected category
+      const categoryStores = Object.values(mockStores)
+        .filter(store => store.category === categoryId)
+        .map(store => ({
+          id: store.id,
+          name: store.name,
+          image: store.image,
+          rating: store.rating,
+          distance: store.distance,
+          estimatedTime: store.estimatedTime,
+          address: store.address
+        }));
+      
+      setStores(categoryStores);
       setIsLoading(false);
     }, 800);
   }, [categoryId, navigate]);
