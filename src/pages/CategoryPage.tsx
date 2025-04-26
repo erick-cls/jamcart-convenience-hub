@@ -229,21 +229,21 @@ const CategoryPage = () => {
     <>
       <Header />
       <div className="min-h-screen pt-20">
-        <section className="py-8 bg-gray-50">
+        <section className="py-8 bg-black">
           <div className="app-container">
             <div className="flex items-center mb-6">
               <button
-                className="p-2 rounded-full hover:bg-gray-200 mr-3"
+                className="p-2 rounded-full hover:bg-gray-800 mr-3 text-white"
                 onClick={() => navigate('/categories')}
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
               <div>
-                <h1 className="text-3xl font-bold flex items-center">
-                  <span className="mr-3 text-4xl">{category.icon}</span>
+                <h1 className="text-3xl font-bold flex items-center text-white">
+                  <span className="mr-3 text-4xl flex items-center justify-center w-12 h-12 rounded-full" style={{ backgroundColor: '#fdf7d5' }}>{category.icon}</span>
                   {category.name}
                 </h1>
-                <p className="text-gray-600">{category.description}</p>
+                <p className="text-gray-400">{category.description}</p>
               </div>
             </div>
             
