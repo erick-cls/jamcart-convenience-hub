@@ -28,7 +28,9 @@ const CategoryPage = () => {
     
     setIsLoading(true);
     setTimeout(() => {
-      setStores(mockStores[categoryId] || []);
+      // Convert the mockStores data to match the Store type
+      const storeData = mockStores[categoryId as keyof typeof mockStores] || [];
+      setStores(storeData as Store[]);
       setIsLoading(false);
     }, 800);
   }, [categoryId, navigate]);
@@ -48,7 +50,7 @@ const CategoryPage = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen pt-20">
+      <div className="min-h-screen pt-20 bg-black">
         <section className="py-8 bg-black">
           <div className="app-container">
             <div className="flex items-center mb-6">
