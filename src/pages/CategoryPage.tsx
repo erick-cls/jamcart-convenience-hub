@@ -228,8 +228,8 @@ const CategoryPage = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen pt-20">
-        <section className="py-8 bg-gray-50">
+      <div className="min-h-screen bg-black">
+        <section className="py-8 bg-black">
           <div className="app-container">
             <div className="flex items-center mb-6">
               <button

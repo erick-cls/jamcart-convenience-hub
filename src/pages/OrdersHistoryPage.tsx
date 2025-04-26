@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -38,7 +37,6 @@ const OrdersHistoryPage = () => {
     }
   }, [user, getUserOrders, toast]);
 
-  // Force refresh of orders with user feedback
   const forceRefresh = useCallback(() => {
     fetchUserOrders();
     toast({
@@ -72,13 +70,13 @@ const OrdersHistoryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black">
       <Header />
       
       <div className="app-container pt-24 pb-12">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">My Orders</h1>
+            <h1 className="text-3xl font-bold" style={{ color: '#1aa44e' }}>My Orders</h1>
             <button 
               onClick={forceRefresh}
               disabled={isRefreshing}
