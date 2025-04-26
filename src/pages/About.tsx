@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -7,7 +6,7 @@ const About = () => {
   return (
     <>
       <Header />
-      <div className="pt-28 pb-16 bg-gray-50">
+      <div className="pt-28 pb-16 bg-black">
         <div className="app-container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
