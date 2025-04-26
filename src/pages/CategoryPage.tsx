@@ -27,8 +27,14 @@ const CategoryPage = () => {
     }
     
     setIsLoading(true);
+    // Simulate API call with timeout
     setTimeout(() => {
-      setStores(mockStores[categoryId] || []);
+      // Filter stores from mockStores that match the current category
+      const filteredStores = Object.values(mockStores).filter(
+        store => store.category === categoryId
+      );
+      
+      setStores(filteredStores);
       setIsLoading(false);
     }, 800);
   }, [categoryId, navigate]);
@@ -48,7 +54,7 @@ const CategoryPage = () => {
   return (
     <>
       <Header />
-      <div className="min-h-screen pt-20">
+      <div className="min-h-screen pt-20 bg-black">
         <section className="py-8 bg-black">
           <div className="app-container">
             <div className="flex items-center mb-6">
