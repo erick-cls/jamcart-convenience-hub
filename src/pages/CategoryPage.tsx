@@ -70,7 +70,7 @@ const CategoryPage = () => {
               <div>
                 <h1 className="text-3xl font-bold flex items-center text-white">
                   <span className="mr-3 text-4xl">{category.icon}</span>
-                  {category.name}
+                  <span className="text-white">{category.name}</span>
                 </h1>
                 <p className="text-gray-400">{category.description}</p>
               </div>
