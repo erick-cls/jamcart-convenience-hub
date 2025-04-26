@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 import { MapPin, Star, Clock } from 'lucide-react';
 import { Store } from '@/types/store.types';
-import ActionButton from '@/components/ui/ActionButton';
+import { ActionButton } from '@/components/ui/ActionButton';
 
 interface StoreCardProps {
   store: Store;
