@@ -32,7 +32,6 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [localOrders, setLocalOrders] = useState<Order[]>(orders);
-  const [orderStatusChangeTime, setOrderStatusChangeTime] = useState<number>(Date.now());
   const { todayOrders, yesterdayOrders, earlierOrders } = useOrderFilters(localOrders);
   
   // Update local orders when the parent component's orders change - with immediate effect
@@ -41,28 +40,18 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     setLocalOrders(orders);
   }, [orders]);
   
-  // Listen for storage events to trigger status updates
+  // Listen for storage events but without the frequent interval refreshes
   useEffect(() => {
     const handleStorageEvent = () => {
       console.log("UserOrdersList: Storage event triggered refresh");
-      setOrderStatusChangeTime(Date.now());
-      
-      // Notify parent component about the update
-      if (onOrderUpdate) {
-        console.log("UserOrdersList: Triggering onOrderUpdate callback from storage event");
-        onOrderUpdate();
-      }
     };
     
-    // Listen for both storage event and custom order-status-change event
     window.addEventListener('storage', handleStorageEvent);
-    window.addEventListener('order-status-change', handleStorageEvent);
     
     return () => {
       window.removeEventListener('storage', handleStorageEvent);
-      window.removeEventListener('order-status-change', handleStorageEvent);
     };
-  }, [onOrderUpdate]);
+  }, []);
   
   const handleViewDetails = (id: string) => {
     console.log("View details clicked for order:", id);
@@ -90,13 +79,7 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
       onOrderUpdate();
     }
     
-    // Update status change time to trigger re-render
-    setOrderStatusChangeTime(Date.now());
-    
-    // Dispatch custom event to ensure all components are notified
-    window.dispatchEvent(new Event('order-status-change'));
-    
-    // Also dispatch storage event for components listening to that
+    // Dispatch single storage event to trigger refresh
     window.dispatchEvent(new Event('storage'));
   }, [onOrderUpdate]);
   
@@ -111,9 +94,6 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
           : order
       )
     );
-    
-    // Update status change time to trigger re-render
-    setOrderStatusChangeTime(Date.now());
     
     if (newStatus === 'cancelled') {
       const order = localOrders.find(o => o.id === orderId);
@@ -147,10 +127,7 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
       onOrderUpdate();
     }
     
-    // Dispatch custom event for other components
-    window.dispatchEvent(new Event('order-status-change'));
-    
-    // Also dispatch storage event for components listening to that
+    // Single dispatch event instead of multiple
     window.dispatchEvent(new Event('storage'));
   }, [localOrders, toast, onOrderUpdate]);
   
@@ -159,25 +136,10 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
   }
   
   return (
-    <div key={`order-list-container-${orderStatusChangeTime}`}>
-      <OrdersSection 
-        title="Today" 
-        orders={todayOrders} 
-        onViewDetails={handleViewDetails} 
-        key={`today-orders-${orderStatusChangeTime}`}
-      />
-      <OrdersSection 
-        title="Yesterday" 
-        orders={yesterdayOrders} 
-        onViewDetails={handleViewDetails} 
-        key={`yesterday-orders-${orderStatusChangeTime}`}
-      />
-      <OrdersSection 
-        title="Earlier" 
-        orders={earlierOrders} 
-        onViewDetails={handleViewDetails} 
-        key={`earlier-orders-${orderStatusChangeTime}`}
-      />
+    <div>
+      <OrdersSection title="Today" orders={todayOrders} onViewDetails={handleViewDetails} />
+      <OrdersSection title="Yesterday" orders={yesterdayOrders} onViewDetails={handleViewDetails} />
+      <OrdersSection title="Earlier" orders={earlierOrders} onViewDetails={handleViewDetails} />
       
       {selectedOrder && (
         <OrderDetailsDialog
