@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
-import { User, ShoppingCart, LogOut, Bike, Package } from "lucide-react";
+import { User, ShoppingCart, LogOut, Bike, Package, X } from "lucide-react";
 import ActionButton from "../ui/ActionButton";
 import { useEffect } from "react";
 
@@ -50,6 +50,16 @@ const MobileMenu = ({ isOpen, navigationItems, user, handleLogout, onClose }: Mo
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
     >
+      <button 
+        onClick={onClose} 
+        className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition-colors group"
+        aria-label="Close menu"
+      >
+        <X 
+          className="h-6 w-6 text-black group-hover:text-[#009c3b]" 
+          strokeWidth={2} 
+        />
+      </button>
       <div className="app-container py-5 flex flex-col space-y-6">
         <nav className="flex flex-col space-y-5">
           {navigationItems.map((item) => (
