@@ -72,6 +72,9 @@ const OrderItem = ({
     minute: '2-digit'
   });
   
+  // Create a unique instance key that changes with every status update
+  const instanceKey = `order-item-${id}-${status}-${Date.now()}`;
+  
   return (
     <motion.div 
       className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden"
@@ -80,7 +83,7 @@ const OrderItem = ({
       transition={{ duration: 0.3 }}
       data-order-id={id}
       data-order-status={status}
-      key={`order-item-${id}-${status}-${Date.now()}`} // Force re-render whenever props change
+      key={instanceKey} // Force re-render whenever props change
     >
       <div className="p-5">
         <div className="flex items-center justify-between mb-4">
@@ -88,7 +91,9 @@ const OrderItem = ({
             <h3 className="font-semibold text-gray-900">Order #{id.slice(-6)}</h3>
             <p className="text-sm text-gray-500">{formattedDate}</p>
           </div>
-          <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center ${displayStatus.color}`}>
+          <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center ${displayStatus.color}`}
+               data-test-status={status} // For testing/debugging
+               data-status-timestamp={Date.now()}>
             {displayStatus.icon}
             <span className="ml-1">{displayStatus.text}</span>
           </div>

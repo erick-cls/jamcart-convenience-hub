@@ -41,7 +41,7 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
       if (customEvent.detail && customEvent.detail.orderId) {
         const { orderId, newStatus } = customEvent.detail;
         
-        // Update specific order if it exists in our list
+        // Immediately update specific order if it exists in our list
         setLocalOrders(prevOrders => 
           prevOrders.map(order => 
             order.id === orderId 
@@ -49,13 +49,15 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
               : order
           )
         );
+        
+        // Always force re-render when status changes
+        setUpdateKey(Date.now());
+        console.log(`OrdersSection: Updated order ${orderId} to ${newStatus}, new key: ${Date.now()}`);
       } else {
-        // Fall back to full refresh if no specific data
+        // Fall back to full refresh if no specific data and force re-render
         setLocalOrders(prevOrders => [...prevOrders]);
+        setUpdateKey(Date.now());
       }
-      
-      // Force component to re-render with new key
-      setUpdateKey(Date.now());
     };
     
     // Listen for multiple event types to ensure we catch all updates

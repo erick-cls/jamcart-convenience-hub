@@ -15,6 +15,8 @@ export const useOrderStatus = (
     setIsSubmitting(true);
     
     try {
+      console.log(`Admin useOrderStatus: Changing order ${orderId} status to ${newStatus}`);
+      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 300));
       
@@ -27,22 +29,43 @@ export const useOrderStatus = (
         variant: "default",
       });
       
-      // Enhanced event dispatching with timestamp and unqiue identifiers
+      // Enhanced event dispatching with multiple event types and rich metadata
+      const timestamp = Date.now();
+      const eventId = `${orderId}-${newStatus}-${timestamp}`;
+      
+      // Use CustomEvent with rich detail payload
       const statusEvent = new CustomEvent('order-status-change', { 
-        detail: { orderId, newStatus, timestamp: Date.now(), id: `${orderId}-${Date.now()}` } 
+        detail: { 
+          orderId, 
+          newStatus, 
+          timestamp, 
+          id: eventId,
+          source: 'admin-status-change' 
+        } 
       });
       window.dispatchEvent(statusEvent);
       
-      // Also dispatch storage event with same enhanced data
+      // Dispatch multiple events to ensure all components receive the update
       window.dispatchEvent(new CustomEvent('storage', { 
-        detail: { orderId, newStatus, timestamp: Date.now(), id: `${orderId}-${Date.now()}` } 
+        detail: { 
+          orderId, 
+          newStatus, 
+          timestamp, 
+          id: eventId,
+          source: 'admin-status-change' 
+        } 
       }));
       
-      // Add a slightly longer delay before closing to ensure UI updates
+      // Extra log for debugging
+      console.log(`Admin useOrderStatus: Dispatched events for order ${orderId}, status: ${newStatus}`);
+      
+      // Add a longer delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-      }, 500);
+      }, 800);
     } catch (error) {
+      console.error("Error updating order status:", error);
+      
       toast({
         title: "Error updating order",
         description: "There was a problem updating the order status. Please try again.",
@@ -57,6 +80,8 @@ export const useOrderStatus = (
     setIsSubmitting(true);
     
     try {
+      console.log(`Admin useOrderStatus: Cancelling order ${orderId}, penalty free: ${isPenaltyFree}`);
+      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 300));
       
@@ -84,34 +109,47 @@ export const useOrderStatus = (
         });
       }
       
-      // Enhanced event dispatching with specific cancellation flag
+      // Enhanced event dispatching with multiple event types and rich metadata
+      const timestamp = Date.now();
+      const eventId = `${orderId}-cancel-${timestamp}`;
+      
+      // Use CustomEvent with rich detail payload
       const cancelEvent = new CustomEvent('order-status-change', { 
         detail: { 
           orderId, 
           newStatus: 'cancelled', 
-          timestamp: Date.now(),
+          timestamp,
           cancelled: true,
-          id: `${orderId}-cancel-${Date.now()}`
+          isPenaltyFree,
+          id: eventId,
+          source: 'admin-cancellation'
         } 
       });
       window.dispatchEvent(cancelEvent);
       
-      // Also dispatch storage event with explicit cancel data
+      // Dispatch multiple events to ensure all components receive the update
       window.dispatchEvent(new CustomEvent('storage', { 
         detail: { 
           orderId, 
           newStatus: 'cancelled', 
-          timestamp: Date.now(),
+          timestamp,
           cancelled: true,
-          id: `${orderId}-cancel-${Date.now()}`
+          isPenaltyFree, 
+          id: eventId,
+          source: 'admin-cancellation'
         } 
       }));
+      
+      // Extra log for debugging
+      console.log(`Admin useOrderStatus: Dispatched cancellation events for order ${orderId}`);
       
       // Increased delay to ensure UI updates before closing
       setTimeout(() => {
         onClose();
-      }, 500);
+      }, 800);
     } catch (error) {
+      console.error("Error cancelling order:", error);
+      
       toast({
         title: "Error cancelling order",
         description: "There was a problem cancelling your order. Please try again.",
