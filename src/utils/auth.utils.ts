@@ -1,4 +1,3 @@
-
 import { User, RegisterUserData } from '../types/auth.types';
 
 // Helper function to get a stored user by email
@@ -106,3 +105,32 @@ export const createNewUser = (userData: RegisterUserData, userId: string): User 
     addresses: addresses
   };
 };
+
+// Helper function to update vendor users
+export const updateVendorUsers = () => {
+  const vendorEmails = [
+    'deonroy.mitchell@example.com',
+    'roger.blakely@example.com',
+    'joe.black@example.com'
+  ];
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('jamcart-user-')) {
+      try {
+        const userData = JSON.parse(localStorage.getItem(key) || '{}');
+        if (vendorEmails.includes(userData.email)) {
+          userData.userType = 'vendor';
+          userData.isAdmin = false;
+          userData.isRider = false;
+          localStorage.setItem(key, JSON.stringify(userData));
+        }
+      } catch (error) {
+        console.error('Error updating vendor user', error);
+      }
+    }
+  }
+};
+
+// Run the update when the file loads
+updateVendorUsers();
