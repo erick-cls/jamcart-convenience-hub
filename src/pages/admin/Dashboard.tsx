@@ -40,14 +40,24 @@ const Dashboard = () => {
     }
   }, [navigate, toast]);
 
+  // Render the appropriate component based on activeTab
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'orders':
+        return <OrdersDashboard onNavigateToOrderDetails={handleNavigateToOrderDetails} />;
+      case 'users':
+        return <UsersDashboard onQuickAction={handleQuickAction} />;
+      case 'complaints':
+        return <ComplaintsManagement />;
+      default:
+        return <OrdersDashboard onNavigateToOrderDetails={handleNavigateToOrderDetails} />;
+    }
+  };
+
   return (
     <AdminLayout>
       <DashboardContainer activeTab={activeTab} onTabChange={setActiveTab}>
-        {activeTab === 'orders' && (
-          <OrdersDashboard onNavigateToOrderDetails={handleNavigateToOrderDetails} />
-        )}
-        {activeTab === 'users' && <UsersDashboard onQuickAction={handleQuickAction} />}
-        {activeTab === 'complaints' && <ComplaintsManagement />}
+        {renderTabContent()}
       </DashboardContainer>
     </AdminLayout>
   );
