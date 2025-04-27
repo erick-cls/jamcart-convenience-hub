@@ -1,13 +1,11 @@
-
 import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, RotateCw, Clock, CreditCard } from 'lucide-react';
+import { Plus, RotateCw, Clock } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { getUserWallet, loadFundsFromCard, loadFunds } from '@/services/wallet.service';
+import { getUserWallet, loadFunds } from '@/services/wallet.service';
 import { UserWallet as UserWalletType } from '@/types/wallet.types';
 import { useToast } from '@/hooks/use-toast';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 const formatCurrency = (value: number): string => {
   return value.toLocaleString('en-US', {
@@ -25,7 +23,6 @@ const UserWallet = ({ onReload }: UserWalletProps) => {
   const { toast } = useToast();
   const [wallet, setWallet] = useState<UserWalletType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadMethod, setLoadMethod] = useState<'cash' | 'card'>('cash');
   const [loadAmount, setLoadAmount] = useState<number>(1000);
   const [showTransactions, setShowTransactions] = useState(false);
   
@@ -42,36 +39,14 @@ const UserWallet = ({ onReload }: UserWalletProps) => {
     setIsLoading(true);
     
     try {
-      if (loadMethod === 'card') {
-        // Use card on file
-        const result = loadFundsFromCard(user.id, loadAmount, user);
-        
-        if (result.success && result.wallet) {
-          setWallet(result.wallet);
-          
-          toast({
-            title: "Funds added",
-            description: result.message,
-            variant: "default",
-          });
-        } else {
-          toast({
-            title: "Payment failed",
-            description: result.message,
-            variant: "destructive",
-          });
-        }
-      } else {
-        // Original cash method
-        const updatedWallet = loadFunds(user.id, loadAmount);
-        setWallet(updatedWallet);
-        
-        toast({
-          title: "Funds added",
-          description: `$${loadAmount.toFixed(2)} JMD has been added to your wallet.`,
-          variant: "default",
-        });
-      }
+      const updatedWallet = loadFunds(user.id, loadAmount);
+      setWallet(updatedWallet);
+      
+      toast({
+        title: "Funds added",
+        description: `$${loadAmount.toFixed(2)} JMD has been added to your wallet.`,
+        variant: "default",
+      });
       
       if (onReload) {
         onReload();
@@ -99,8 +74,6 @@ const UserWallet = ({ onReload }: UserWalletProps) => {
       </Card>
     );
   }
-  
-  const hasCardOnFile = user.cardInfo && user.cardInfo.cardNumber;
   
   return (
     <Card className="bg-black border-[#20a64f]/20 text-white">
@@ -135,98 +108,40 @@ const UserWallet = ({ onReload }: UserWalletProps) => {
           </p>
         </div>
         
-        <Tabs defaultValue="cash" onValueChange={(value) => setLoadMethod(value as 'cash' | 'card')} className="mb-6">
-          <TabsList className="w-full grid grid-cols-2 bg-[#20a64f]/10">
-            <TabsTrigger value="cash">Cash Payment</TabsTrigger>
-            <TabsTrigger value="card" disabled={!hasCardOnFile}>Card on File</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="cash" className="mt-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm text-white mb-2 block">Reload Amount (JMD)</label>
-                <select 
-                  className="w-full px-4 py-2 bg-black text-white border border-[#20a64f]/30 rounded-md"
-                  value={loadAmount}
-                  onChange={(e) => setLoadAmount(Number(e.target.value))}
-                >
-                  <option value={500}>$500</option>
-                  <option value={1000}>$1,000</option>
-                  <option value={2000}>$2,000</option>
-                  <option value={5000}>$5,000</option>
-                </select>
-              </div>
-              <div className="flex items-end">
-                <Button 
-                  onClick={handleReload}
-                  disabled={isLoading}
-                  className="w-full bg-[#20a64f] hover:bg-[#20a64f]/80 text-white"
-                >
-                  {isLoading ? (
-                    <>
-                      <RotateCw className="h-4 w-4 mr-2 animate-spin" /> 
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="h-4 w-4 mr-2" /> 
-                      Add Cash
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="card" className="mt-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm text-white mb-2 block">Reload Amount (JMD)</label>
-                <select 
-                  className="w-full px-4 py-2 bg-black text-white border border-[#20a64f]/30 rounded-md"
-                  value={loadAmount}
-                  onChange={(e) => setLoadAmount(Number(e.target.value))}
-                >
-                  <option value={500}>$500</option>
-                  <option value={1000}>$1,000</option>
-                  <option value={2000}>$2,000</option>
-                  <option value={5000}>$5,000</option>
-                </select>
-              </div>
-              <div className="flex items-end">
-                <Button 
-                  onClick={handleReload}
-                  disabled={isLoading || !hasCardOnFile}
-                  className="w-full bg-[#20a64f] hover:bg-[#20a64f]/80 text-white"
-                >
-                  {isLoading ? (
-                    <>
-                      <RotateCw className="h-4 w-4 mr-2 animate-spin" /> 
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="h-4 w-4 mr-2" /> 
-                      Charge Card
-                    </>
-                  )}
-                </Button>
-              </div>
-              
-              {hasCardOnFile && (
-                <div className="col-span-2 mt-2 text-center text-xs text-white">
-                  Using card ending in {user.cardInfo?.cardNumber.slice(-4)}
-                </div>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div>
+            <label className="text-sm text-white mb-2 block">Reload Amount (JMD)</label>
+            <select 
+              className="w-full px-4 py-2 bg-black text-white border border-[#20a64f]/30 rounded-md"
+              value={loadAmount}
+              onChange={(e) => setLoadAmount(Number(e.target.value))}
+            >
+              <option value={500}>$500</option>
+              <option value={1000}>$1,000</option>
+              <option value={2000}>$2,000</option>
+              <option value={5000}>$5,000</option>
+            </select>
+          </div>
+          <div className="flex items-end">
+            <Button 
+              onClick={handleReload}
+              disabled={isLoading}
+              className="w-full bg-[#20a64f] hover:bg-[#20a64f]/80 text-white"
+            >
+              {isLoading ? (
+                <>
+                  <RotateCw className="h-4 w-4 mr-2 animate-spin" /> 
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4 mr-2" /> 
+                  Add Funds
+                </>
               )}
-              
-              {!hasCardOnFile && (
-                <div className="col-span-2 mt-2 text-center text-xs text-red-400">
-                  No payment card on file. Please add a card in your profile settings.
-                </div>
-              )}
-            </div>
-          </TabsContent>
-        </Tabs>
+            </Button>
+          </div>
+        </div>
         
         <Button
           variant="outline"
