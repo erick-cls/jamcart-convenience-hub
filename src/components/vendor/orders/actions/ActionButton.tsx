@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { OrderStatus } from '@/components/ui/OrderItem';
+import { OrderStatus } from '@/pages/admin/orders/types';
 
 interface ActionButtonProps {
   onClick: () => void;

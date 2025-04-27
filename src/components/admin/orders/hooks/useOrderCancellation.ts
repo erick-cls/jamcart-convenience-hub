@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { OrderStatus } from '@/components/ui/OrderItem';
+import { OrderStatus } from '@/pages/admin/orders/types';
 
 export const useOrderCancellation = (
   orderId: string,

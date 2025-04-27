@@ -1,4 +1,6 @@
 
+import { OrderStatus } from '@/pages/admin/orders/types';
+
 interface OrderTotalProps {
   total: number;
 }

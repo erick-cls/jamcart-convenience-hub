@@ -1,7 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Order } from '@/pages/admin/orders/types';
-import { OrderStatus } from '@/components/ui/OrderItem';
+import { Order, OrderStatus } from '@/pages/admin/orders/types';
 import { useOrderActions } from '@/hooks/useOrderActions';
 import ActionButton from './actions/ActionButton';
 

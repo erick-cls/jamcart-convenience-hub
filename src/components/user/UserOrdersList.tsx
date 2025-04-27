@@ -1,6 +1,7 @@
+
 import React from 'react';
 import OrderItem from '@/components/ui/OrderItem';
-import { Order as AdminOrder } from '@/pages/admin/orders/types';
+import { Order as AdminOrder, OrderStatus } from '@/pages/admin/orders/types';
 import { Order as UserOrder } from '@/hooks/useUserOrdersState';
 
 interface UserOrdersListProps {

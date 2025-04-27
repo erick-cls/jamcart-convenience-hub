@@ -1,7 +1,7 @@
 
 import { useCallback } from 'react';
 import { useToast } from './use-toast';
-import { OrderStatus } from '@/components/ui/OrderItem';
+import { OrderStatus } from '@/pages/admin/orders/types';
 
 export const useOrderUpdates = (onOrderUpdate?: () => void) => {
   const { toast } = useToast();

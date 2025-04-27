@@ -1,7 +1,7 @@
 
 import { useOrderStatusUpdate } from './useOrderStatusUpdate';
 import { useOrderCancellation } from './useOrderCancellation';
-import { OrderStatus } from '@/components/ui/OrderItem';
+import { OrderStatus } from '@/pages/admin/orders/types';
 
 export const useOrderStatus = (
   orderId: string,

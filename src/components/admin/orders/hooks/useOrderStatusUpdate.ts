@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { OrderStatus } from '@/components/ui/OrderItem';
+import { OrderStatus } from '@/pages/admin/orders/types';
 import { useToast } from '@/hooks/use-toast';
 
 export const useOrderStatusUpdate = (

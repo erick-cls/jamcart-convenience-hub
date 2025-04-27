@@ -1,9 +1,8 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { OrderStatus } from '@/components/ui/OrderItem';
 import { useAuth } from '@/context/AuthContext';
-import { OrderItem } from '@/pages/admin/orders/types';
+import { OrderItem, OrderStatus } from '@/pages/admin/orders/types';
 import { useOrderDialog } from './hooks/useOrderDialog';
 import OrderDialogHeader from './details/OrderDialogHeader';
 import OrderDialogContent from './details/OrderDialogContent';

@@ -1,6 +1,6 @@
 
 import OrderStatusActions from './OrderStatusActions';
-import { OrderStatus } from '@/components/ui/OrderItem';
+import { OrderStatus } from '@/pages/admin/orders/types';
 
 interface AdminActionsSectionProps {
   currentStatus: OrderStatus;

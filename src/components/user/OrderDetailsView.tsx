@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from 'react';
-import { OrderStatus } from '@/components/ui/OrderItem';
+import { OrderStatus } from '@/pages/admin/orders/types';
 import OrderDetailsDialog from '@/components/admin/orders/OrderDetailsDialog';
 import { Order } from '@/hooks/useUserOrdersState';
 
