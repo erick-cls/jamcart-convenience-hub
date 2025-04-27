@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { OrderStatus } from '@/components/ui/OrderItem';
 import OrderItem from '@/components/ui/OrderItem';
@@ -111,8 +110,8 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
   
   return (
     <div className="mb-8" key={`orders-section-${updateKey}`}>
-      <h3 className="text-lg font-medium mb-4">{title}</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <h3 className="text-lg font-medium mb-4 text-white">{title}</h3>
+      <div className="grid grid-cols-1 gap-4">
         {localOrders.map((order) => {
           // Check localStorage one more time before rendering
           let currentStatus = order.status;
