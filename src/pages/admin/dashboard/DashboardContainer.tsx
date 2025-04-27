@@ -1,49 +1,28 @@
 
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
+import React from 'react';
 import DashboardHeader from '@/components/admin/dashboard/DashboardHeader';
-import StatCardsSection from '@/components/admin/dashboard/StatCardsSection';
-import OrdersDashboard from './OrdersDashboard';
-import UsersDashboard from './UsersDashboard';
-import { mockStats, mockUserStats } from './dashboardMockData';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-const DashboardContainer = () => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('orders');
+interface DashboardContainerProps {
+  children: React.ReactNode;
+  activeTab: string;
+  onTabChange: (value: string) => void;
+}
 
-  // State to hold stats for orders and users, for StatCardsSection usage
-  const [stats, setStats] = useState(mockStats);
-  const [userStats] = useState(mockUserStats);
-
-  useEffect(() => {
-    if (!user?.isAdmin) {
-      navigate('/');
-    }
-  }, [user, navigate]);
-
-  const handleViewOrderDetails = (orderId: string) => {
-    navigate(`/admin/orders/${orderId}`);
-  };
-
-  const handleQuickAction = (actionLabel: string) => {
-    if (actionLabel === 'Manage User Permissions') {
-      navigate('/admin/users');
-    }
-  };
-
+const DashboardContainer = ({ children, activeTab, onTabChange }: DashboardContainerProps) => {
   return (
-    <div className="py-6 px-6">
-      <div className="max-w-7xl mx-auto">
-        <DashboardHeader activeTab={activeTab} setActiveTab={setActiveTab} />
-        <StatCardsSection stats={stats} userStats={userStats} activeTab={activeTab} />
-        {activeTab === 'orders' ? (
-          <OrdersDashboard onNavigateToOrderDetails={handleViewOrderDetails} />
-        ) : (
-          <UsersDashboard onQuickAction={handleQuickAction} />
-        )}
-      </div>
+    <div className="p-6 max-w-7xl mx-auto">
+      <DashboardHeader />
+      
+      <Tabs defaultValue="orders" value={activeTab} onValueChange={onTabChange}>
+        <TabsList className="grid grid-cols-3 w-full max-w-md mb-6">
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="complaints">Complaints</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value={activeTab}>{children}</TabsContent>
+      </Tabs>
     </div>
   );
 };

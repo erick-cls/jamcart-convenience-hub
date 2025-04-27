@@ -1,5 +1,5 @@
-
 import { UserWallet, WalletTransaction, RiderWallet } from '@/types/wallet.types';
+import { User } from '@/types/auth.types';
 
 // Helper function to get a wallet from localStorage
 const getWalletFromStorage = (userId: string): UserWallet | null => {
@@ -74,6 +74,61 @@ export const addCashbackToWallet = (
   saveWalletToStorage(wallet);
   
   return wallet;
+};
+
+// Load funds to wallet from card on file
+export const loadFundsFromCard = (
+  userId: string, 
+  amount: number,
+  user: User
+): { success: boolean; message: string; wallet?: UserWallet } => {
+  // Check if user has card on file
+  if (!user.cardInfo || !user.cardInfo.cardNumber) {
+    return { 
+      success: false, 
+      message: 'No payment card on file. Please add a card in your profile settings.'
+    };
+  }
+  
+  // In a real app, we would make an API call to payment processor here
+  // This is a simplified simulation where we just check card data exists
+  
+  // Check last 4 digits as a simplistic "balance check" (just for demo purposes)
+  // In a real app, we'd make an API call to check sufficient funds
+  const lastFourDigits = parseInt(user.cardInfo.cardNumber.slice(-4), 10);
+  if (isNaN(lastFourDigits) || lastFourDigits < 1000) {
+    return { 
+      success: false, 
+      message: 'Your card was declined. Insufficient funds or card error.'
+    };
+  }
+  
+  // If we reach here, payment was "successful"
+  const wallet = getUserWallet(userId);
+  
+  // Create transaction record
+  const transaction: WalletTransaction = {
+    id: `dep_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+    userId,
+    amount,
+    type: 'deposit',
+    description: `Added $${amount.toFixed(2)} JMD using card ending in ${user.cardInfo.cardNumber.slice(-4)}`,
+    createdAt: new Date().toISOString()
+  };
+  
+  // Update wallet
+  wallet.balance += amount;
+  wallet.lastUpdated = new Date().toISOString();
+  wallet.transactions = [transaction, ...wallet.transactions];
+  
+  // Save updated wallet
+  saveWalletToStorage(wallet);
+  
+  return { 
+    success: true, 
+    message: `$${amount.toFixed(2)} JMD has been added to your wallet.`,
+    wallet 
+  };
 };
 
 // Load funds to wallet
