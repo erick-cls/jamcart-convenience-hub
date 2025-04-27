@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -5,8 +6,11 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import Header from '@/components/layout/Header';
 import UserOrdersList from '@/components/user/UserOrdersList';
 import UserWallet from '@/components/wallet/UserWallet';
-import { useOrdersState, Order } from '@/pages/admin/orders/useOrdersState';
+import { useOrdersState } from '@/pages/admin/orders/useOrdersState';
+import { Order as AdminOrder } from '@/pages/admin/orders/types';
+import { Order as UserOrder } from '@/hooks/useUserOrdersState';
 import { useToast } from '@/hooks/use-toast';
+import { OrderStatus } from '@/components/ui/OrderItem';
 import { RefreshCcw } from 'lucide-react';
 
 const OrdersHistoryPage = () => {
@@ -14,7 +18,7 @@ const OrdersHistoryPage = () => {
   const navigate = useNavigate();
   const { getUserOrders } = useOrdersState();
   const { toast } = useToast();
-  const [userOrders, setUserOrders] = useState<Order[]>([]);
+  const [userOrders, setUserOrders] = useState<UserOrder[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState(Date.now());
 
@@ -26,7 +30,29 @@ const OrdersHistoryPage = () => {
         const orders = getUserOrders(user.id);
         console.log("Found", orders.length, "orders for user", user.id);
         
-        setUserOrders([...orders]);
+        // Transform AdminOrder to UserOrder
+        const transformedOrders: UserOrder[] = orders.map(order => ({
+          id: order.id,
+          storeName: order.storeName,
+          category: order.category,
+          date: order.date,
+          status: order.status,
+          items: order.items,
+          total: order.total,
+          userId: order.userId,
+          userName: order.userName,
+          riderId: order.riderId,
+          riderName: order.riderName,
+          isNew: order.isNew,
+          store: order.store,
+          user: order.user,
+          address: order.address,
+          price: order.price,
+          notes: order.notes,
+          estimatedTime: order.estimatedTime
+        }));
+        
+        setUserOrders(transformedOrders);
         setLastRefreshed(Date.now());
       } catch (error) {
         console.error("Error fetching user orders:", error);

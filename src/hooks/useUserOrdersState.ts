@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { OrderStatus } from '@/components/ui/OrderItem';
 import { useToast } from '@/hooks/use-toast';
+import { OrderItem } from '@/pages/admin/orders/types';
 
 export interface Order {
   id: string;
@@ -9,13 +10,25 @@ export interface Order {
   category: string;
   date: string;
   status: OrderStatus;
-  items: string[];
+  items: OrderItem[];
   total: number;
   userId?: string;
   userName?: string;
   riderId?: string | null;
   riderName?: string | null;
   isNew?: boolean;
+  store?: {
+    vendor: string;
+  };
+  user?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  address?: string;
+  price?: number;
+  notes?: string;
+  estimatedTime?: string;
 }
 
 export const useUserOrdersState = (orders: Order[], onOrderUpdate?: () => void) => {

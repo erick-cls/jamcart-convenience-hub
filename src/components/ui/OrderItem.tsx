@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import ActionButton from './ActionButton';
 import { ReactNode } from 'react';
+import { OrderItem as OrderItemType } from '@/pages/admin/orders/types';
 
 export type OrderStatus = 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
 
@@ -12,7 +13,7 @@ interface OrderItemProps {
   category: string;
   date: string;
   status: OrderStatus;
-  items: string[];
+  items: OrderItemType[];
   total?: number;
   onViewDetails: (id: string) => void;
   isNew?: boolean;
@@ -127,7 +128,7 @@ const OrderItem = ({
             {items.slice(0, 3).map((item, index) => (
               <li key={index} className="flex items-center">
                 <span className="h-1.5 w-1.5 rounded-full bg-jamcart-red mr-2"></span>
-                {item}
+                {item.name} (${item.price.toFixed(2)} × {item.quantity})
               </li>
             ))}
             {items.length > 3 && (

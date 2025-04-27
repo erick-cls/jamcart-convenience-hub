@@ -36,6 +36,14 @@ export interface Order {
   estimatedTime?: string;
 }
 
+export interface Rider {
+  id: string;
+  name: string;
+  isAvailable: boolean;
+  lat?: number;
+  lng?: number;
+}
+
 // Mock users data for reference (keeping for consistent functionality)
 export const mockUsers = [
   { id: 'user-123', name: 'John Doe', email: 'john.doe@example.com' },

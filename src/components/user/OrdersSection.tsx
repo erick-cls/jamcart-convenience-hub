@@ -1,18 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { OrderStatus } from '@/components/ui/OrderItem';
 import OrderItem from '@/components/ui/OrderItem';
-
-interface Order {
-  id: string;
-  storeName: string;
-  category: string;
-  date: string;
-  status: OrderStatus;
-  items: string[];
-  total: number;
-  isNew?: boolean;
-}
+import { Order } from '@/hooks/useUserOrdersState';
 
 interface OrdersSectionProps {
   title: string;

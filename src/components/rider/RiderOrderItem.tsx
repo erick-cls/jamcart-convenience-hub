@@ -2,6 +2,7 @@
 import { CheckCircle, Clock, MapPin, XCircle, ChevronRight, Bike, CheckCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { OrderStatus } from '@/components/ui/OrderItem';
+import { OrderItem as OrderItemType } from '@/pages/admin/orders/types';
 
 interface Order {
   id: string;
@@ -9,7 +10,7 @@ interface Order {
   category: string;
   date: string;
   status: OrderStatus;
-  items: string[];
+  items: OrderItemType[];
   total: number;
   assignedTo?: string;
 }
@@ -94,7 +95,7 @@ const RiderOrderItem = ({ order, onViewDetails, onTakeOrder, onCompleteOrder }: 
           <div className="bg-gray-50 rounded p-2">
             <ul className="text-sm">
               {items.slice(0, 2).map((item, index) => (
-                <li key={index} className="mb-1">{item}</li>
+                <li key={index} className="mb-1">{item.name} (${item.price.toFixed(2)} × {item.quantity})</li>
               ))}
               {items.length > 2 && (
                 <li className="text-gray-500">+{items.length - 2} more items</li>

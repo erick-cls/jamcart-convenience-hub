@@ -4,6 +4,7 @@ import { OrderStatus } from '@/components/ui/OrderItem';
 import RiderOrderItem from './RiderOrderItem';
 import OrderDetailsDialog from '@/components/admin/orders/OrderDetailsDialog';
 import { useToast } from '@/hooks/use-toast';
+import { OrderItem } from '@/pages/admin/orders/types';
 
 interface Order {
   id: string;
@@ -11,7 +12,7 @@ interface Order {
   category: string;
   date: string;
   status: OrderStatus;
-  items: string[];
+  items: OrderItem[];
   total: number;
   assignedTo?: string;
 }

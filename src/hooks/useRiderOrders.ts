@@ -1,5 +1,7 @@
+
 import { useState, useEffect } from 'react';
 import { OrderStatus } from '@/components/ui/OrderItem';
+import { OrderItem } from '@/pages/admin/orders/types';
 
 interface Order {
   id: string;
@@ -7,7 +9,7 @@ interface Order {
   category: string;
   date: string;
   status: OrderStatus;
-  items: string[];
+  items: OrderItem[];
   total: number;
   assignedTo?: string;
 }
@@ -19,7 +21,11 @@ const mockOrders: Order[] = [
     category: 'Mini Mart',
     date: '2023-06-15T14:30:00',
     status: 'accepted',
-    items: ['Bread', 'Milk', 'Eggs'],
+    items: [
+      { name: 'Bread', price: 5.99, quantity: 1 },
+      { name: 'Milk', price: 6.50, quantity: 1 },
+      { name: 'Eggs', price: 3.50, quantity: 1 }
+    ],
     total: 15.99,
     assignedTo: 'rider-123',
   },
@@ -29,7 +35,11 @@ const mockOrders: Order[] = [
     category: 'Supermarket',
     date: '2023-06-15T10:15:00',
     status: 'pending',
-    items: ['Rice', 'Chicken', 'Vegetables'],
+    items: [
+      { name: 'Rice', price: 10.50, quantity: 1 },
+      { name: 'Chicken', price: 12.00, quantity: 1 },
+      { name: 'Vegetables', price: 10.00, quantity: 1 }
+    ],
     total: 32.50,
   },
   {
@@ -38,7 +48,11 @@ const mockOrders: Order[] = [
     category: 'Pharmacy',
     date: '2023-06-14T16:45:00',
     status: 'completed',
-    items: ['Pain reliever', 'Band-aids', 'Vitamins'],
+    items: [
+      { name: 'Pain reliever', price: 8.75, quantity: 1 },
+      { name: 'Band-aids', price: 6.00, quantity: 1 },
+      { name: 'Vitamins', price: 10.00, quantity: 1 }
+    ],
     total: 24.75,
     assignedTo: 'rider-123',
   },
@@ -48,7 +62,11 @@ const mockOrders: Order[] = [
     category: 'Restaurant',
     date: '2023-06-14T12:30:00',
     status: 'pending',
-    items: ['Jerk Chicken', 'Rice and Peas', 'Festival'],
+    items: [
+      { name: 'Jerk Chicken', price: 12.99, quantity: 1 },
+      { name: 'Rice and Peas', price: 8.00, quantity: 1 },
+      { name: 'Festival', price: 8.00, quantity: 1 }
+    ],
     total: 28.99,
   },
   {
@@ -57,7 +75,11 @@ const mockOrders: Order[] = [
     category: 'Mini Mart',
     date: '2023-06-13T15:20:00',
     status: 'declined',
-    items: ['Chips', 'Soda', 'Candy'],
+    items: [
+      { name: 'Chips', price: 3.50, quantity: 1 },
+      { name: 'Soda', price: 2.50, quantity: 1 },
+      { name: 'Candy', price: 2.50, quantity: 1 }
+    ],
     total: 8.50,
   },
 ];

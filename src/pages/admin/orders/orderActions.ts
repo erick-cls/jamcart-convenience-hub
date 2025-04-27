@@ -1,4 +1,5 @@
-import { Order, OrderStatus } from './types';
+
+import { Order, OrderStatus, OrderItem } from './types';
 import { saveOrdersToStorage, getStoredOrders } from './orderStorage';
 
 // Update order status
@@ -63,22 +64,44 @@ export const assignRider = (
 export const createTestOrder = (
   userId: string, 
   userName: string, 
-  items: string[] = []
+  itemNames: string[] = []
 ): Order => {
   const now = new Date();
+  
+  // Convert string items to OrderItem objects
+  const items: OrderItem[] = itemNames.length > 0 
+    ? itemNames.map(name => ({ name, price: Math.floor(Math.random() * 20) + 5, quantity: 1 }))
+    : [
+        { name: 'Test Item 1', price: 7.99, quantity: 1 },
+        { name: 'Test Item 2', price: 12.99, quantity: 1 }
+      ];
+      
+  // Calculate total from items
+  const price = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  
   const newOrder: Order = {
     id: `order-${now.getTime()}`,
     storeName: 'New Test Order',
     category: 'Test Category',
     date: now.toISOString(),
     status: 'pending',
-    items: items.length > 0 ? items : ['Test Item 1', 'Test Item 2'],
-    total: Math.floor(Math.random() * 100) + 10,
+    items,
+    total: price,
     userId,
     userName,
     riderId: null,
     riderName: null,
-    isNew: true
+    isNew: true,
+    store: {
+      vendor: 'vendor-test'
+    },
+    user: {
+      name: userName,
+      email: 'test@example.com',
+      phone: '555-0000'
+    },
+    address: 'Test Address, Kingston, Jamaica',
+    price
   };
   
   // Get current orders
