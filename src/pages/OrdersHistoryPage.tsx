@@ -128,27 +128,6 @@ const OrdersHistoryPage = () => {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="lg:col-span-1 [&_button]:text-black [&_button:hover]:bg-[#0d9539] [&_button:hover]:text-white">
-              <Card className="bg-black border-[#20a64f]/20">
-                <CardHeader>
-                  <CardTitle className="text-[#e6e172] flex items-center">
-                    <img 
-                      src="/lovable-uploads/188d537b-f44b-4db3-b725-94d721ef70b1.png" 
-                      alt="JAM Logo" 
-                      className="h-5 w-5 mr-2"
-                    />
-                    JAM
-                  </CardTitle>
-                  <CardDescription className="text-white">
-                    Earn and manage your cashback
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <UserWallet onReload={forceRefresh} />
-                </CardContent>
-              </Card>
-            </div>
-            
             <div className="lg:col-span-1">
               <Card className="bg-black border-[#20a64f]/20">
                 <CardHeader>
@@ -163,6 +142,10 @@ const OrdersHistoryPage = () => {
                   />
                 </CardContent>
               </Card>
+            </div>
+            
+            <div className="lg:col-span-1 [&_button]:text-black [&_button:hover]:bg-[#0d9539] [&_button:hover]:text-white">
+              <UserWallet onReload={forceRefresh} />
             </div>
           </div>
         </div>
