@@ -2,27 +2,38 @@
 
 export type OrderStatus = 'pending' | 'accepted' | 'completed' | 'declined' | 'cancelled';
 
+export interface OrderItem {
+  name: string;
+  price: number;
+  quantity: number;
+  options?: string;
+}
+
 export interface Order {
   id: string;
   storeName: string;
   category: string;
   date: string;
   status: OrderStatus;
-  items: string[];
+  items: OrderItem[];
   total: number;
-  userId?: string;
-  userName?: string;
+  userId: string;
+  userName: string;
   riderId?: string | null;
   riderName?: string | null;
   isNew?: boolean;
-}
-
-export interface Rider {
-  id: string;
-  name: string;
-  isAvailable: boolean;
-  lat?: number;
-  lng?: number;
+  store: {
+    vendor: string;
+  };
+  user: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  address: string;
+  price: number;
+  notes?: string;
+  estimatedTime?: string;
 }
 
 // Mock users data for reference (keeping for consistent functionality)

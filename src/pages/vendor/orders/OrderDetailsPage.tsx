@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -40,7 +39,6 @@ const OrderDetailsPage = () => {
     }
   }, [user, navigate]);
   
-  // Verify this order belongs to the vendor
   useEffect(() => {
     if (order && user && order.store?.vendor !== user.id) {
       toast({
@@ -67,8 +65,6 @@ const OrderDetailsPage = () => {
   const handleSaveChanges = () => {
     if (!order) return;
     
-    // Here we would update the order with the new notes and estimated time
-    // This is a mock implementation since we don't have a full backend
     const updatedOrder = { ...order, notes, estimatedTime };
     
     setOrder(updatedOrder);
@@ -110,10 +106,14 @@ const OrderDetailsPage = () => {
               <CardTitle>Customer Information</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="font-medium">{order.user.name}</p>
-              <p className="text-gray-600">{order.user.email}</p>
-              <p className="text-gray-600">{order.user.phone}</p>
-              <p className="text-gray-600 mt-2">{order.address}</p>
+              {order?.user && (
+                <>
+                  <p className="font-medium">{order.user.name}</p>
+                  <p className="text-gray-600">{order.user.email}</p>
+                  <p className="text-gray-600">{order.user.phone}</p>
+                  <p className="text-gray-600 mt-2">{order.address}</p>
+                </>
+              )}
             </CardContent>
           </Card>
           
