@@ -6,9 +6,10 @@ import { Order as UserOrder } from '@/hooks/useUserOrdersState';
 interface UserOrdersListProps {
   orders: UserOrder[];
   onViewDetails: (orderId: string) => void;
+  onOrderUpdate?: () => void;
 }
 
-const UserOrdersList = ({ orders, onViewDetails }: UserOrdersListProps) => {
+const UserOrdersList = ({ orders, onViewDetails, onOrderUpdate }: UserOrdersListProps) => {
   // Convert UserOrder[] to AdminOrder[] by ensuring required fields
   const convertedOrders: AdminOrder[] = orders.map(order => ({
     ...order,

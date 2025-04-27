@@ -9,6 +9,7 @@ import OrderStatusActions from './details/OrderStatusActions';
 import OrderCancellationTimer from './details/OrderCancellationTimer';
 import { useOrderStatus } from './hooks/useOrderStatus';
 import { useEffect, useState, useCallback } from 'react';
+import { OrderItem } from '@/pages/admin/orders/types';
 
 interface OrderDetailsDialogProps {
   isOpen: boolean;
@@ -19,7 +20,7 @@ interface OrderDetailsDialogProps {
     category: string;
     date: string;
     status: OrderStatus;
-    items: OrderItemType[];
+    items: OrderItem[];
     total?: number;
   } | null;
   onStatusChange: (orderId: string, newStatus: OrderStatus) => void;
