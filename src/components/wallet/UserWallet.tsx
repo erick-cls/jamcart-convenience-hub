@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -82,7 +83,7 @@ const UserWallet = ({ onReload }: UserWalletProps) => {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-[#e6e172] flex items-center">
-              <Wallet className="h-5 w-5 mr-2" /> JAMCart Wallet
+              <Wallet className="h-5 w-5 mr-2" /> JAMWallet
             </CardTitle>
             <CardDescription className="text-white">
               Earn and manage your cashback
