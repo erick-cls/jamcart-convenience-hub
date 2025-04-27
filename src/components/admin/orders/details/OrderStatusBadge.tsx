@@ -1,7 +1,6 @@
 
 import { Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { OrderStatus } from '@/components/ui/OrderItem';
-import { memo } from 'react';
 
 interface OrderStatusBadgeProps {
   status: OrderStatus;
@@ -36,7 +35,7 @@ export const statusConfigs = {
   }
 };
 
-// Using a non-memoized component to ensure re-renders on status changes
+// Non-memoized component to ensure it updates on status changes
 const OrderStatusBadge = ({ status, className = '' }: OrderStatusBadgeProps) => {
   const currentStatus = statusConfigs[status] || statusConfigs.pending;
   

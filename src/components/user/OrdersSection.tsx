@@ -1,5 +1,5 @@
 
-import { memo, useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { OrderStatus } from '@/components/ui/OrderItem';
 import OrderItem from '@/components/ui/OrderItem';
 
@@ -30,7 +30,7 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
     setLocalOrders([...orders]);
   }, [orders]);
 
-  // Listen for order status changes
+  // Listen for order status changes and force re-render
   useEffect(() => {
     const handleOrderStatusChange = () => {
       // Force re-render with current orders
@@ -38,6 +38,7 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
       setUpdateKey(Date.now());
     };
     
+    // Listen for multiple event types to ensure we catch all updates
     window.addEventListener('order-status-change', handleOrderStatusChange);
     window.addEventListener('storage', handleOrderStatusChange);
     
@@ -71,7 +72,5 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
     </div>
   );
 };
-
-OrdersSection.displayName = 'OrdersSection';
 
 export default OrdersSection;
