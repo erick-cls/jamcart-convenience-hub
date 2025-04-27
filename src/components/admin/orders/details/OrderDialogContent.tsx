@@ -3,8 +3,9 @@ import { OrderStatus } from '@/components/ui/OrderItem';
 import { OrderItem } from '@/pages/admin/orders/types';
 import OrderDialogHeader from './OrderDialogHeader';
 import OrderItemsList from './OrderItemsList';
-import OrderStatusActions from './OrderStatusActions';
-import OrderCancellationTimer from './OrderCancellationTimer';
+import OrderTotalSection from './OrderTotalSection';
+import CustomerCancellationSection from './CustomerCancellationSection';
+import AdminActionsSection from './AdminActionsSection';
 
 interface OrderDialogContentProps {
   order: {
@@ -45,28 +46,19 @@ const OrderDialogContent = ({
       
       <OrderItemsList items={order.items || []} />
       
-      {order.total && (
-        <div className="flex justify-between items-center pt-2 border-t">
-          <span className="font-medium">Total:</span>
-          <span className="font-semibold text-jamcart-green">
-            ${order.total.toFixed(2)}
-          </span>
-        </div>
-      )}
+      {order.total && <OrderTotalSection total={order.total} />}
       
       {user?.userType === 'customer' && displayStatus === 'pending' && (
-        <div className="pt-4 border-t">
-          <OrderCancellationTimer
-            orderId={order.id}
-            orderDate={order.date}
-            onCancel={onCancellation}
-            isDialogOpen={isDialogOpen}
-          />
-        </div>
+        <CustomerCancellationSection
+          orderId={order.id}
+          orderDate={order.date}
+          onCancellation={onCancellation}
+          isDialogOpen={isDialogOpen}
+        />
       )}
       
       {(user?.userType === 'admin' || user?.userType === 'rider') && (
-        <OrderStatusActions
+        <AdminActionsSection
           currentStatus={displayStatus}
           onStatusChange={onStatusChange}
           isSubmitting={false}

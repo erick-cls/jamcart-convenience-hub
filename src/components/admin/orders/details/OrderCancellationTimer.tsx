@@ -5,13 +5,19 @@ import { Button } from '@/components/ui/button';
 interface OrderCancellationTimerProps {
   orderId: string;
   orderDate: string;
-  onCancel: () => void;
-  isSubmitting: boolean;
+  onCancel: (isPenaltyFree: boolean) => void;
+  isDialogOpen: boolean;
 }
 
-const OrderCancellationTimer = ({ orderId, orderDate, onCancel, isSubmitting }: OrderCancellationTimerProps) => {
+const OrderCancellationTimer = ({ 
+  orderId, 
+  orderDate, 
+  onCancel,
+  isDialogOpen 
+}: OrderCancellationTimerProps) => {
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
   const [isPenaltyFree, setIsPenaltyFree] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   
   // Format seconds into MM:SS
   const formatTime = (seconds: number): string => {
@@ -50,9 +56,13 @@ const OrderCancellationTimer = ({ orderId, orderDate, onCancel, isSubmitting }: 
     return () => clearInterval(timerId);
   }, [orderDate]);
   
+  const handleCancel = () => {
+    onCancel(isPenaltyFree);
+  };
+  
   return (
     <Button
-      onClick={onCancel}
+      onClick={handleCancel}
       variant="destructive"
       className="w-full"
       disabled={isSubmitting}
