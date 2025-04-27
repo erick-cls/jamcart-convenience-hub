@@ -2,6 +2,7 @@ import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import OrderItem, { OrderStatus } from '@/components/ui/OrderItem';
 import { useNavigate } from 'react-router-dom';
+import { OrderItemType } from '@/pages/admin/orders/types';
 
 interface Order {
   id: string;
@@ -9,7 +10,7 @@ interface Order {
   category: string;
   date: string;
   status: OrderStatus;
-  items: OrderItemType[]; // Update this to use OrderItemType[]
+  items: OrderItemType[];
   total?: number;
 }
 

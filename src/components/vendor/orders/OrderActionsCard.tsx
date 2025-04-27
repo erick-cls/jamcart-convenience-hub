@@ -1,8 +1,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Order } from '@/pages/admin/orders/types';
 import { OrderStatus } from '@/components/ui/OrderItem';
+import { useOrderActions } from '@/hooks/useOrderActions';
+import ActionButton from './actions/ActionButton';
 
 interface OrderActionsCardProps {
   order: Order;
@@ -10,36 +11,43 @@ interface OrderActionsCardProps {
 }
 
 const OrderActionsCard = ({ order, onStatusChange }: OrderActionsCardProps) => {
+  const { 
+    handleStatusChange, 
+    isAcceptDisabled, 
+    isCompleteDisabled, 
+    isDeclineDisabled 
+  } = useOrderActions({
+    status: order.status,
+    onStatusChange
+  });
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Order Actions</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        <Button 
-          onClick={() => onStatusChange('accepted')} 
-          className="w-full"
-          disabled={order.status !== 'pending'}
-          variant="default"
+        <ActionButton 
+          onClick={() => handleStatusChange('accepted')} 
+          disabled={isAcceptDisabled}
         >
           Accept Order
-        </Button>
-        <Button 
-          onClick={() => onStatusChange('completed')} 
-          className="w-full"
-          disabled={order.status !== 'accepted'}
-          variant="default"
+        </ActionButton>
+        
+        <ActionButton 
+          onClick={() => handleStatusChange('completed')} 
+          disabled={isCompleteDisabled}
         >
           Mark as Completed
-        </Button>
-        <Button 
-          onClick={() => onStatusChange('declined')} 
-          className="w-full"
-          disabled={['completed', 'cancelled', 'declined'].includes(order.status)}
+        </ActionButton>
+        
+        <ActionButton 
+          onClick={() => handleStatusChange('declined')} 
+          disabled={isDeclineDisabled}
           variant="destructive"
         >
           Decline Order
-        </Button>
+        </ActionButton>
       </CardContent>
     </Card>
   );

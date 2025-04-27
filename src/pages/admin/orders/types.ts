@@ -9,6 +9,8 @@ export interface OrderItem {
   options?: string;
 }
 
+export type { OrderItem as OrderItemType };
+
 export interface Order {
   id: string;
   storeName: string;
@@ -50,3 +52,4 @@ export const mockUsers = [
   { id: 'admin-123', name: 'Admin User', email: 'admin@example.com' },
   { id: 'rider-123', name: 'John Rider', email: 'rider@jamcart.com' }
 ];
+

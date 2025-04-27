@@ -19,7 +19,7 @@ interface OrderDetailsDialogProps {
     category: string;
     date: string;
     status: OrderStatus;
-    items: OrderItemType[]; // Update this to use OrderItemType[]
+    items: OrderItemType[];
     total?: number;
   } | null;
   onStatusChange: (orderId: string, newStatus: OrderStatus) => void;
