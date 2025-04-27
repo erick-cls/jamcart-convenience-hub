@@ -14,9 +14,9 @@ const MobileMenuButton = ({ isOpen, onClick }: MobileMenuButtonProps) => {
       aria-label={isOpen ? "Close menu" : "Open menu"}
     >
       {isOpen ? (
-        <X className="h-6 w-6 text-gray-800 hover:text-[#009c3b] transition-colors" />
+        <X className="h-6 w-6 text-black hover:text-[#009c3b] transition-colors" />
       ) : (
-        <Menu className="h-6 w-6 text-gray-800 hover:text-[#009c3b] transition-colors" />
+        <Menu className="h-6 w-6 text-white hover:text-[#009c3b] transition-colors" />
       )}
     </button>
   );
