@@ -2,6 +2,7 @@
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { User } from '@/types/auth.types';
+import UserTypeTag from '@/components/admin/users/UserTypeTag';
 
 interface UserInfoCardProps {
   user: User;
@@ -38,7 +39,7 @@ const UserInfoCard = ({ user }: UserInfoCardProps) => {
       <CardContent>
         <div className="flex items-center justify-between py-2 border-b">
           <span className="text-gray-500">Account Type</span>
-          <span className="font-medium">{user.isAdmin ? 'Admin' : (user.isRider ? 'Rider' : 'Customer')}</span>
+          <UserTypeTag userType={user.userType} />
         </div>
         <div className="flex items-center justify-between py-2 border-b">
           <span className="text-gray-500">Phone</span>
