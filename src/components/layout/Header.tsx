@@ -61,7 +61,8 @@ const Header = () => {
             isOpen={isOpen} 
             navigationItems={navigationItems} 
             user={user} 
-            handleLogout={handleLogout} 
+            handleLogout={handleLogout}
+            onClose={() => setIsOpen(false)}
           />
         )}
       </AnimatePresence>

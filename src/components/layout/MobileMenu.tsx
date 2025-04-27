@@ -1,18 +1,44 @@
-
 import { motion } from "framer-motion";
 import { Link, useLocation } from "react-router-dom";
 import { User, ShoppingCart, LogOut, Bike, Package } from "lucide-react";
 import ActionButton from "../ui/ActionButton";
+import { useEffect } from "react";
 
 interface MobileMenuProps {
   isOpen: boolean;
   navigationItems: Array<{ name: string; path: string }>;
   user: any;
   handleLogout: () => void;
+  onClose: () => void;
 }
 
-const MobileMenu = ({ isOpen, navigationItems, user, handleLogout }: MobileMenuProps) => {
+const MobileMenu = ({ isOpen, navigationItems, user, handleLogout, onClose }: MobileMenuProps) => {
   const location = useLocation();
+  
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains('fixed')) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      window.addEventListener('keydown', handleEscape);
+      window.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+      window.removeEventListener('click', handleClickOutside);
+    };
+  }, [isOpen, onClose]);
   
   if (!isOpen) return null;
   
