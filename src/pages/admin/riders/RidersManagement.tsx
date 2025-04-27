@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from "react";
 import GoogleMap from "@/components/maps/GoogleMap";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { mockRiders } from "@/pages/admin/orders/mockData";
 import { Rider } from "@/pages/admin/orders/types";
+import RiderWalletManagement from "@/components/admin/riders/RiderWalletManagement";
 
 const RidersManagement = () => {
   const [riders, setRiders] = useState<Rider[]>(mockRiders);
@@ -36,52 +36,58 @@ const RidersManagement = () => {
       }));
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Riders Management</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="mb-4 h-[300px] w-full">
-          <GoogleMap
-            riderLocations={riderLocations}
-            riderLocation={firstLocation}
-            riderName={riders[0]?.name || "Rider"}
-            height="100%"
-            showControls={false}
-          />
-        </div>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Available</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {riders.map(rider => (
-                <TableRow key={rider.id}>
-                  <TableCell>{rider.name}</TableCell>
-                  <TableCell>{rider.isAvailable ? "Available" : "Busy"}</TableCell>
-                  <TableCell>
-                    {rider.lat && rider.lng
-                      ? `${rider.lat.toFixed(5)}, ${rider.lng.toFixed(5)}`
-                      : "Unknown"}
-                  </TableCell>
-                  <TableCell>
-                    <span className={`px-2 py-1 rounded text-xs font-semibold ${rider.isAvailable ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}>
-                      {rider.isAvailable ? "Yes" : "No"}
-                    </span>
-                  </TableCell>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Rider Management</h1>
+      
+      <RiderWalletManagement />
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Riders Management</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4 h-[300px] w-full">
+            <GoogleMap
+              riderLocations={riderLocations}
+              riderLocation={firstLocation}
+              riderName={riders[0]?.name || "Rider"}
+              height="100%"
+              showControls={false}
+            />
+          </div>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Available</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+              </TableHeader>
+              <TableBody>
+                {riders.map(rider => (
+                  <TableRow key={rider.id}>
+                    <TableCell>{rider.name}</TableCell>
+                    <TableCell>{rider.isAvailable ? "Available" : "Busy"}</TableCell>
+                    <TableCell>
+                      {rider.lat && rider.lng
+                        ? `${rider.lat.toFixed(5)}, ${rider.lng.toFixed(5)}`
+                        : "Unknown"}
+                    </TableCell>
+                    <TableCell>
+                      <span className={`px-2 py-1 rounded text-xs font-semibold ${rider.isAvailable ? "bg-green-200 text-green-800" : "bg-red-200 text-red-800"}`}>
+                        {rider.isAvailable ? "Yes" : "No"}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
