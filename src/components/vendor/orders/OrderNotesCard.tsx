@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { useOrderNotes } from '@/hooks/useOrderNotes';
 
 interface OrderNotesCardProps {
   notes: string;
@@ -13,12 +14,28 @@ interface OrderNotesCardProps {
 }
 
 const OrderNotesCard = ({ 
-  notes, 
-  estimatedTime, 
-  onNotesChange, 
-  onEstimatedTimeChange, 
+  notes: initialNotes, 
+  estimatedTime: initialEstimatedTime, 
+  onNotesChange,
+  onEstimatedTimeChange,
   onSave 
 }: OrderNotesCardProps) => {
+  const {
+    notes,
+    estimatedTime,
+    handleNotesChange,
+    handleEstimatedTimeChange,
+    handleSave
+  } = useOrderNotes({
+    initialNotes,
+    initialEstimatedTime,
+    onSave: () => {
+      onNotesChange(notes);
+      onEstimatedTimeChange(estimatedTime);
+      onSave();
+    }
+  });
+
   return (
     <Card>
       <CardHeader>
@@ -33,7 +50,7 @@ const OrderNotesCard = ({
             <Input 
               type="number" 
               value={estimatedTime} 
-              onChange={(e) => onEstimatedTimeChange(e.target.value)}
+              onChange={(e) => handleEstimatedTimeChange(e.target.value)}
               placeholder="E.g., 20"
             />
           </div>
@@ -44,14 +61,14 @@ const OrderNotesCard = ({
             </label>
             <Textarea 
               value={notes} 
-              onChange={(e) => onNotesChange(e.target.value)}
+              onChange={(e) => handleNotesChange(e.target.value)}
               placeholder="Add any notes about the order..."
               rows={3}
             />
           </div>
           
           <Button 
-            onClick={onSave}
+            onClick={handleSave}
             className="w-full"
             variant="outline"
           >

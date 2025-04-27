@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import OrderItem, { OrderStatus } from '@/components/ui/OrderItem';
@@ -10,7 +9,7 @@ interface Order {
   category: string;
   date: string;
   status: OrderStatus;
-  items: string[];
+  items: OrderItemType[]; // Update this to use OrderItemType[]
   total?: number;
 }
 

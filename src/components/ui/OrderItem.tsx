@@ -13,7 +13,7 @@ interface OrderItemProps {
   category: string;
   date: string;
   status: OrderStatus;
-  items: OrderItemType[];
+  items: OrderItemType[]; // Update this to use OrderItemType[] instead of string[]
   total?: number;
   onViewDetails: (id: string) => void;
   isNew?: boolean;
