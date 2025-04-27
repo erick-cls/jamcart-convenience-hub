@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 import { Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import ActionButton from './ActionButton';
-import { ReactNode, memo } from 'react';
+import { ReactNode } from 'react';
 
 export type OrderStatus = 'pending' | 'accepted' | 'declined' | 'completed' | 'cancelled';
 
@@ -20,7 +20,7 @@ interface OrderItemProps {
   actionButton?: ReactNode;
 }
 
-// Using non-memoized component to ensure it re-renders when status changes
+// Using non-memoized component with forced render key to ensure immediate updates
 const OrderItem = ({ 
   id, 
   storeName, 
@@ -80,6 +80,7 @@ const OrderItem = ({
       transition={{ duration: 0.3 }}
       data-order-id={id}
       data-order-status={status}
+      key={`order-item-${id}-${status}-${Date.now()}`} // Force re-render whenever props change
     >
       <div className="p-5">
         <div className="flex items-center justify-between mb-4">

@@ -24,20 +24,28 @@ export const useOrderStatus = (
         variant: "default",
       });
       
-      // Dispatch both events with details to notify all components
-      window.dispatchEvent(new CustomEvent('order-status-change', { detail: { orderId, newStatus } }));
-      window.dispatchEvent(new CustomEvent('storage', { detail: { orderId, newStatus } }));
+      // Enhanced event dispatching with detailed payload
+      const statusChangeEvent = new CustomEvent('order-status-change', { 
+        detail: { orderId, newStatus, timestamp: Date.now() } 
+      });
+      window.dispatchEvent(statusChangeEvent);
+      
+      // Ensure storage event is also dispatched with payload
+      window.dispatchEvent(new CustomEvent('storage', { 
+        detail: { orderId, newStatus, timestamp: Date.now() } 
+      }));
       
       // Close with slight delay to ensure updates are processed
       setTimeout(() => {
         onClose();
-      }, 300);
+      }, 500); // Increased delay for better UI consistency
     } catch (error) {
       toast({
         title: "Error updating order",
         description: "There was a problem updating the order status. Please try again.",
         variant: "destructive",
       });
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -67,20 +75,28 @@ export const useOrderStatus = (
         });
       }
       
-      // Dispatch both events with details to notify all components
-      window.dispatchEvent(new CustomEvent('order-status-change', { detail: { orderId, newStatus: 'cancelled' } }));
-      window.dispatchEvent(new CustomEvent('storage', { detail: { orderId, newStatus: 'cancelled' } }));
+      // Enhanced event dispatching with timestamp for better tracking
+      const cancelEvent = new CustomEvent('order-status-change', { 
+        detail: { orderId, newStatus: 'cancelled', timestamp: Date.now(), cancelled: true } 
+      });
+      window.dispatchEvent(cancelEvent);
       
-      // Close with slight delay to ensure updates are processed
+      // Also dispatch storage event with same data
+      window.dispatchEvent(new CustomEvent('storage', { 
+        detail: { orderId, newStatus: 'cancelled', timestamp: Date.now(), cancelled: true } 
+      }));
+      
+      // Close with increased delay to ensure updates are processed
       setTimeout(() => {
         onClose();
-      }, 300);
+      }, 500);
     } catch (error) {
       toast({
         title: "Error cancelling order",
         description: "There was a problem cancelling your order. Please try again.",
         variant: "destructive",
       });
+    } finally {
       setIsSubmitting(false);
     }
   };

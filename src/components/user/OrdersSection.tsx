@@ -28,13 +28,33 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
   // Update localOrders when props change
   useEffect(() => {
     setLocalOrders([...orders]);
+    // Force re-render when orders change
+    setUpdateKey(Date.now());
   }, [orders]);
 
   // Listen for order status changes and force re-render
   useEffect(() => {
-    const handleOrderStatusChange = () => {
-      // Force re-render with current orders
-      setLocalOrders(prevOrders => [...prevOrders]);
+    const handleOrderStatusChange = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      
+      // If we have detail data, use it for targeted updates
+      if (customEvent.detail && customEvent.detail.orderId) {
+        const { orderId, newStatus } = customEvent.detail;
+        
+        // Update specific order if it exists in our list
+        setLocalOrders(prevOrders => 
+          prevOrders.map(order => 
+            order.id === orderId 
+              ? { ...order, status: newStatus } 
+              : order
+          )
+        );
+      } else {
+        // Fall back to full refresh if no specific data
+        setLocalOrders(prevOrders => [...prevOrders]);
+      }
+      
+      // Force component to re-render with new key
       setUpdateKey(Date.now());
     };
     
@@ -46,7 +66,7 @@ const OrdersSection = ({ title, orders, onViewDetails }: OrdersSectionProps) => 
       window.removeEventListener('order-status-change', handleOrderStatusChange);
       window.removeEventListener('storage', handleOrderStatusChange);
     };
-  }, [orders]);
+  }, []);
   
   if (localOrders.length === 0) return null;
   

@@ -32,11 +32,14 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
   
   // Use local state to track order status for immediate UI updates
   const [currentStatus, setCurrentStatus] = useState<OrderStatus | null>(null);
+  const [renderKey, setRenderKey] = useState<number>(Date.now());
   
   // Update current status when order changes
   useEffect(() => {
     if (order) {
       setCurrentStatus(order.status);
+      // Reset render key to force badge update
+      setRenderKey(Date.now());
     }
   }, [order]);
   
@@ -46,9 +49,21 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
     setCurrentStatus(null);
     // Call the original onClose
     onClose();
-    // Ensure all components get notified about status changes
-    window.dispatchEvent(new Event('order-status-change'));
-    window.dispatchEvent(new Event('storage'));
+    
+    // Enhanced event broadcasting to ensure all components update
+    const closeEvent = new CustomEvent('order-status-change', {
+      detail: { 
+        timestamp: Date.now(),
+        action: 'dialog-close'
+      }
+    });
+    window.dispatchEvent(closeEvent);
+    window.dispatchEvent(new CustomEvent('storage', { 
+      detail: { 
+        timestamp: Date.now(),
+        action: 'dialog-close'
+      } 
+    }));
   }, [onClose]);
   
   // Call hooks before any conditional returns to comply with React's rules of hooks
@@ -57,12 +72,31 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
     (orderId, newStatus) => {
       // Update local state immediately for instant UI feedback
       setCurrentStatus(newStatus);
+      // Force badge to re-render with new key
+      setRenderKey(Date.now());
       // Call the parent handler
       onStatusChange(orderId, newStatus);
       
-      // Broadcast status change to all components
-      window.dispatchEvent(new Event('order-status-change'));
-      window.dispatchEvent(new Event('storage'));
+      // Broadcast status change with enhanced data
+      const updateEvent = new CustomEvent('order-status-change', {
+        detail: { 
+          orderId, 
+          newStatus, 
+          timestamp: Date.now(),
+          source: 'dialog'
+        }
+      });
+      window.dispatchEvent(updateEvent);
+      
+      // Also dispatch storage event with same data
+      window.dispatchEvent(new CustomEvent('storage', { 
+        detail: { 
+          orderId, 
+          newStatus, 
+          timestamp: Date.now(),
+          source: 'dialog'
+        } 
+      }));
     },
     handleClose
   );
@@ -121,7 +155,9 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
               <p className="text-base mt-1">{order.storeName}</p>
               <p className="text-sm text-gray-600">{order.category}</p>
             </div>
-            <OrderStatusBadge status={displayStatus} />
+            <div key={`status-badge-wrapper-${renderKey}`}>
+              <OrderStatusBadge status={displayStatus} />
+            </div>
           </div>
           
           <OrderItemsList items={order.items || []} />

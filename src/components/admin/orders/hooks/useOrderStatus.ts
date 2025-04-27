@@ -27,14 +27,21 @@ export const useOrderStatus = (
         variant: "default",
       });
       
-      // Dispatch multiple events to ensure all components are notified
-      window.dispatchEvent(new CustomEvent('order-status-change', { detail: { orderId, newStatus } }));
-      window.dispatchEvent(new CustomEvent('storage', { detail: { orderId, newStatus } }));
+      // Enhanced event dispatching with timestamp and unqiue identifiers
+      const statusEvent = new CustomEvent('order-status-change', { 
+        detail: { orderId, newStatus, timestamp: Date.now(), id: `${orderId}-${Date.now()}` } 
+      });
+      window.dispatchEvent(statusEvent);
       
-      // Add a small delay before closing to ensure UI updates
+      // Also dispatch storage event with same enhanced data
+      window.dispatchEvent(new CustomEvent('storage', { 
+        detail: { orderId, newStatus, timestamp: Date.now(), id: `${orderId}-${Date.now()}` } 
+      }));
+      
+      // Add a slightly longer delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-      }, 300);
+      }, 500);
     } catch (error) {
       toast({
         title: "Error updating order",
@@ -53,7 +60,7 @@ export const useOrderStatus = (
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      // Call status change handler to update UI immediately
+      // Call status change handler to update UI immediately - with forced cancelled status
       onStatusChange(orderId, 'cancelled');
       
       const description = isPenaltyFree 
@@ -77,14 +84,33 @@ export const useOrderStatus = (
         });
       }
       
-      // Dispatch multiple events with details to ensure all components are notified
-      window.dispatchEvent(new CustomEvent('order-status-change', { detail: { orderId, newStatus: 'cancelled' } }));
-      window.dispatchEvent(new CustomEvent('storage', { detail: { orderId, newStatus: 'cancelled' } }));
+      // Enhanced event dispatching with specific cancellation flag
+      const cancelEvent = new CustomEvent('order-status-change', { 
+        detail: { 
+          orderId, 
+          newStatus: 'cancelled', 
+          timestamp: Date.now(),
+          cancelled: true,
+          id: `${orderId}-cancel-${Date.now()}`
+        } 
+      });
+      window.dispatchEvent(cancelEvent);
       
-      // Add a small delay before closing to ensure UI updates
+      // Also dispatch storage event with explicit cancel data
+      window.dispatchEvent(new CustomEvent('storage', { 
+        detail: { 
+          orderId, 
+          newStatus: 'cancelled', 
+          timestamp: Date.now(),
+          cancelled: true,
+          id: `${orderId}-cancel-${Date.now()}`
+        } 
+      }));
+      
+      // Increased delay to ensure UI updates before closing
       setTimeout(() => {
         onClose();
-      }, 300);
+      }, 500);
     } catch (error) {
       toast({
         title: "Error cancelling order",

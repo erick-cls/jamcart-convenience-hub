@@ -37,7 +37,7 @@ export const statusConfigs = {
   }
 };
 
-// Non-memoized component to ensure it updates on status changes
+// Non-memoized component with forced render key to ensure immediate updates
 const OrderStatusBadge = ({ status, className = '' }: OrderStatusBadgeProps) => {
   const currentStatus = statusConfigs[status] || statusConfigs.pending;
   
@@ -50,6 +50,7 @@ const OrderStatusBadge = ({ status, className = '' }: OrderStatusBadgeProps) => 
       )}
       variant="outline"
       data-status={status}
+      key={`status-badge-${status}-${Date.now()}`} // Force re-render on every status change
     >
       {currentStatus.icon}
       <span>{currentStatus.label}</span>
