@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -132,7 +131,7 @@ const OrdersHistoryPage = () => {
             <div className="md:col-span-2">
               <Card className="bg-black border-[#20a64f]/20">
                 <CardHeader>
-                  <CardTitle className="text-[#e6e172]">Order History</CardTitle>
+                  <CardTitle className="text-white">Order History</CardTitle>
                   <CardDescription className="text-white">View and track all your orders</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -145,7 +144,7 @@ const OrdersHistoryPage = () => {
               </Card>
             </div>
             
-            <div>
+            <div className="[&_button]:text-black [&_button:hover]:bg-[#0d9539] [&_button:hover]:text-white">
               <UserWallet onReload={forceRefresh} />
             </div>
           </div>
