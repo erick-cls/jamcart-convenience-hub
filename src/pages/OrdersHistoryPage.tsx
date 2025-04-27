@@ -128,7 +128,7 @@ const OrdersHistoryPage = () => {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="lg:col-span-1 [&_button]:text-black [&_button:hover]:bg-[#0d9539] [&_button:hover]:text-white">
+            <div className="lg:col-span-1 [&_button]:text-black [&_button:hover]:bg-[#0d9539] [&_button:hover]:text-white sticky top-24 max-h-[calc(100vh-8rem)] overflow-auto">
               <UserWallet onReload={forceRefresh} />
             </div>
             
