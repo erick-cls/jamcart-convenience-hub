@@ -40,8 +40,7 @@ const Dashboard = () => {
     }
   }, [navigate, toast]);
 
-  // Render the appropriate component based on activeTab
-  const renderTabContent = () => {
+  const renderContent = () => {
     switch (activeTab) {
       case 'orders':
         return <OrdersDashboard onNavigateToOrderDetails={handleNavigateToOrderDetails} />;
@@ -57,7 +56,7 @@ const Dashboard = () => {
   return (
     <AdminLayout>
       <DashboardContainer activeTab={activeTab} onTabChange={setActiveTab}>
-        {renderTabContent()}
+        {renderContent()}
       </DashboardContainer>
     </AdminLayout>
   );

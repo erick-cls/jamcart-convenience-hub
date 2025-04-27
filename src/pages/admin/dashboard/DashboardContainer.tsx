@@ -9,7 +9,11 @@ interface DashboardContainerProps {
   onTabChange: (value: string) => void;
 }
 
-const DashboardContainer: React.FC<DashboardContainerProps> = ({ children, activeTab, onTabChange }) => {
+const DashboardContainer: React.FC<DashboardContainerProps> = ({ 
+  children, 
+  activeTab, 
+  onTabChange 
+}) => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <DashboardHeader activeTab={activeTab} setActiveTab={onTabChange} />
