@@ -31,8 +31,8 @@ import "./App.css";
 
 function App() {
   return (
-    <MaintenanceProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <MaintenanceProvider>
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<About />} />
@@ -61,8 +61,8 @@ function App() {
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </AuthProvider>
-    </MaintenanceProvider>
+      </MaintenanceProvider>
+    </AuthProvider>
   );
 }
 
