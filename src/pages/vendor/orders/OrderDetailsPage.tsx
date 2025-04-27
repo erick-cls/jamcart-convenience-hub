@@ -1,14 +1,16 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { useOrdersState, Order } from '@/pages/admin/orders/useOrdersState';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useOrdersState } from '@/pages/admin/orders/useOrdersState';
 import { OrderStatus } from '@/components/ui/OrderItem';
 import { useToast } from '@/hooks/use-toast';
 import VendorLayout from '@/components/vendor/VendorLayout';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
+import LoadingState from '@/components/vendor/orders/LoadingState';
+import CustomerInfoCard from '@/components/vendor/orders/CustomerInfoCard';
+import OrderSummaryCard from '@/components/vendor/orders/OrderSummaryCard';
+import OrderActionsCard from '@/components/vendor/orders/OrderActionsCard';
+import OrderNotesCard from '@/components/vendor/orders/OrderNotesCard';
 import OrderStatusBadge from '@/components/admin/orders/details/OrderStatusBadge';
 
 const OrderDetailsPage = () => {
@@ -18,9 +20,9 @@ const OrderDetailsPage = () => {
   const { orders, updateOrderStatus, loading } = useOrdersState();
   const { toast } = useToast();
   
-  const [order, setOrder] = useState<Order | null>(null);
-  const [notes, setNotes] = useState('');
-  const [estimatedTime, setEstimatedTime] = useState('');
+  const [order, setOrder] = useState(orders.find(o => o.id === orderId) || null);
+  const [notes, setNotes] = useState(order?.notes || '');
+  const [estimatedTime, setEstimatedTime] = useState(order?.estimatedTime || '');
   
   useEffect(() => {
     if (!orderId) return;
@@ -66,7 +68,6 @@ const OrderDetailsPage = () => {
     if (!order) return;
     
     const updatedOrder = { ...order, notes, estimatedTime };
-    
     setOrder(updatedOrder);
     
     toast({
@@ -77,16 +78,7 @@ const OrderDetailsPage = () => {
   };
   
   if (loading || !order) {
-    return (
-      <VendorLayout>
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-jamcart-green border-r-transparent"></div>
-            <p className="mt-4 text-gray-600">Loading order details...</p>
-          </div>
-        </div>
-      </VendorLayout>
-    );
+    return <LoadingState />;
   }
   
   return (
@@ -101,140 +93,22 @@ const OrderDetailsPage = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Customer Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {order?.user && (
-                <>
-                  <p className="font-medium">{order.user.name}</p>
-                  <p className="text-gray-600">{order.user.email}</p>
-                  <p className="text-gray-600">{order.user.phone}</p>
-                  <p className="text-gray-600 mt-2">{order.address}</p>
-                </>
-              )}
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between mb-2">
-                <span>Subtotal:</span>
-                <span>${order.price.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between mb-2">
-                <span>Delivery Fee:</span>
-                <span>${(order.price * 0.1).toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between font-bold">
-                <span>Total:</span>
-                <span>${(order.price * 1.1).toFixed(2)}</span>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button 
-                onClick={() => handleStatusChange('accepted')} 
-                className="w-full"
-                disabled={order.status !== 'pending'}
-                variant="default"
-              >
-                Accept Order
-              </Button>
-              <Button 
-                onClick={() => handleStatusChange('completed')} 
-                className="w-full"
-                disabled={order.status !== 'accepted'}
-                variant="default"
-              >
-                Mark as Completed
-              </Button>
-              <Button 
-                onClick={() => handleStatusChange('declined')} 
-                className="w-full"
-                disabled={['completed', 'cancelled', 'declined'].includes(order.status)}
-                variant="destructive"
-              >
-                Decline Order
-              </Button>
-            </CardContent>
-          </Card>
+          <CustomerInfoCard order={order} />
+          <OrderSummaryCard order={order} />
+          <OrderActionsCard 
+            order={order} 
+            onStatusChange={handleStatusChange} 
+          />
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Items</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {order.items?.map((item, index) => (
-                  <div key={index} className="flex justify-between">
-                    <div>
-                      <p className="font-medium">{item.name}</p>
-                      {item.options && (
-                        <p className="text-sm text-gray-600">{item.options}</p>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <p>${Number(item.price).toFixed(2)}</p>
-                      <p className="text-sm text-gray-600">Qty: {item.quantity || 1}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Notes & Preparation</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    Estimated Preparation Time (minutes)
-                  </label>
-                  <Input 
-                    type="number" 
-                    value={estimatedTime} 
-                    onChange={(e) => setEstimatedTime(e.target.value)}
-                    placeholder="E.g., 20"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    Notes for Customer
-                  </label>
-                  <Textarea 
-                    value={notes} 
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Add any notes about the order..."
-                    rows={3}
-                  />
-                </div>
-                
-                <Button 
-                  onClick={handleSaveChanges}
-                  className="w-full"
-                  variant="outline"
-                >
-                  Save Changes
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <OrderNotesCard 
+            notes={notes}
+            estimatedTime={estimatedTime}
+            onNotesChange={setNotes}
+            onEstimatedTimeChange={setEstimatedTime}
+            onSave={handleSaveChanges}
+          />
         </div>
       </div>
     </VendorLayout>
