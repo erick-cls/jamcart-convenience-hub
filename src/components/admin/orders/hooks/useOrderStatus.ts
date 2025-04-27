@@ -15,7 +15,10 @@ export const useOrderStatus = (
     setIsSubmitting(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Call status change handler to update UI immediately
       onStatusChange(orderId, newStatus);
       
       toast({
@@ -24,19 +27,21 @@ export const useOrderStatus = (
         variant: "default",
       });
       
-      // Force a refresh of the order data
+      // Dispatch multiple events to ensure all components are notified
+      window.dispatchEvent(new Event('order-status-change'));
       window.dispatchEvent(new Event('storage'));
       
       // Add a small delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-      }, 300);
+      }, 100);
     } catch (error) {
       toast({
         title: "Error updating order",
         description: "There was a problem updating the order status. Please try again.",
         variant: "destructive",
       });
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -45,8 +50,10 @@ export const useOrderStatus = (
     setIsSubmitting(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      // Explicitly call with 'cancelled' status to ensure it gets set correctly
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Call status change handler to update UI immediately
       onStatusChange(orderId, 'cancelled');
       
       const description = isPenaltyFree 
@@ -60,8 +67,8 @@ export const useOrderStatus = (
       });
       
       if (!isPenaltyFree) {
-        // Simulate API call to charge card for penalty
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Simulate API call for penalty charge
+        await new Promise(resolve => setTimeout(resolve, 300));
         
         toast({
           title: "Penalty applied",
@@ -70,19 +77,21 @@ export const useOrderStatus = (
         });
       }
       
-      // Force a refresh of the order data
+      // Dispatch multiple events to ensure all components are notified
+      window.dispatchEvent(new Event('order-status-change'));
       window.dispatchEvent(new Event('storage'));
       
       // Add a small delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-      }, 300);
+      }, 100);
     } catch (error) {
       toast({
         title: "Error cancelling order",
         description: "There was a problem cancelling your order. Please try again.",
         variant: "destructive",
       });
+    } finally {
       setIsSubmitting(false);
     }
   };

@@ -9,7 +9,7 @@ import OrderItemsList from './details/OrderItemsList';
 import OrderStatusActions from './details/OrderStatusActions';
 import OrderCancellationTimer from './details/OrderCancellationTimer';
 import { useOrderStatus } from './hooks/useOrderStatus';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 interface OrderDetailsDialogProps {
   isOpen: boolean;
@@ -32,44 +32,40 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
   
   // Use local state to track order status for immediate UI updates
   const [currentStatus, setCurrentStatus] = useState<OrderStatus | null>(null);
-  const [statusUpdateTime, setStatusUpdateTime] = useState<number>(Date.now());
   
   // Update current status when order changes
   useEffect(() => {
     if (order) {
-      console.log(`OrderDetailsDialog: Order ${order.id} status is ${order.status}`);
       setCurrentStatus(order.status);
-      setStatusUpdateTime(Date.now());
     }
   }, [order]);
+  
+  // Create a wrapped onClose handler to ensure proper cleanup
+  const handleClose = useCallback(() => {
+    // Reset local state
+    setCurrentStatus(null);
+    // Call the original onClose
+    onClose();
+    // Ensure all components get notified about status changes
+    window.dispatchEvent(new Event('order-status-change'));
+    window.dispatchEvent(new Event('storage'));
+  }, [onClose]);
   
   // Call hooks before any conditional returns to comply with React's rules of hooks
   const { isSubmitting, handleStatusChange, handleCancellation } = useOrderStatus(
     order?.id || '', 
     (orderId, newStatus) => {
-      // Update local state immediately
+      // Update local state immediately for instant UI feedback
       setCurrentStatus(newStatus);
-      setStatusUpdateTime(Date.now());
       // Call the parent handler
       onStatusChange(orderId, newStatus);
       
-      // Trigger storage events to ensure all components update
+      // Broadcast status change to all components
+      window.dispatchEvent(new Event('order-status-change'));
       window.dispatchEvent(new Event('storage'));
-      setTimeout(() => window.dispatchEvent(new Event('storage')), 100);
     },
-    onClose
+    handleClose
   );
-  
-  // Set up additional listener for storage events
-  useEffect(() => {
-    const handleStorageEvent = () => {
-      console.log("OrderDetailsDialog: Storage event detected");
-      setStatusUpdateTime(Date.now()); // Force re-render
-    };
-    
-    window.addEventListener('storage', handleStorageEvent);
-    return () => window.removeEventListener('storage', handleStorageEvent);
-  }, []);
   
   // Now we can safely return null if needed
   if (!isOpen || !order) return null;
@@ -112,7 +108,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
   };
   
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="text-xl">Order #{order.id.slice(-6)}</DialogTitle>
@@ -161,7 +157,7 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
         </div>
         
         <DialogFooter className="mt-6">
-          <Button variant="outline" onClick={onClose}>
+          <Button variant="outline" onClick={handleClose}>
             Close
           </Button>
         </DialogFooter>

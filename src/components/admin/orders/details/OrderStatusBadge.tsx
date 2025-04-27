@@ -5,6 +5,7 @@ import { memo } from 'react';
 
 interface OrderStatusBadgeProps {
   status: OrderStatus;
+  className?: string;
 }
 
 export const statusConfigs = {
@@ -35,19 +36,19 @@ export const statusConfigs = {
   }
 };
 
-const OrderStatusBadge = memo(({ status }: OrderStatusBadgeProps) => {
+// Using a non-memoized component to ensure re-renders on status changes
+const OrderStatusBadge = ({ status, className = '' }: OrderStatusBadgeProps) => {
   const currentStatus = statusConfigs[status] || statusConfigs.pending;
   
   return (
     <div 
-      className={`px-3 py-1 rounded-full text-sm font-medium flex items-center ${currentStatus.color}`}
+      className={`px-3 py-1 rounded-full text-sm font-medium flex items-center ${currentStatus.color} ${className}`}
+      data-status={status}
     >
       {currentStatus.icon}
       <span className="ml-1">{currentStatus.label}</span>
     </div>
   );
-});
-
-OrderStatusBadge.displayName = 'OrderStatusBadge';
+};
 
 export default OrderStatusBadge;
