@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -30,7 +29,6 @@ const OrdersHistoryPage = () => {
         const orders = getUserOrders(user.id);
         console.log("Found", orders.length, "orders for user", user.id);
         
-        // Transform AdminOrder to UserOrder
         const transformedOrders: UserOrder[] = orders.map(order => ({
           id: order.id,
           storeName: order.storeName,
@@ -74,6 +72,10 @@ const OrdersHistoryPage = () => {
       description: "Your order list has been updated with the latest status.",
     });
   }, [fetchUserOrders, toast]);
+
+  const handleViewDetails = (id: string) => {
+    console.log("Opening order details for:", id);
+  };
 
   useEffect(() => {
     if (!user) {
@@ -168,6 +170,7 @@ const OrdersHistoryPage = () => {
                   <UserOrdersList 
                     orders={userOrders} 
                     onOrderUpdate={handleOrderUpdate} 
+                    onViewDetails={handleViewDetails}
                     key={`orders-list-${lastRefreshed}`} 
                   />
                 </CardContent>
