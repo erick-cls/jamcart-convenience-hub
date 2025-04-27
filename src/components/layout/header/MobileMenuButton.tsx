@@ -9,14 +9,14 @@ interface MobileMenuButtonProps {
 const MobileMenuButton = ({ isOpen, onClick }: MobileMenuButtonProps) => {
   return (
     <button
-      className="md:hidden flex items-center"
+      className="md:hidden flex items-center transition-colors"
       onClick={onClick}
       aria-label={isOpen ? "Close menu" : "Open menu"}
     >
       {isOpen ? (
-        <X className="h-6 w-6 text-gray-800" />
+        <X className="h-6 w-6 text-gray-800 hover:text-[#009c3b] transition-colors" />
       ) : (
-        <Menu className="h-6 w-6 text-gray-800" />
+        <Menu className="h-6 w-6 text-gray-800 hover:text-[#009c3b] transition-colors" />
       )}
     </button>
   );
