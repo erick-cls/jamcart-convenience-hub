@@ -6,6 +6,7 @@ import OrdersSection from './OrdersSection';
 import OrderDetailsView from './OrderDetailsView';
 import { useUserOrdersState, Order } from '@/hooks/useUserOrdersState';
 import { useToast } from '@/hooks/use-toast';
+import { OrderStatus } from '@/components/ui/OrderItem';
 
 interface UserOrdersListProps {
   orders: Order[];
