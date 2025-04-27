@@ -41,15 +41,35 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     setLocalOrders(orders);
   }, [orders]);
   
-  // Listen for storage events to trigger status updates
+  // Listen for storage and custom events to trigger status updates
   useEffect(() => {
-    const handleStorageEvent = () => {
-      console.log("UserOrdersList: Storage event triggered refresh");
+    const handleStorageEvent = (e: Event) => {
+      console.log("UserOrdersList: Event triggered refresh", e);
+      
+      // Check if this is a CustomEvent with order details
+      if (e instanceof CustomEvent && e.detail) {
+        const { orderId, newStatus, forceUpdate } = e.detail;
+        
+        if (orderId && newStatus) {
+          console.log(`UserOrdersList: Received specific update for order ${orderId} to ${newStatus}`);
+          
+          // Update specific order in local state
+          setLocalOrders(prevOrders => 
+            prevOrders.map(order => 
+              order.id === orderId 
+                ? { ...order, status: newStatus } 
+                : order
+            )
+          );
+        }
+      }
+      
+      // Always update timestamp to force re-render
       setOrderStatusChangeTime(Date.now());
       
       // Notify parent component about the update
       if (onOrderUpdate) {
-        console.log("UserOrdersList: Triggering onOrderUpdate callback from storage event");
+        console.log("UserOrdersList: Triggering onOrderUpdate callback from event");
         onOrderUpdate();
       }
     };
@@ -69,6 +89,17 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     const order = localOrders.find(order => order.id === id);
     
     if (order) {
+      // Check if there's a persisted status in localStorage for this order
+      try {
+        const persistedStatus = localStorage.getItem(`order_${id}_status`);
+        if (persistedStatus && persistedStatus !== order.status) {
+          console.log(`UserOrdersList: Found persisted status ${persistedStatus} for order ${id}`);
+          order.status = persistedStatus as OrderStatus;
+        }
+      } catch (e) {
+        console.warn('Error checking localStorage status:', e);
+      }
+      
       setSelectedOrder(order);
       setIsDialogOpen(true);
     } else {
@@ -94,10 +125,15 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
     setOrderStatusChangeTime(Date.now());
     
     // Dispatch custom event to ensure all components are notified
-    window.dispatchEvent(new Event('order-status-change'));
+    window.dispatchEvent(new CustomEvent('order-status-change', {
+      detail: {
+        action: 'dialog-closed',
+        timestamp: Date.now()
+      }
+    }));
     
     // Also dispatch storage event for components listening to that
-    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new CustomEvent('storage'));
   }, [onOrderUpdate]);
   
   const handleStatusChange = useCallback((orderId: string, newStatus: OrderStatus) => {
@@ -111,6 +147,13 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
           : order
       )
     );
+    
+    // Save status to localStorage for persistence
+    try {
+      localStorage.setItem(`order_${orderId}_status`, newStatus);
+    } catch (e) {
+      console.warn('Error saving to localStorage:', e);
+    }
     
     // Update status change time to trigger re-render
     setOrderStatusChangeTime(Date.now());
@@ -147,11 +190,32 @@ const UserOrdersList = ({ orders, onOrderUpdate }: UserOrdersListProps) => {
       onOrderUpdate();
     }
     
-    // Dispatch custom event for other components
-    window.dispatchEvent(new Event('order-status-change'));
+    // Dispatch custom event with detailed payload for other components
+    const updateEvent = new CustomEvent('order-status-change', {
+      detail: {
+        orderId,
+        newStatus,
+        timestamp: Date.now(),
+        source: 'userOrdersList-statusChange',
+        forceUpdate: true
+      },
+      bubbles: true,
+      cancelable: true
+    });
+    window.dispatchEvent(updateEvent);
     
     // Also dispatch storage event for components listening to that
-    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new CustomEvent('storage', {
+      detail: {
+        orderId,
+        newStatus,
+        timestamp: Date.now(),
+        source: 'userOrdersList-statusChange',
+        forceUpdate: true
+      },
+      bubbles: true,
+      cancelable: true
+    }));
   }, [localOrders, toast, onOrderUpdate]);
   
   if (localOrders.length === 0) {

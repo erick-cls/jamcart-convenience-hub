@@ -3,6 +3,7 @@ import { Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { OrderStatus } from '@/components/ui/OrderItem';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { memo } from 'react';
 
 interface OrderStatusBadgeProps {
   status: OrderStatus;
@@ -37,11 +38,11 @@ export const statusConfigs = {
   }
 };
 
-// Complete non-memoized component with additional force update mechanism
-const OrderStatusBadge = ({ status, className = '' }: OrderStatusBadgeProps) => {
+// Memoizing the component for better performance while ensuring updates when status changes
+const OrderStatusBadge = memo(({ status, className = '' }: OrderStatusBadgeProps) => {
   const currentStatus = statusConfigs[status] || statusConfigs.pending;
   
-  // Generate a unique ID for this badge instance including status + timestamp
+  // Unique ID that includes the status to ensure re-rendering when status changes
   const badgeId = `status-badge-${status}-${Date.now()}`;
   
   return (
@@ -54,12 +55,18 @@ const OrderStatusBadge = ({ status, className = '' }: OrderStatusBadgeProps) => 
       variant="outline"
       data-status={status}
       data-badge-id={badgeId}
-      key={badgeId} // Force re-render on every render
+      key={badgeId}
     >
       {currentStatus.icon}
       <span>{currentStatus.label}</span>
     </Badge>
   );
-};
+}, (prevProps, nextProps) => {
+  // Only re-render if the status has changed
+  return prevProps.status === nextProps.status;
+});
+
+// Display name for debugging
+OrderStatusBadge.displayName = 'OrderStatusBadge';
 
 export default OrderStatusBadge;

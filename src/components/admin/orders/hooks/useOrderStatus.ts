@@ -33,15 +33,18 @@ export const useOrderStatus = (
       const timestamp = Date.now();
       const eventId = `${orderId}-${newStatus}-${timestamp}`;
       
-      // Use CustomEvent with rich detail payload
+      // Use CustomEvent with rich detail payload and force update flag
       const statusEvent = new CustomEvent('order-status-change', { 
         detail: { 
           orderId, 
           newStatus, 
           timestamp, 
           id: eventId,
-          source: 'admin-status-change' 
-        } 
+          source: 'admin-status-change',
+          forceUpdate: true
+        },
+        bubbles: true,
+        cancelable: true
       });
       window.dispatchEvent(statusEvent);
       
@@ -52,9 +55,19 @@ export const useOrderStatus = (
           newStatus, 
           timestamp, 
           id: eventId,
-          source: 'admin-status-change' 
-        } 
+          source: 'admin-status-change',
+          forceUpdate: true
+        },
+        bubbles: true,
+        cancelable: true
       }));
+      
+      // Update localStorage to persist the change
+      try {
+        localStorage.setItem(`order_${orderId}_status`, newStatus);
+      } catch (e) {
+        console.warn('Local storage update failed:', e);
+      }
       
       // Extra log for debugging
       console.log(`Admin useOrderStatus: Dispatched events for order ${orderId}, status: ${newStatus}`);
@@ -62,7 +75,7 @@ export const useOrderStatus = (
       // Add a longer delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-      }, 800);
+      }, 1000);
     } catch (error) {
       console.error("Error updating order status:", error);
       
@@ -113,7 +126,7 @@ export const useOrderStatus = (
       const timestamp = Date.now();
       const eventId = `${orderId}-cancel-${timestamp}`;
       
-      // Use CustomEvent with rich detail payload
+      // Use CustomEvent with rich detail payload and force update flag
       const cancelEvent = new CustomEvent('order-status-change', { 
         detail: { 
           orderId, 
@@ -122,8 +135,11 @@ export const useOrderStatus = (
           cancelled: true,
           isPenaltyFree,
           id: eventId,
-          source: 'admin-cancellation'
-        } 
+          source: 'admin-cancellation',
+          forceUpdate: true
+        },
+        bubbles: true,
+        cancelable: true
       });
       window.dispatchEvent(cancelEvent);
       
@@ -136,9 +152,19 @@ export const useOrderStatus = (
           cancelled: true,
           isPenaltyFree, 
           id: eventId,
-          source: 'admin-cancellation'
-        } 
+          source: 'admin-cancellation',
+          forceUpdate: true
+        },
+        bubbles: true,
+        cancelable: true
       }));
+      
+      // Set localStorage to persist the cancellation
+      try {
+        localStorage.setItem(`order_${orderId}_status`, 'cancelled');
+      } catch (e) {
+        console.warn('Local storage update failed:', e);
+      }
       
       // Extra log for debugging
       console.log(`Admin useOrderStatus: Dispatched cancellation events for order ${orderId}`);
@@ -146,7 +172,7 @@ export const useOrderStatus = (
       // Increased delay to ensure UI updates before closing
       setTimeout(() => {
         onClose();
-      }, 800);
+      }, 1000);
     } catch (error) {
       console.error("Error cancelling order:", error);
       

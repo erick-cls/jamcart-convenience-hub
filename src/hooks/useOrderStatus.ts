@@ -20,30 +20,37 @@ export const useOrderStatus = (
       // Call onStatusChange immediately for instant UI update
       onStatusChange(orderId, newStatus);
       
-      // Broadcast status change event with rich metadata
+      // Create unique event ID for tracking
       const timestamp = Date.now();
       const eventId = `${orderId}-${newStatus}-${timestamp}`;
       
+      // Broadcast multiple events with rich metadata to ensure all components update
       const statusChangeEvent = new CustomEvent('order-status-change', { 
         detail: { 
           orderId, 
           newStatus, 
           timestamp, 
           eventId, 
-          source: 'user-hook' 
-        } 
+          source: 'user-hook',
+          forceUpdate: true
+        },
+        bubbles: true,
+        cancelable: true
       });
       window.dispatchEvent(statusChangeEvent);
       
-      // Dispatch multiple events to ensure all listeners receive the update
+      // Also dispatch storage event as fallback for components listening to that
       window.dispatchEvent(new CustomEvent('storage', { 
         detail: { 
           orderId, 
           newStatus, 
           timestamp, 
           eventId, 
-          source: 'user-hook' 
-        } 
+          source: 'user-hook',
+          forceUpdate: true
+        },
+        bubbles: true,
+        cancelable: true
       }));
       
       // Extra notification for debugging
@@ -55,10 +62,10 @@ export const useOrderStatus = (
         variant: "default",
       });
       
-      // Close with slightly longer delay to ensure updates are processed
+      // Close with longer delay to ensure updates are processed
       setTimeout(() => {
         onClose();
-      }, 800);
+      }, 1000);
     } catch (error) {
       console.error("Error updating order status:", error);
       
@@ -78,7 +85,7 @@ export const useOrderStatus = (
     try {
       console.log(`useOrderStatus: Cancelling order ${orderId}, penalty free: ${isPenaltyFree}`);
       
-      // Call onStatusChange immediately for instant UI update
+      // Call onStatusChange immediately for instant UI update with CANCELLED status
       onStatusChange(orderId, 'cancelled');
       
       const description = isPenaltyFree 
@@ -103,7 +110,7 @@ export const useOrderStatus = (
       const timestamp = Date.now();
       const eventId = `${orderId}-cancel-${timestamp}`;
       
-      // Dispatch status change event
+      // Dispatch status change event with clear cancellation flag and force update
       const cancelEvent = new CustomEvent('order-status-change', { 
         detail: { 
           orderId, 
@@ -112,12 +119,15 @@ export const useOrderStatus = (
           eventId,
           cancelled: true, 
           isPenaltyFree,
-          source: 'user-cancellation' 
-        } 
+          source: 'user-cancellation',
+          forceUpdate: true
+        },
+        bubbles: true,
+        cancelable: true
       });
       window.dispatchEvent(cancelEvent);
       
-      // Also dispatch storage event with same data
+      // Also dispatch storage event with same data as fallback
       window.dispatchEvent(new CustomEvent('storage', { 
         detail: { 
           orderId, 
@@ -126,17 +136,27 @@ export const useOrderStatus = (
           eventId,
           cancelled: true, 
           isPenaltyFree,
-          source: 'user-cancellation' 
-        } 
+          source: 'user-cancellation',
+          forceUpdate: true
+        },
+        bubbles: true,
+        cancelable: true
       }));
+      
+      // Set localStorage to persist the cancellation
+      try {
+        localStorage.setItem(`order_${orderId}_status`, 'cancelled');
+      } catch (e) {
+        console.warn('Local storage update failed:', e);
+      }
       
       // Log success for debugging
       console.log(`useOrderStatus: Dispatched cancellation events for order ${orderId}`);
       
-      // Close with longer delay to ensure all components have time to process updates
+      // Wait a moment to ensure UI updates before closing the dialog
       setTimeout(() => {
         onClose();
-      }, 800);
+      }, 1000);
     } catch (error) {
       console.error("Error cancelling order:", error);
       
