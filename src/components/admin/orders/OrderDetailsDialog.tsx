@@ -9,7 +9,7 @@ import OrderItemsList from './details/OrderItemsList';
 import OrderStatusActions from './details/OrderStatusActions';
 import OrderCancellationTimer from './details/OrderCancellationTimer';
 import { useOrderStatus } from './hooks/useOrderStatus';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, ReactNode } from 'react';
 
 interface OrderDetailsDialogProps {
   isOpen: boolean;
@@ -24,9 +24,11 @@ interface OrderDetailsDialogProps {
     total?: number;
   } | null;
   onStatusChange: (orderId: string, newStatus: OrderStatus) => void;
+  extraActions?: ReactNode; // Add this prop
+  showComplaintBadge?: boolean; // Add this prop
 }
 
-const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDetailsDialogProps) => {
+const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange, extraActions, showComplaintBadge }: OrderDetailsDialogProps) => {
   const { toast } = useToast();
   const { user } = useAuth();
   
@@ -170,7 +172,14 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="text-xl">Order #{order.id.slice(-6)}</DialogTitle>
+          <DialogTitle className="text-xl">
+            Order #{order.id.slice(-6)}
+            {showComplaintBadge && (
+              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                Has Complaint
+              </span>
+            )}
+          </DialogTitle>
         </DialogHeader>
         
         <div className="mt-4 space-y-6">
@@ -218,6 +227,12 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
               orderId={order.id}
             />
           )}
+          
+          {extraActions && (
+            <div className="pt-4 border-t">
+              {extraActions}
+            </div>
+          )}
         </div>
         
         <DialogFooter className="mt-6">
@@ -231,3 +246,4 @@ const OrderDetailsDialog = ({ isOpen, onClose, order, onStatusChange }: OrderDet
 };
 
 export default OrderDetailsDialog;
+

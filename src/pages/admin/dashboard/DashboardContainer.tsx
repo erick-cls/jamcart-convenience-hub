@@ -12,7 +12,7 @@ interface DashboardContainerProps {
 const DashboardContainer = ({ children, activeTab, onTabChange }: DashboardContainerProps) => {
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <DashboardHeader />
+      <DashboardHeader activeTab={activeTab} setActiveTab={onTabChange} />
       
       <Tabs defaultValue="orders" value={activeTab} onValueChange={onTabChange}>
         <TabsList className="grid grid-cols-3 w-full max-w-md mb-6">
