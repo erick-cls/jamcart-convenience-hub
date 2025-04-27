@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -156,7 +157,7 @@ const ProfilePage = () => {
             <Button 
               variant="outline"
               onClick={() => navigate('/orders')}
-              className="hover:bg-[#20a64f] hover:text-white"
+              className="text-black hover:bg-[#20a64f] hover:text-white"
             >
               View My Orders
             </Button>
