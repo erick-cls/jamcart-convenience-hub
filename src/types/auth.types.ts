@@ -25,6 +25,7 @@ export interface User {
   dateJoined?: string;
   cardInfo?: CardInfo;
   addresses?: UserAddress[];
+  location?: { lat: number; lng: number } | null;
 }
 
 export interface AuthContextType {
