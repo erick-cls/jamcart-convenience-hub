@@ -21,11 +21,15 @@ export interface User {
   isVerified: boolean;
   isAdmin: boolean;
   isRider: boolean;
-  userType: 'customer' | 'rider' | 'admin';
+  userType: 'customer' | 'rider' | 'admin' | 'vendor';
   dateJoined?: string;
   cardInfo?: CardInfo;
   addresses?: UserAddress[];
   location?: { lat: number; lng: number } | null;
+  // Additional fields for vendors
+  storeName?: string;
+  storeDescription?: string;
+  storeCategory?: string;
 }
 
 export interface AuthContextType {
@@ -42,5 +46,8 @@ export interface AuthContextType {
 export type RegisterUserData = Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isRider' | 'userType'> & { 
   password: string, 
   userType: string, 
-  cardInfo?: CardInfo 
+  cardInfo?: CardInfo,
+  storeName?: string,
+  storeDescription?: string,
+  storeCategory?: string
 };

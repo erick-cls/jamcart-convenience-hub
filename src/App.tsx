@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,6 +28,11 @@ import RiderProfilePage from "./pages/rider/ProfilePage";
 import ThankYouPage from "./pages/ThankYouPage";
 import MaintenancePage from "./pages/MaintenancePage";
 import RidersManagement from "./pages/admin/riders/RidersManagement";
+// Import vendor pages
+import VendorDashboard from "./pages/vendor/Dashboard";
+import VendorOrdersPage from "./pages/vendor/OrdersPage";
+import VendorProfilePage from "./pages/vendor/ProfilePage";
+import VendorOrderDetailsPage from "./pages/vendor/orders/OrderDetailsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -128,6 +134,12 @@ const App = () => (
               <Route path="orders" element={<RiderOrdersPage />} />
               <Route path="profile" element={<RiderProfilePage />} />
             </Route>
+
+            {/* Vendor routes */}
+            <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+            <Route path="/vendor/orders" element={<VendorOrdersPage />} />
+            <Route path="/vendor/orders/:orderId" element={<VendorOrderDetailsPage />} />
+            <Route path="/vendor/profile" element={<VendorProfilePage />} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>
