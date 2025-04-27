@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -63,7 +62,6 @@ const ProfilePage = () => {
     setAddresses(updatedAddresses);
     setNewAddress('');
 
-    // Update user with new addresses
     updateUserProfile({ addresses: updatedAddresses });
   };
 
@@ -72,7 +70,6 @@ const ProfilePage = () => {
     updatedAddresses.splice(index, 1);
     setAddresses(updatedAddresses);
     
-    // Update user with new addresses
     updateUserProfile({ addresses: updatedAddresses });
   };
 
@@ -137,7 +134,6 @@ const ProfilePage = () => {
       .toUpperCase();
   };
 
-  // Format card number to show only last 4 digits
   const formatCardNumber = (cardNumber: string) => {
     if (!cardNumber) return '';
     const lastFourDigits = cardNumber.slice(-4);
@@ -150,23 +146,23 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black text-white">
       <Header />
       
       <div className="app-container pt-24 pb-12">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">My Profile</h1>
+            <h1 className="text-3xl font-bold text-[#e6e172]">My Profile</h1>
             <Button 
               variant="outline"
               onClick={() => navigate('/orders')}
+              className="hover:bg-[#20a64f] hover:text-white"
             >
               View My Orders
             </Button>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* User Info Card */}
             <Card className="lg:col-span-1">
               <CardHeader className="text-center">
                 <div className="flex justify-center mb-4">
@@ -221,7 +217,6 @@ const ProfilePage = () => {
               </CardContent>
             </Card>
             
-            {/* Profile Details Form */}
             <Card className="lg:col-span-2">
               <CardHeader>
                 <CardTitle>Profile Details</CardTitle>
@@ -292,7 +287,6 @@ const ProfilePage = () => {
                   
                   <TabsContent value="addresses">
                     <div className="space-y-6">
-                      {/* Display existing addresses */}
                       {addresses.map((address, index) => (
                         <div key={index} className="flex items-start border rounded-md p-3 bg-gray-50">
                           <div className="flex-grow">
@@ -312,7 +306,6 @@ const ProfilePage = () => {
                         </div>
                       ))}
                       
-                      {/* Add new address */}
                       <div className="border rounded-md p-4">
                         <h3 className="text-sm font-medium mb-3 flex items-center">
                           <Plus className="h-4 w-4 mr-1" /> Add New Address
