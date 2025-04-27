@@ -182,7 +182,7 @@ const UserWallet = ({ onReload }: UserWalletProps) => {
         )}
       </CardContent>
       <CardFooter className="text-xs text-white/60 justify-center border-t border-[#20a64f]/10 pt-4">
-        Earn cashback on every order you place with JAMCart!
+        <span style={{ color: '#009c3b' }}>Earn cashback on every order you place with JAMCart!</span>
       </CardFooter>
     </Card>
   );
