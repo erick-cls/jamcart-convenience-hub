@@ -28,13 +28,13 @@ export const useOrderStatus = (
       });
       
       // Dispatch multiple events to ensure all components are notified
-      window.dispatchEvent(new Event('order-status-change'));
-      window.dispatchEvent(new Event('storage'));
+      window.dispatchEvent(new CustomEvent('order-status-change', { detail: { orderId, newStatus } }));
+      window.dispatchEvent(new CustomEvent('storage', { detail: { orderId, newStatus } }));
       
       // Add a small delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-      }, 100);
+      }, 300);
     } catch (error) {
       toast({
         title: "Error updating order",
@@ -77,14 +77,14 @@ export const useOrderStatus = (
         });
       }
       
-      // Dispatch multiple events to ensure all components are notified
-      window.dispatchEvent(new Event('order-status-change'));
-      window.dispatchEvent(new Event('storage'));
+      // Dispatch multiple events with details to ensure all components are notified
+      window.dispatchEvent(new CustomEvent('order-status-change', { detail: { orderId, newStatus: 'cancelled' } }));
+      window.dispatchEvent(new CustomEvent('storage', { detail: { orderId, newStatus: 'cancelled' } }));
       
       // Add a small delay before closing to ensure UI updates
       setTimeout(() => {
         onClose();
-      }, 100);
+      }, 300);
     } catch (error) {
       toast({
         title: "Error cancelling order",

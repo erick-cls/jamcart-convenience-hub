@@ -1,6 +1,8 @@
 
 import { Clock, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { OrderStatus } from '@/components/ui/OrderItem';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface OrderStatusBadgeProps {
   status: OrderStatus;
@@ -9,28 +11,28 @@ interface OrderStatusBadgeProps {
 
 export const statusConfigs = {
   pending: {
-    color: "text-yellow-500 bg-yellow-50",
-    icon: <Clock className="h-5 w-5" />,
+    color: "bg-yellow-100 text-yellow-800 hover:bg-yellow-100",
+    icon: <Clock className="h-4 w-4 mr-1" />,
     label: "Pending"
   },
   accepted: {
-    color: "text-jamcart-green bg-green-50",
-    icon: <CheckCircle className="h-5 w-5" />,
+    color: "bg-green-100 text-green-800 hover:bg-green-100",
+    icon: <CheckCircle className="h-4 w-4 mr-1" />,
     label: "Accepted"
   },
   completed: {
-    color: "text-blue-500 bg-blue-50",
-    icon: <CheckCircle className="h-5 w-5" />,
+    color: "bg-blue-100 text-blue-800 hover:bg-blue-100",
+    icon: <CheckCircle className="h-4 w-4 mr-1" />,
     label: "Completed"
   },
   declined: {
-    color: "text-gray-500 bg-gray-50",
-    icon: <XCircle className="h-5 w-5" />,
+    color: "bg-gray-100 text-gray-800 hover:bg-gray-100",
+    icon: <XCircle className="h-4 w-4 mr-1" />,
     label: "Declined"
   },
   cancelled: {
-    color: "text-gray-500 bg-gray-50",
-    icon: <AlertTriangle className="h-5 w-5" />,
+    color: "bg-red-100 text-red-800 hover:bg-red-100",
+    icon: <AlertTriangle className="h-4 w-4 mr-1" />,
     label: "Cancelled"
   }
 };
@@ -40,13 +42,18 @@ const OrderStatusBadge = ({ status, className = '' }: OrderStatusBadgeProps) => 
   const currentStatus = statusConfigs[status] || statusConfigs.pending;
   
   return (
-    <div 
-      className={`px-3 py-1 rounded-full text-sm font-medium flex items-center ${currentStatus.color} ${className}`}
+    <Badge 
+      className={cn(
+        "inline-flex items-center px-3 py-1 rounded-full font-medium", 
+        currentStatus.color, 
+        className
+      )}
+      variant="outline"
       data-status={status}
     >
       {currentStatus.icon}
-      <span className="ml-1">{currentStatus.label}</span>
-    </div>
+      <span>{currentStatus.label}</span>
+    </Badge>
   );
 };
 
