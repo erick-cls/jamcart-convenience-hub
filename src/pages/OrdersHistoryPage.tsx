@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -7,7 +6,6 @@ import Header from '@/components/layout/Header';
 import UserOrdersList from '@/components/user/UserOrdersList';
 import { useOrdersState, Order } from '@/pages/admin/orders/useOrdersState';
 import { useToast } from '@/hooks/use-toast';
-import { Badge } from '@/components/ui/badge';
 import { RefreshCcw } from 'lucide-react';
 
 const OrdersHistoryPage = () => {
@@ -42,7 +40,6 @@ const OrdersHistoryPage = () => {
     }
   }, [user, getUserOrders, toast]);
 
-  // Force refresh of orders with user feedback
   const forceRefresh = useCallback(() => {
     fetchUserOrders();
     toast({
@@ -59,7 +56,6 @@ const OrdersHistoryPage = () => {
     
     fetchUserOrders();
     
-    // Enhanced storage event listener
     const handleStorageChange = (e) => {
       if (e && e.key === 'jamcart_orders') {
         console.log("Storage change detected in orders, refreshing...");
@@ -70,10 +66,8 @@ const OrdersHistoryPage = () => {
       }
     };
     
-    // Add both specific and general storage listeners
     window.addEventListener('storage', handleStorageChange);
     
-    // Set up a polling mechanism to check for updates every 10 seconds
     const intervalId = setInterval(() => {
       console.log("Automatic refresh interval triggered");
       fetchUserOrders();
@@ -85,7 +79,6 @@ const OrdersHistoryPage = () => {
     };
   }, [user, navigate, fetchUserOrders]);
   
-  // Listen for local updates
   useEffect(() => {
     const handleLocalUpdate = () => {
       console.log("Local update triggered, refreshing orders");
@@ -103,7 +96,6 @@ const OrdersHistoryPage = () => {
     console.log("OrdersHistoryPage: Order update detected, refreshing orders");
     fetchUserOrders();
     
-    // Dispatch a custom event to ensure other components are notified
     window.dispatchEvent(new Event('order-status-change'));
   }, [fetchUserOrders]);
 
@@ -112,32 +104,32 @@ const OrdersHistoryPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black text-white">
       <Header />
       
       <div className="app-container pt-24 pb-12">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold">My Orders</h1>
-              <p className="text-sm text-gray-500 mt-1">
+              <h1 className="text-3xl font-bold text-[#20a64f]">My Orders</h1>
+              <p className="text-sm text-[#20a64f]/70 mt-1">
                 Last updated: {new Date(lastRefreshed).toLocaleTimeString()}
               </p>
             </div>
             <button 
               onClick={forceRefresh}
               disabled={isRefreshing}
-              className="flex items-center gap-2 text-sm px-4 py-2 bg-jamcart-green text-white rounded-md hover:bg-jamcart-green/90 disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 text-sm px-4 py-2 bg-[#20a64f] text-white rounded-md hover:bg-[#20a64f]/90 disabled:opacity-50 transition-all"
             >
               <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               {isRefreshing ? "Refreshing..." : "Refresh Orders"}
             </button>
           </div>
           
-          <Card>
+          <Card className="bg-black border-[#20a64f]/20">
             <CardHeader>
-              <CardTitle>Order History</CardTitle>
-              <CardDescription>View and track all your orders</CardDescription>
+              <CardTitle className="text-[#20a64f]">Order History</CardTitle>
+              <CardDescription className="text-[#20a64f]/70">View and track all your orders</CardDescription>
             </CardHeader>
             <CardContent>
               <UserOrdersList 
