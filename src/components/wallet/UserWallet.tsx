@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -84,7 +85,7 @@ const UserWallet = ({ onReload }: UserWalletProps) => {
               <img 
                 src="/lovable-uploads/427c4be6-ee47-4e3f-a29f-ef0152361fad.png" 
                 alt="JAMWallet" 
-                className="h-8 w-auto mr-2"
+                className="h-16 w-16 mr-2" // Changed to h-16 and w-16, which corresponds to 4rem
               />
             </CardTitle>
             <CardDescription className="text-white">
