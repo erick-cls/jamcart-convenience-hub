@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Wallet, Plus, RotateCw, Clock } from 'lucide-react';
@@ -7,6 +6,14 @@ import { useAuth } from '@/context/AuthContext';
 import { getUserWallet, loadFunds } from '@/services/wallet.service';
 import { UserWallet as UserWalletType } from '@/types/wallet.types';
 import { useToast } from '@/hooks/use-toast';
+
+// Helper function to format number with commas
+const formatCurrency = (value: number): string => {
+  return value.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+};
 
 interface UserWalletProps {
   onReload?: () => void;
@@ -91,7 +98,7 @@ const UserWallet = ({ onReload }: UserWalletProps) => {
         <div className="bg-[#20a64f]/10 px-6 py-4 rounded-md mb-6">
           <p className="text-sm text-white mb-1">Current Balance</p>
           <p className="text-3xl font-bold text-[#e6e172]">
-            ${wallet.balance.toFixed(2)} <span className="text-sm text-white">JMD</span>
+            ${formatCurrency(wallet.balance)} <span className="text-sm text-white">JMD</span>
           </p>
           <p className="text-xs text-white mt-2">
             Last updated: {new Date(wallet.lastUpdated).toLocaleDateString()}
