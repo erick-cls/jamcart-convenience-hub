@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -13,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Header from '@/components/layout/Header';
 import { useToast } from '@/hooks/use-toast';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import CustomerLocation from '@/components/order/CustomerLocation';
 
 const ProfilePage = () => {
   const { user, updateUserProfile } = useAuth();
@@ -40,6 +40,9 @@ const ProfilePage = () => {
 
   const [selectedAddressType, setSelectedAddressType] = useState('home');
   const [newAddress, setNewAddress] = useState('');
+  const [customerLocation, setCustomerLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -82,6 +85,11 @@ const ProfilePage = () => {
           setNewAddress(locationString);
           setSelectedAddressType('current');
           
+          setCustomerLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+          
           toast({
             title: "Location Retrieved",
             description: "Your current location has been added.",
@@ -104,6 +112,10 @@ const ProfilePage = () => {
     }
   };
 
+  const handleLocationUpdate = (location: { lat: number; lng: number }) => {
+    setCustomerLocation(location);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -111,7 +123,8 @@ const ProfilePage = () => {
       await updateUserProfile({
         ...formData,
         cardInfo: cardData,
-        addresses
+        addresses,
+        location: customerLocation
       });
       
       toast({
@@ -429,6 +442,19 @@ const ProfilePage = () => {
                             maxLength={4}
                           />
                         </div>
+                      </div>
+                      
+                      <div className="mt-6">
+                        <div className="mb-2">
+                          <Label>Your Billing Location</Label>
+                        </div>
+                        <CustomerLocation
+                          customerLocation={customerLocation}
+                          customerName={user.name}
+                          isLoadingLocation={isLoadingLocation}
+                          locationError={locationError}
+                          onLocationUpdate={handleLocationUpdate}
+                        />
                       </div>
                       
                       <div className="flex justify-end pt-4">
