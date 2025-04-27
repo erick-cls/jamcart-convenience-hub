@@ -1,14 +1,12 @@
-
 import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wallet, Plus, RotateCw, Clock } from 'lucide-react';
+import { Plus, RotateCw, Clock } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { getUserWallet, loadFunds } from '@/services/wallet.service';
 import { UserWallet as UserWalletType } from '@/types/wallet.types';
 import { useToast } from '@/hooks/use-toast';
 
-// Helper function to format number with commas
 const formatCurrency = (value: number): string => {
   return value.toLocaleString('en-US', {
     minimumFractionDigits: 2,
@@ -83,7 +81,11 @@ const UserWallet = ({ onReload }: UserWalletProps) => {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-[#e6e172] flex items-center">
-              <Wallet className="h-5 w-5 mr-2" /> JAMWallet
+              <img 
+                src="/lovable-uploads/427c4be6-ee47-4e3f-a29f-ef0152361fad.png" 
+                alt="JAMWallet" 
+                className="h-8 w-auto mr-2"
+              />
             </CardTitle>
             <CardDescription className="text-white">
               Earn and manage your cashback
