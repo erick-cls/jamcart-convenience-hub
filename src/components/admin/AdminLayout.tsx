@@ -21,6 +21,7 @@ import {
   LogOut,
   ChevronLeft,
   Navigation,
+  Percent,
 } from 'lucide-react';
 import AnimatedLogo from '@/components/ui/AnimatedLogo';
 import { Badge } from '@/components/ui/badge';
@@ -102,6 +103,18 @@ const AdminLayout = () => {
                   <Users className="h-4 w-4" />
                   <span>Users</span>
                   <Badge className="ml-auto bg-blue-500 py-0 px-1.5 text-[10px]">2 new</Badge>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={() => navigate('/admin/vendors')}
+                  isActive={window.location.pathname.includes('/admin/vendors')}
+                  tooltip="Vendors"
+                >
+                  <Percent className="h-4 w-4" />
+                  <span>Vendors</span>
+                  <Badge className="ml-auto bg-orange-500 py-0 px-1.5 text-[10px]">New</Badge>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               

@@ -18,6 +18,7 @@ import AdminDashboard from "./pages/admin/Dashboard";
 import OrdersPage from "./pages/admin/orders/OrdersPage";
 import UsersPage from "./pages/admin/users/UsersPage";
 import SettingsPage from "./pages/admin/SettingsPage";
+import VendorManagementPage from "./pages/admin/vendors/VendorManagementPage";
 import ProfilePage from "./pages/ProfilePage";
 import OrdersHistoryPage from "./pages/OrdersHistoryPage";
 import NotFound from "./pages/NotFound";
@@ -125,6 +126,7 @@ const App = () => (
               <Route path="orders" element={<OrdersPage />} />
               <Route path="riders" element={<RidersManagement />} />
               <Route path="users" element={<UsersPage />} />
+              <Route path="vendors" element={<VendorManagementPage />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
             
