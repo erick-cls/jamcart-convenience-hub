@@ -1,4 +1,3 @@
-
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -37,7 +36,15 @@ export const FeeRateField = ({ control }: { control: any }) => (
   />
 );
 
-export const VendorSelectField = ({ control, vendorList }: { control: any; vendorList: any[] }) => (
+export const VendorSelectField = ({ 
+  control, 
+  vendorList,
+  onVendorSelect 
+}: { 
+  control: any; 
+  vendorList: any[];
+  onVendorSelect: (vendorId: string) => void;
+}) => (
   <FormField
     control={control}
     name="vendorId"
@@ -45,7 +52,10 @@ export const VendorSelectField = ({ control, vendorList }: { control: any; vendo
       <FormItem>
         <FormLabel>Select Vendor</FormLabel>
         <Select 
-          onValueChange={field.onChange}
+          onValueChange={(value) => {
+            field.onChange(value);
+            onVendorSelect(value);
+          }}
           defaultValue={field.value}
         >
           <FormControl>

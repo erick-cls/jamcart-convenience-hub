@@ -97,7 +97,11 @@ const VendorCommissionForm = ({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         {!isEditing ? (
-          <VendorSelectField control={form.control} vendorList={vendorList} />
+          <VendorSelectField 
+            control={form.control} 
+            vendorList={vendorList}
+            onVendorSelect={handleVendorSelect}
+          />
         ) : (
           <VendorDisplay 
             vendorName={vendor?.vendorName || ''} 
