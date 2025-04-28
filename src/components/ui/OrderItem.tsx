@@ -75,6 +75,13 @@ const OrderItem = ({
   
   // Create a unique instance key that changes with every status update
   const instanceKey = `order-item-${id}-${status}-${Date.now()}`;
+
+  // Ensure items is always an array and all properties are valid
+  const safeItems = Array.isArray(items) ? items.map(item => ({
+    name: item?.name || 'Unknown Item',
+    price: typeof item?.price === 'number' ? item.price : 0,
+    quantity: typeof item?.quantity === 'number' ? item.quantity : 1
+  })) : [];
   
   return (
     <motion.div 
@@ -125,19 +132,19 @@ const OrderItem = ({
         <div className="mb-4">
           <h4 className="text-sm font-medium text-gray-700 mb-2">Items:</h4>
           <ul className="text-sm text-gray-600 space-y-1">
-            {items.slice(0, 3).map((item, index) => (
+            {safeItems.slice(0, 3).map((item, index) => (
               <li key={index} className="flex items-center">
                 <span className="h-1.5 w-1.5 rounded-full bg-jamcart-red mr-2"></span>
                 {item.name} (${item.price.toFixed(2)} × {item.quantity})
               </li>
             ))}
-            {items.length > 3 && (
-              <li className="text-gray-500 italic">+{items.length - 3} more items</li>
+            {safeItems.length > 3 && (
+              <li className="text-gray-500 italic">+{safeItems.length - 3} more items</li>
             )}
           </ul>
         </div>
         
-        {total && (
+        {total !== undefined && (
           <div className="flex justify-between items-center mb-4 text-sm">
             <span className="font-medium text-gray-700">Total:</span>
             <span className="font-semibold text-jamcart-red">${total.toFixed(2)}</span>
