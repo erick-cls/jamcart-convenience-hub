@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import VendorList from '@/components/admin/vendors/VendorList';
@@ -21,7 +20,6 @@ const VendorManagementPage = () => {
       if (storedVendors) {
         setVendors(JSON.parse(storedVendors));
       } else {
-        // Create some initial sample data
         const initialVendors = getMockVendors();
         localStorage.setItem('jamcart-vendor-commissions', JSON.stringify(initialVendors));
         setVendors(initialVendors);
@@ -37,24 +35,21 @@ const VendorManagementPage = () => {
   };
 
   const getMockVendors = (): VendorCommission[] => {
-    // Find vendor users from localStorage
     const vendorUsers: VendorCommission[] = [];
     
-    // Try to find all users in localStorage
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key && key.startsWith('jamcart-user-')) {
         try {
           const userData = JSON.parse(localStorage.getItem(key) || '{}');
           if (userData.userType === 'vendor') {
-            // This is a vendor
             vendorUsers.push({
               id: userData.id,
               vendorId: userData.id,
               vendorName: userData.name || 'Unknown Vendor',
               vendorEmail: userData.email || 'vendor@example.com',
-              rate: 15, // Default rate
-              schedule: 'monthly', // Default schedule
+              rate: 15,
+              schedule: 'monthly',
               lastUpdated: new Date().toISOString(),
               nextPaymentDate: calculateNextPaymentDate('monthly'),
               active: true
@@ -66,7 +61,6 @@ const VendorManagementPage = () => {
       }
     }
 
-    // If no vendors found, create some sample ones
     if (vendorUsers.length === 0) {
       return [
         {
@@ -143,7 +137,6 @@ const VendorManagementPage = () => {
       let updatedVendors: VendorCommission[];
       
       if (isEditing && selectedVendor) {
-        // Update existing vendor
         updatedVendors = vendors.map(v => 
           v.id === selectedVendor.id 
             ? { 
@@ -154,7 +147,6 @@ const VendorManagementPage = () => {
             : v
         );
       } else {
-        // Add new vendor
         const newVendor = { 
           ...data,
           id: `v${Date.now()}`,
@@ -216,8 +208,8 @@ const VendorManagementPage = () => {
     <div className="py-6 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-1">Vendor Commission Management</h1>
-          <p className="text-gray-600">Set and manage commission rates for platform vendors</p>
+          <h1 className="text-2xl font-bold mb-1">Vendor Fee Management</h1>
+          <p className="text-gray-600">Set and manage fee/rates for platform vendors</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
