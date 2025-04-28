@@ -13,6 +13,9 @@ interface OrderDetailsProps {
 }
 
 const OrderDetails = ({ orderDetails }: OrderDetailsProps) => {
+  // Ensure total is a number
+  const total = typeof orderDetails.total === 'number' ? orderDetails.total : 0;
+  
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
       <div className="p-6 border-b border-gray-100">
@@ -41,7 +44,7 @@ const OrderDetails = ({ orderDetails }: OrderDetailsProps) => {
         </ul>
         <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between font-medium">
           <span>Total</span>
-          <span>${orderDetails.total.toFixed(2)}</span>
+          <span>${total.toFixed(2)}</span>
         </div>
       </div>
     </div>

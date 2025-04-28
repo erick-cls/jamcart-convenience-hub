@@ -11,15 +11,16 @@ interface UserOrdersListProps {
 }
 
 const UserOrdersList = ({ orders, onViewDetails, onOrderUpdate }: UserOrdersListProps) => {
-  // Convert UserOrder[] to AdminOrder[] by ensuring required fields
+  // Convert UserOrder[] to AdminOrder[] by ensuring required fields and validating numeric values
   const convertedOrders: AdminOrder[] = orders.map(order => ({
     ...order,
-    userId: order.userId || '',  // Provide default value for required field
+    userId: order.userId || '',
     userName: order.userName || '',
     store: order.store || { vendor: '' },
     user: order.user || { name: '', email: '', phone: '' },
     address: order.address || '',
-    price: order.price || 0,
+    price: typeof order.price === 'number' ? order.price : 0,
+    total: typeof order.total === 'number' ? order.total : 0
   }));
 
   return (

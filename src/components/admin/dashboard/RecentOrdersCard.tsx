@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import OrderItem, { OrderStatus } from '@/components/ui/OrderItem';
@@ -22,6 +23,12 @@ interface RecentOrdersCardProps {
 const RecentOrdersCard = ({ recentOrders, onViewDetails }: RecentOrdersCardProps) => {
   const navigate = useNavigate();
   
+  // Make sure orders have valid total values
+  const validatedOrders = recentOrders.map(order => ({
+    ...order,
+    total: typeof order.total === 'number' ? order.total : 0
+  }));
+  
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div className="p-5 border-b border-gray-100 flex justify-between items-center">
@@ -36,7 +43,7 @@ const RecentOrdersCard = ({ recentOrders, onViewDetails }: RecentOrdersCardProps
       </div>
       <div className="p-5">
         <div className="space-y-4">
-          {recentOrders.map((order) => (
+          {validatedOrders.map((order) => (
             <OrderItem
               key={order.id}
               id={order.id}

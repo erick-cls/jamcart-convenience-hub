@@ -7,6 +7,11 @@ interface OrderSummaryCardProps {
 }
 
 const OrderSummaryCard = ({ order }: OrderSummaryCardProps) => {
+  // Ensure price exists and is a number before using toFixed
+  const price = typeof order.price === 'number' ? order.price : 0;
+  const deliveryFee = price * 0.1;
+  const total = price + deliveryFee;
+
   return (
     <Card>
       <CardHeader>
@@ -15,15 +20,15 @@ const OrderSummaryCard = ({ order }: OrderSummaryCardProps) => {
       <CardContent>
         <div className="flex justify-between mb-2">
           <span>Subtotal:</span>
-          <span>${order.price.toFixed(2)}</span>
+          <span>${price.toFixed(2)}</span>
         </div>
         <div className="flex justify-between mb-2">
           <span>Delivery Fee:</span>
-          <span>${(order.price * 0.1).toFixed(2)}</span>
+          <span>${deliveryFee.toFixed(2)}</span>
         </div>
         <div className="flex justify-between font-bold">
           <span>Total:</span>
-          <span>${(order.price * 1.1).toFixed(2)}</span>
+          <span>${total.toFixed(2)}</span>
         </div>
       </CardContent>
     </Card>
