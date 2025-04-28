@@ -132,6 +132,26 @@ const VendorManagementPage = () => {
     return nextDate.toISOString();
   };
 
+  const handleDeleteVendor = (vendorId: string) => {
+    try {
+      const updatedVendors = vendors.filter(v => v.id !== vendorId);
+      setVendors(updatedVendors);
+      localStorage.setItem('jamcart-vendor-commissions', JSON.stringify(updatedVendors));
+      
+      toast({
+        title: "Vendor fee rate deleted",
+        description: "The vendor fee rate has been successfully deleted.",
+      });
+    } catch (error) {
+      console.error('Error deleting vendor:', error);
+      toast({
+        title: "Error deleting vendor",
+        description: "Could not delete vendor fee rate. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleSaveCommission = (data: VendorCommission) => {
     try {
       let updatedVendors: VendorCommission[];
@@ -218,6 +238,7 @@ const VendorManagementPage = () => {
               vendors={vendors}
               onEdit={handleEditVendor}
               onToggleStatus={handleToggleVendorStatus}
+              onDelete={handleDeleteVendor}
             />
           </div>
           
