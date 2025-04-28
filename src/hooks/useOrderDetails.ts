@@ -1,13 +1,14 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { OrderItem } from '@/pages/admin/orders/types';
 
 interface OrderDetails {
   id: string;
   date: string;
   time: string;
   status: string;
-  items: string[];
+  items: OrderItem[] | string[];
   total: number;
   delivery: string;
   rider: {

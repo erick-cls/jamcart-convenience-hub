@@ -1,5 +1,6 @@
 
 import { Calendar } from 'lucide-react';
+import { OrderItem } from '@/pages/admin/orders/types';
 
 interface OrderDetailsProps {
   orderDetails: {
@@ -7,7 +8,7 @@ interface OrderDetailsProps {
     date: string;
     time: string;
     status: string;
-    items: string[];
+    items: OrderItem[] | string[]; // Update to accept both types
     total: number;
   };
 }
@@ -36,11 +37,26 @@ const OrderDetails = ({ orderDetails }: OrderDetailsProps) => {
       <div className="p-6 border-b border-gray-100">
         <h3 className="font-medium mb-3">Order Items</h3>
         <ul className="space-y-2">
-          {orderDetails.items.map((item, index) => (
-            <li key={index} className="flex justify-between text-gray-600">
-              <span>{item}</span>
-            </li>
-          ))}
+          {Array.isArray(orderDetails.items) && orderDetails.items.map((item, index) => {
+            // Check if the item is a string or an object
+            if (typeof item === 'string') {
+              return (
+                <li key={index} className="flex justify-between text-gray-600">
+                  <span>{item}</span>
+                </li>
+              );
+            } else if (typeof item === 'object' && item !== null) {
+              // Handle OrderItem objects
+              const orderItem = item as OrderItem;
+              return (
+                <li key={index} className="flex justify-between text-gray-600">
+                  <span>{orderItem.name} (x{orderItem.quantity})</span>
+                  <span>${(orderItem.price * orderItem.quantity).toFixed(2)}</span>
+                </li>
+              );
+            }
+            return null;
+          })}
         </ul>
         <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between font-medium">
           <span>Total</span>
