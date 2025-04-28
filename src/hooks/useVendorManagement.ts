@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { VendorCommission } from '@/types/vendor.types';
+import { VendorCommission, CommissionSchedule } from '@/types/vendor.types';
 import { toast } from '@/hooks/use-toast';
 
 export const useVendorManagement = () => {
@@ -138,7 +138,7 @@ export const useVendorManagement = () => {
 };
 
 // Helper functions
-const calculateNextPaymentDate = (schedule: 'weekly' | 'bi-monthly' | 'monthly'): string => {
+const calculateNextPaymentDate = (schedule: CommissionSchedule): string => {
   const today = new Date();
   let nextDate = new Date(today);
   
@@ -157,7 +157,7 @@ const calculateNextPaymentDate = (schedule: 'weekly' | 'bi-monthly' | 'monthly')
   return nextDate.toISOString();
 };
 
-const getMockVendors = () => {
+const getMockVendors = (): VendorCommission[] => {
   const vendorUsers: VendorCommission[] = [];
   
   for (let i = 0; i < localStorage.length; i++) {
@@ -172,9 +172,9 @@ const getMockVendors = () => {
             vendorName: userData.name || 'Unknown Vendor',
             vendorEmail: userData.email || 'vendor@example.com',
             rate: 15,
-            schedule: 'monthly',
+            schedule: 'monthly' as CommissionSchedule,
             lastUpdated: new Date().toISOString(),
-            nextPaymentDate: calculateNextPaymentDate('monthly'),
+            nextPaymentDate: calculateNextPaymentDate('monthly' as CommissionSchedule),
             active: true
           });
         }
@@ -192,7 +192,7 @@ const getMockVendors = () => {
         vendorName: 'Deonroy Mitchell',
         vendorEmail: 'deonroy@gmail.com',
         rate: 15,
-        schedule: 'monthly',
+        schedule: 'monthly' as CommissionSchedule,
         lastUpdated: new Date().toISOString(),
         nextPaymentDate: calculateNextPaymentDate('monthly'),
         active: true
@@ -203,7 +203,7 @@ const getMockVendors = () => {
         vendorName: 'Roger Blakely',
         vendorEmail: 'rogerb@gmail.com',
         rate: 12,
-        schedule: 'weekly',
+        schedule: 'weekly' as CommissionSchedule,
         lastUpdated: new Date().toISOString(),
         nextPaymentDate: calculateNextPaymentDate('weekly'),
         active: true
@@ -214,7 +214,7 @@ const getMockVendors = () => {
         vendorName: 'Joe Black',
         vendorEmail: 'joeblack@gmail.com',
         rate: 10,
-        schedule: 'bi-monthly',
+        schedule: 'bi-monthly' as CommissionSchedule,
         lastUpdated: new Date().toISOString(),
         nextPaymentDate: calculateNextPaymentDate('bi-monthly'),
         active: true
@@ -225,7 +225,7 @@ const getMockVendors = () => {
         vendorName: 'Niche Marshall',
         vendorEmail: 'nichemarsh@gmail.com',
         rate: 18,
-        schedule: 'monthly',
+        schedule: 'monthly' as CommissionSchedule,
         lastUpdated: new Date().toISOString(),
         nextPaymentDate: calculateNextPaymentDate('monthly'),
         active: false
