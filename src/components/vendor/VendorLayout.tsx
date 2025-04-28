@@ -19,6 +19,7 @@ import {
   LogOut,
   ChevronLeft,
   User,
+  Store,
 } from 'lucide-react';
 import AnimatedLogo from '@/components/ui/AnimatedLogo';
 import { Badge } from '@/components/ui/badge';
@@ -80,9 +81,9 @@ const VendorLayout = ({ children }: VendorLayoutProps) => {
                 <SidebarMenuButton 
                   onClick={() => navigate('/vendor/profile')}
                   isActive={window.location.pathname === '/vendor/profile'}
-                  tooltip="Profile"
+                  tooltip="Store Profile"
                 >
-                  <User className="h-4 w-4" />
+                  <Store className="h-4 w-4" />
                   <span>Store Profile</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>

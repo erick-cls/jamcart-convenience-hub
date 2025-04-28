@@ -30,6 +30,7 @@ export interface User {
   storeName?: string;
   storeDescription?: string;
   storeCategory?: string;
+  storeImage?: string;
 }
 
 export interface AuthContextType {
@@ -49,5 +50,6 @@ export type RegisterUserData = Omit<User, 'id' | 'isVerified' | 'isAdmin' | 'isR
   cardInfo?: CardInfo,
   storeName?: string,
   storeDescription?: string,
-  storeCategory?: string
+  storeCategory?: string,
+  storeImage?: string
 };

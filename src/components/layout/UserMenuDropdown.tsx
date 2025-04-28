@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { ShoppingCart, LogOut, Bike, Package, User } from "lucide-react";
+import { ShoppingCart, LogOut, Bike, Package, Store } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface UserMenuDropdownProps {
   user: any;
@@ -27,6 +27,9 @@ const UserMenuDropdown = ({ user, handleLogout, getUserInitials }: UserMenuDropd
         <DropdownMenuTrigger asChild>
           <button className="flex items-center justify-center h-9 w-9 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors focus:outline-none">
             <Avatar className="h-8 w-8">
+              {user.storeImage ? (
+                <AvatarImage src={user.storeImage} alt={user.name} />
+              ) : null}
               <AvatarFallback className="bg-jamcart-red text-white text-xs">
                 {getUserInitials()}
               </AvatarFallback>
@@ -48,6 +51,14 @@ const UserMenuDropdown = ({ user, handleLogout, getUserInitials }: UserMenuDropd
             <DropdownMenuItem asChild>
               <Link to="/admin/dashboard" className="cursor-pointer">
                 Admin Dashboard
+              </Link>
+            </DropdownMenuItem>
+          )}
+          {user.userType === 'vendor' && (
+            <DropdownMenuItem asChild>
+              <Link to="/vendor/dashboard" className="cursor-pointer">
+                <Store className="mr-2 h-4 w-4" />
+                Vendor Dashboard
               </Link>
             </DropdownMenuItem>
           )}
@@ -79,4 +90,3 @@ const UserMenuDropdown = ({ user, handleLogout, getUserInitials }: UserMenuDropd
 };
 
 export default UserMenuDropdown;
-
