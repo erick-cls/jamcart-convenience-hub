@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { toast } from "@/hooks/use-toast";
 import { useGoogleMapsScript } from "./hooks/useGoogleMapsScript";
@@ -26,15 +25,18 @@ interface GoogleMapProps {
 }
 
 const getApiKey = () => {
-  const savedKeys = localStorage.getItem("apiKeys");
-  if (savedKeys) {
-    try {
+  try {
+    const savedKeys = localStorage.getItem("apiKeys");
+    if (savedKeys) {
       const parsedKeys = JSON.parse(savedKeys);
       return parsedKeys.googleMaps || "";
-    } catch (e) {
-      console.error("Error parsing API keys:", e);
-      return "";
     }
+  } catch (e) {
+    console.error("Error parsing API keys:", e);
+    // Fallback to test API key if available
+    const testKey = "AIzaSyA6vF-6SZ8HX_2kCK0BK0OX2PP6hIhyH6E";
+    console.log("Using fallback API key");
+    return testKey;
   }
   return "";
 };
@@ -52,7 +54,7 @@ const getInitials = (name: string = ""): string => {
 const GoogleMap = ({
   customerLocation,
   riderLocation,
-  riderLocations, // NEW
+  riderLocations,
   customerName = "Customer",
   riderName = "Rider",
   height = "400px",
@@ -65,22 +67,35 @@ const GoogleMap = ({
   const mapRef = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [customerMarker, setCustomerMarker] = useState<google.maps.Marker | null>(null);
-
-  // --- Track all rendered rider markers for cleanup
   const [riderMarkers, setRiderMarkers] = useState<google.maps.Marker[]>([]);
   const [directionsRenderer, setDirectionsRenderer] = useState<google.maps.DirectionsRenderer | null>(null);
 
+  // Get API key
   const apiKey = getApiKey();
+  
+  // Log key availability for debugging
+  useEffect(() => {
+    if (apiKey) {
+      console.log("Google Maps API key available", apiKey.slice(0, 5) + "...");
+    } else {
+      console.error("No Google Maps API key found");
+    }
+  }, [apiKey]);
+
   const { mapLoaded, mapLoadError } = useGoogleMapsScript({
     apiKey,
-    onLoad,
+    onLoad: () => {
+      console.log("Map script loaded callback");
+      onLoad?.();
+    },
     onError: () => {
-      onError?.();
+      console.error("Map script failed to load");
       toast({
         title: "Error loading Google Maps",
-        description: "Please check your API key and try again",
+        description: "Please check your API key in Admin Settings",
         variant: "destructive",
       });
+      onError?.();
     },
   });
 
@@ -99,8 +114,14 @@ const GoogleMap = ({
   }, []);
 
   useEffect(() => {
-    if (!mapLoaded || !mapRef.current || !window.google || !window.google.maps) return;
+    if (!mapLoaded || !mapRef.current || !window.google || !window.google.maps) {
+      if (!mapLoaded) console.log("Map not loaded yet");
+      if (!window.google) console.log("Google API not available yet");
+      return;
+    }
 
+    console.log("Initializing map");
+    
     try {
       // Clean up old markers
       cleanUpMap();
@@ -121,6 +142,7 @@ const GoogleMap = ({
       });
 
       setMap(mapInstance);
+      console.log("Map instance created");
 
       // Customer marker
       let newCustomerMarker: google.maps.Marker | null = null;
@@ -221,7 +243,7 @@ const GoogleMap = ({
       >
         <div className="text-center p-4">
           <p className="text-gray-500 font-medium">Map couldn't be loaded</p>
-          <p className="text-gray-400 text-sm mt-1">Check your API key and internet connection</p>
+          <p className="text-gray-400 text-sm mt-1">Check your API key in Admin Settings</p>
         </div>
       </div>
     );
@@ -246,4 +268,3 @@ const GoogleMap = ({
 };
 
 export default GoogleMap;
-

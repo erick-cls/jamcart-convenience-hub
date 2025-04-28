@@ -12,7 +12,9 @@ export function useGoogleMapsScript({ apiKey, onLoad, onError }: UseGoogleMapsSc
   const [mapLoadError, setMapLoadError] = useState(false);
 
   useEffect(() => {
-    if (!apiKey) {
+    // Check if API key is valid
+    if (!apiKey || apiKey.trim() === "") {
+      console.error("Google Maps API key is missing or empty");
       setMapLoadError(true);
       onError?.();
       return;
@@ -20,6 +22,7 @@ export function useGoogleMapsScript({ apiKey, onLoad, onError }: UseGoogleMapsSc
 
     // Check if Google Maps is already loaded
     if (window.google && window.google.maps) {
+      console.log("Google Maps API already loaded");
       setMapLoaded(true);
       onLoad?.();
       return;
@@ -29,6 +32,8 @@ export function useGoogleMapsScript({ apiKey, onLoad, onError }: UseGoogleMapsSc
     const existingScripts = document.querySelectorAll('script[src*="maps.googleapis.com/maps/api"]');
     existingScripts.forEach(script => script.remove());
 
+    console.log("Loading Google Maps API with key:", apiKey.slice(0, 5) + "...");
+
     // Create a new script tag with async attribute
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
@@ -37,11 +42,13 @@ export function useGoogleMapsScript({ apiKey, onLoad, onError }: UseGoogleMapsSc
     script.setAttribute("data-added-by-us", "true");
     
     script.onload = () => {
+      console.log("Google Maps API loaded successfully");
       setMapLoaded(true);
       onLoad?.();
     };
     
-    script.onerror = () => {
+    script.onerror = (e) => {
+      console.error("Error loading Google Maps API:", e);
       setMapLoadError(true);
       onError?.();
     };
