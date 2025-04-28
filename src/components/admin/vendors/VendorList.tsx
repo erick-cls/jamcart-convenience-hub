@@ -41,7 +41,7 @@ const VendorList = ({ vendors, onEdit, onToggleStatus }: VendorListProps) => {
       <CardHeader>
         <CardTitle className="flex items-center">
           <Percent className="mr-2 h-5 w-5 text-orange-500" />
-          Vendor Commission Rates
+          Vendor Fee Rates
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -51,7 +51,7 @@ const VendorList = ({ vendors, onEdit, onToggleStatus }: VendorListProps) => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Vendor Name</TableHead>
-                  <TableHead>Commission</TableHead>
+                  <TableHead>Fee</TableHead>
                   <TableHead>Schedule</TableHead>
                   <TableHead>Next Payment</TableHead>
                   <TableHead>Status</TableHead>

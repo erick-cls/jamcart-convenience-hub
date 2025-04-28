@@ -1,4 +1,3 @@
-
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -157,7 +156,7 @@ const VendorCommissionForm = ({
           name="rate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Commission Rate (%)</FormLabel>
+              <FormLabel>Fee Rate (%)</FormLabel>
               <FormControl>
                 <div className="flex items-center">
                   <Input
@@ -176,7 +175,7 @@ const VendorCommissionForm = ({
                   <span className="ml-2">%</span>
                 </div>
               </FormControl>
-              <p className="text-xs text-gray-500">Commission rate must be between 10% and 20%</p>
+              <p className="text-xs text-gray-500">Fee rate must be between 10% and 20%</p>
               <FormMessage />
             </FormItem>
           )}
@@ -218,7 +217,7 @@ const VendorCommissionForm = ({
             Cancel
           </Button>
           <Button type="submit">
-            {isEditing ? 'Update' : 'Save'} Commission
+            {isEditing ? 'Update' : 'Save'} Fee
           </Button>
         </div>
       </form>

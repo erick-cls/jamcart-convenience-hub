@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Order } from '@/pages/admin/orders/types';
@@ -45,7 +44,7 @@ const OrderSummaryCard = ({ order, vendorId }: OrderSummaryCardProps) => {
         {vendorId && (
           <>
             <div className="flex justify-between mb-2 text-orange-600">
-              <span>Platform Commission:</span>
+              <span>Platform Fee:</span>
               <span>-${commission.toFixed(2)}</span>
             </div>
             <div className="flex justify-between mb-2 text-green-600 font-medium">
