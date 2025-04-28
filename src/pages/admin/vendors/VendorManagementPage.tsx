@@ -224,7 +224,7 @@ const VendorManagementPage = () => {
           <div className="lg:col-span-1">
             <Card>
               <CardHeader>
-                <CardTitle>{isEditing ? 'Edit' : 'Set'} Commission Rate</CardTitle>
+                <CardTitle>{isEditing ? 'Edit' : 'Set'} Fee Rate</CardTitle>
               </CardHeader>
               <CardContent>
                 <VendorCommissionForm 
